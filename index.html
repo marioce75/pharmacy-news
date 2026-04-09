@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pharmacy News — Dosys Health</title>
+  <meta name="description" content="Drug development, pharma, and disease news curated by Dosys Health.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="logo">
+        <span class="logo-dosys">Dosys</span>
+        <span class="logo-divider"></span>
+        <span class="logo-section">Pharmacy News</span>
+      </a>
+      <nav class="site-nav">
+        <a href="#all" class="nav-link active" data-category="all">Latest</a>
+        <a href="#fda-approvals" class="nav-link" data-category="fda-approvals">FDA Approvals</a>
+        <a href="#clinical-trials" class="nav-link" data-category="clinical-trials">Clinical Trials</a>
+        <a href="#drug-safety" class="nav-link" data-category="drug-safety">Drug Safety</a>
+        <a href="#industry-news" class="nav-link" data-category="industry-news">Industry News</a>
+        <a href="#disease-research" class="nav-link" data-category="disease-research">Disease Research</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Pharmacy &amp; Drug Development News</h1>
+      <p class="hero-subtitle">Curated coverage of FDA approvals, clinical trials, drug safety, and the pharmaceutical industry.</p>
+    </div>
+  </section>
+
+  <main class="container">
+    <section class="news-grid" id="news-grid">
+      <!-- Cards injected by JS -->
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-brand">
+        <span class="footer-logo">Dosys</span>
+        <p>&copy; 2026 Dosys Health LLC. All rights reserved.</p>
+      </div>
+      <div class="footer-links">
+        <a href="https://dosys.health">dosys.health</a>
+        <a href="https://vancomyzer.com">vancomyzer.com</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/articles.js"></script>
+  <script src="js/news.js"></script>
+</body>
+</html>
