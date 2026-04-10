@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pharmacy News — Dosys Health</title>
+  <meta name="description" content="Drug development, pharma, and disease news curated by Dosys Health.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <%- include('partials/header', { activeCategory: activeCategory || 'all' }) %>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Pharmacy &amp; Drug Development News</h1>
+      <p class="hero-subtitle">Curated coverage of FDA approvals, clinical trials, drug safety, and the pharmaceutical industry.</p>
+    </div>
+  </section>
+
+  <main class="container">
+    <section class="news-grid" id="news-grid">
+      <% if (articles.length === 0) { %>
+        <p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 3rem 0;">No articles in this category yet.</p>
+      <% } else { %>
+        <% articles.forEach(article => { %>
+          <%- include('partials/card', { article }) %>
+        <% }); %>
+      <% } %>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+
+  <script src="/js/news.js"></script>
+</body>
+</html>

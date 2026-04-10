@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings — Pharmacy News Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+  <div class="admin-layout">
+    <%- include('_sidebar', { page: 'settings', totalPending: 0 }) %>
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Settings</h1>
+      </div>
+
+      <div class="settings-section">
+        <h2>Scraping Pipeline</h2>
+        <p class="settings-desc">The scraper runs daily at 4:00 AM CST. You can also trigger it manually.</p>
+        <button class="btn btn-primary" id="run-scrape-settings">Run Scraper Now</button>
+        <div id="scrape-status" style="margin-top:1rem;color:var(--text-muted)"></div>
+      </div>
+
+      <div class="settings-section">
+        <h2>Sources by Category</h2>
+        <% Object.entries(sources).forEach(([category, categoryConfig]) => { %>
+          <% const catInfo = categories[category] || { label: category, color: '#888' }; %>
+          <div class="source-group">
+            <h3>
+              <span class="news-card__tag" style="--tag-color:<%= catInfo.color %>"><%= catInfo.label %></span>
+            </h3>
+            <div class="source-list">
+              <% categoryConfig.forEach(source => { %>
+                <div class="source-item">
+                  <span class="source-name"><%= source.name %></span>
+                  <span class="source-type"><%= source.type.toUpperCase() %></span>
+                  <span class="source-url mono"><%= source.url %></span>
+                </div>
+              <% }); %>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    </main>
+  </div>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

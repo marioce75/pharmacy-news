@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editor's Picks — Pharmacy News Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head>
+<body class="admin-body">
+  <div class="admin-layout">
+    <%- include('_sidebar', { page: 'editors-picks', totalPending }) %>
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Editor's Picks <span style="color:var(--text-dim);font-weight:400;font-family:'DM Sans',sans-serif;font-size:0.9rem">— <%= today %></span></h1>
+        <div class="admin-actions">
+          <% if (slateArticles.length > 0) { %>
+            <button class="btn btn-sm btn-primary" id="approve-slate-btn">Approve Entire Slate (<%= slateArticles.length %>)</button>
+          <% } %>
+          <button class="btn btn-sm btn-outline" id="run-pharmeditor-btn">Re-run PharmEditor</button>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-cards">
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--signal-green)"><%= scored.length %></div>
+          <div class="stat-label">Scored</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:#A78BFA"><%= avgScore %></div>
+          <div class="stat-label">Avg Score</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:#F59E0B"><%= topScore %></div>
+          <div class="stat-label">Top Score</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:#3B82F6"><%= Object.keys(slateCategories).length %></div>
+          <div class="stat-label">Categories in Slate</div>
+        </div>
+      </div>
+
+      <% if (!slate) { %>
+        <div class="empty-state">
+          <h2>No editorial slate for today</h2>
+          <p>Run PharmEditor to analyze pending articles and generate today's publishing recommendations.</p>
+          <button class="btn btn-primary" id="run-pharmeditor-empty">Run PharmEditor Now</button>
+        </div>
+      <% } else { %>
+
+        <!-- Editorial Notes -->
+        <% if (slate.editorial_notes) { %>
+          <div class="editorial-notes">
+            <h3>Editorial Brief</h3>
+            <p><%= slate.editorial_notes %></p>
+          </div>
+        <% } %>
+
+        <div class="picks-layout">
+          <div class="picks-main">
+            <!-- Recommended Slate -->
+            <% if (slateArticles.length > 0) { %>
+              <h2 class="section-title">Recommended Slate</h2>
+              <div class="admin-grid">
+                <% slateArticles.forEach(article => { %>
+                  <% const catInfo = categories[article.category] || { label: article.category, color: '#888' }; %>
+                  <% const scoreClass = article.editorial_score >= 80 ? 'high' : article.editorial_score >= 60 ? 'med' : 'low'; %>
+                  <div class="admin-card slate-card" data-id="<%= article.id %>">
+                    <div class="slate-rank">#<%= article.slate_rank %></div>
+                    <div class="admin-card__content">
+                      <div class="admin-card__meta">
+                        <span class="score-badge score-<%= scoreClass %>"><%= article.editorial_score %></span>
+                        <span class="news-card__tag" style="--tag-color:<%= catInfo.color %>"><%= catInfo.label %></span>
+                        <span class="news-card__dot"></span>
+                        <span><%= article.source %></span>
+                        <span class="news-card__dot"></span>
+                        <time><%= article.date_published %></time>
+                      </div>
+                      <h3 class="admin-card__title"><%= article.title %></h3>
+
+                      <% if (article.editorial_reasoning) { %>
+                        <p class="admin-card__reasoning"><%= article.editorial_reasoning %></p>
+                      <% } %>
+
+                      <% if (article.recommended_angle) { %>
+                        <div class="angle-box"><%= article.recommended_angle %></div>
+                      <% } %>
+
+                      <!-- Score Breakdown Bars -->
+                      <% if (article.score_breakdown) { %>
+                        <div class="score-bars">
+                          <div class="score-bar-row">
+                            <span class="score-bar-label">Traffic</span>
+                            <div class="score-bar"><div class="score-bar-fill" style="width:<%= article.score_breakdown.traffic_potential || 0 %>%;background:#F59E0B"></div></div>
+                            <span class="score-bar-value"><%= article.score_breakdown.traffic_potential || 0 %></span>
+                          </div>
+                          <div class="score-bar-row">
+                            <span class="score-bar-label">Clinical</span>
+                            <div class="score-bar"><div class="score-bar-fill" style="width:<%= article.score_breakdown.clinical_significance || 0 %>%;background:#7C3AED"></div></div>
+                            <span class="score-bar-value"><%= article.score_breakdown.clinical_significance || 0 %></span>
+                          </div>
+                          <div class="score-bar-row">
+                            <span class="score-bar-label">Engagement</span>
+                            <div class="score-bar"><div class="score-bar-fill" style="width:<%= article.score_breakdown.engagement_prediction || 0 %>%;background:#00d4aa"></div></div>
+                            <span class="score-bar-value"><%= article.score_breakdown.engagement_prediction || 0 %></span>
+                          </div>
+                          <div class="score-bar-row">
+                            <span class="score-bar-label">Source</span>
+                            <div class="score-bar"><div class="score-bar-fill" style="width:<%= article.score_breakdown.source_authority || 0 %>%;background:#3B82F6"></div></div>
+                            <span class="score-bar-value"><%= article.score_breakdown.source_authority || 0 %></span>
+                          </div>
+                        </div>
+                      <% } %>
+
+                      <div class="admin-card__expand" style="display:none">
+                        <% if (article.headline_options && article.headline_options.length) { %>
+                          <div class="expand-section">
+                            <h4>Headline Options</h4>
+                            <ul class="headline-list">
+                              <% article.headline_options.forEach(h => { %>
+                                <li><%= h %></li>
+                              <% }); %>
+                            </ul>
+                          </div>
+                        <% } %>
+
+                        <% if (article.optimized_summary) { %>
+                          <div class="expand-section">
+                            <h4>Optimized Summary</h4>
+                            <p><%= article.optimized_summary %></p>
+                          </div>
+                        <% } %>
+
+                        <% if (article.instagram_caption) { %>
+                          <div class="instagram-preview">
+                            <h4>Instagram Caption</h4>
+                            <% if (article.instagram_hook_options && article.instagram_hook_options.length) { %>
+                              <div class="hook-options">
+                                <span class="hook-label">Hook options:</span>
+                                <% article.instagram_hook_options.forEach(h => { %>
+                                  <span class="hook-pill"><%= h %></span>
+                                <% }); %>
+                              </div>
+                            <% } %>
+                            <pre class="caption-text"><%= article.instagram_caption %></pre>
+                            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+                              <button class="btn btn-sm btn-outline copy-caption" data-caption="<%= encodeURIComponent(article.instagram_caption) %>">Copy Caption</button>
+                              <% if (article.best_posting_time) { %>
+                                <span style="font-size:0.78rem;color:var(--text-dim)">Best time: <%= article.best_posting_time %></span>
+                              <% } %>
+                              <% if (article.content_type_recommendation) { %>
+                                <span class="content-type-pill"><%= article.content_type_recommendation %></span>
+                              <% } %>
+                            </div>
+                          </div>
+                        <% } %>
+
+                        <% if (article.follow_up_angle) { %>
+                          <div class="expand-section">
+                            <h4>Follow-up Angle</h4>
+                            <p style="color:var(--text-muted);font-size:0.85rem"><%= article.follow_up_angle %></p>
+                          </div>
+                        <% } %>
+                      </div>
+
+                      <div class="admin-card__actions">
+                        <button class="btn btn-sm btn-approve" onclick="approveArticle('<%= article.id %>')">Approve</button>
+                        <a href="/admin/edit/<%= article.id %>" class="btn btn-sm btn-outline">Edit</a>
+                        <button class="btn btn-sm btn-decline" onclick="declineArticle('<%= article.id %>')">Decline</button>
+                        <button class="btn btn-sm btn-ghost toggle-expand">More ▾</button>
+                      </div>
+                    </div>
+                  </div>
+                <% }); %>
+              </div>
+            <% } %>
+
+            <!-- Honorable Mentions -->
+            <% if (honorableMentionArticles.length > 0) { %>
+              <h2 class="section-title" style="margin-top:2rem">Honorable Mentions</h2>
+              <div class="admin-grid">
+                <% honorableMentionArticles.forEach(article => { %>
+                  <% const catInfo = categories[article.category] || { label: article.category, color: '#888' }; %>
+                  <% const scoreClass = article.editorial_score >= 80 ? 'high' : article.editorial_score >= 60 ? 'med' : 'low'; %>
+                  <div class="admin-card" data-id="<%= article.id %>">
+                    <div class="admin-card__content">
+                      <div class="admin-card__meta">
+                        <span class="score-badge score-<%= scoreClass %>"><%= article.editorial_score || '—' %></span>
+                        <span class="news-card__tag" style="--tag-color:<%= catInfo.color %>"><%= catInfo.label %></span>
+                        <span class="news-card__dot"></span>
+                        <span><%= article.source %></span>
+                      </div>
+                      <h3 class="admin-card__title"><%= article.title %></h3>
+                      <% if (article.slate_reason) { %>
+                        <p class="admin-card__reasoning" style="font-style:italic"><%= article.slate_reason %></p>
+                      <% } %>
+                      <div class="admin-card__actions">
+                        <button class="btn btn-sm btn-approve" onclick="approveArticle('<%= article.id %>')">Approve</button>
+                        <a href="/admin/edit/<%= article.id %>" class="btn btn-sm btn-outline">Edit</a>
+                        <button class="btn btn-sm btn-decline" onclick="declineArticle('<%= article.id %>')">Decline</button>
+                      </div>
+                    </div>
+                  </div>
+                <% }); %>
+              </div>
+            <% } %>
+          </div>
+
+          <!-- Sidebar: Trends + Calendar + Charts -->
+          <div class="picks-sidebar">
+            <% if (slate.trending_topics_today && slate.trending_topics_today.length) { %>
+              <div class="sidebar-card">
+                <h3>Trending Today</h3>
+                <div class="trending-pills">
+                  <% slate.trending_topics_today.forEach(t => { %>
+                    <span class="trending-pill"><%= t %></span>
+                  <% }); %>
+                </div>
+              </div>
+            <% } %>
+
+            <% if (slate.content_calendar_suggestion) { %>
+              <div class="sidebar-card">
+                <h3>Posting Schedule</h3>
+                <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.6"><%= slate.content_calendar_suggestion %></p>
+              </div>
+            <% } %>
+
+            <div class="sidebar-card">
+              <h3>Score Distribution</h3>
+              <canvas id="histogramChart" height="200"></canvas>
+            </div>
+
+            <div class="sidebar-card">
+              <h3>Category Balance</h3>
+              <canvas id="categoryChart" height="200"></canvas>
+            </div>
+
+            <% if (feedbackStats) { %>
+              <div class="sidebar-card">
+                <h3>PharmEditor Alignment</h3>
+                <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.5rem">
+                  Last 30 days: <strong style="color:var(--signal-green)"><%= (feedbackStats.overall_approval_rate * 100).toFixed(0) %>%</strong> overall approval rate
+                  (<%= feedbackStats.total_reviewed %> reviewed)
+                </p>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      <% } %>
+    </main>
+  </div>
+
+  <script>
+    // Score histogram
+    const histogram = <%- JSON.stringify(histogram) %>;
+    new Chart(document.getElementById('histogramChart'), {
+      type: 'bar',
+      data: {
+        labels: ['0-20', '20-40', '40-60', '60-80', '80-100'],
+        datasets: [{
+          data: histogram,
+          backgroundColor: ['#EF4444', '#F59E0B', '#F59E0B', '#00d4aa88', '#00d4aa'],
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#8a96a3' }, grid: { color: '#1e2830' } },
+          y: { ticks: { color: '#8a96a3' }, grid: { color: '#1e2830' } }
+        }
+      }
+    });
+
+    // Category balance
+    const catCoverage = <%- JSON.stringify(slateCategories) %>;
+    const catConfig = <%- JSON.stringify(categories) %>;
+    const catLabels = Object.keys(catCoverage);
+    const catColors = catLabels.map(k => catConfig[k]?.color || '#888');
+    if (catLabels.length > 0) {
+      new Chart(document.getElementById('categoryChart'), {
+        type: 'doughnut',
+        data: {
+          labels: catLabels.map(k => catConfig[k]?.label || k),
+          datasets: [{
+            data: catLabels.map(k => catCoverage[k]),
+            backgroundColor: catColors
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: '#8a96a3', font: { size: 10 } } } }
+        }
+      });
+    }
+  </script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

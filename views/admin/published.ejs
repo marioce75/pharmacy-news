@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Published Articles — Pharmacy News Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+  <div class="admin-layout">
+    <%- include('_sidebar', { page: 'published', totalPending: 0 }) %>
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Published Articles</h1>
+        <div class="admin-actions">
+          <input type="text" class="search-input" id="search-published" placeholder="Search articles...">
+        </div>
+      </div>
+
+      <div class="category-tabs">
+        <a href="/admin/published" class="cat-tab<%= !activeCategory || activeCategory === 'all' ? ' active' : '' %>">All</a>
+        <% Object.entries(categories).forEach(([slug, cat]) => { %>
+          <a href="/admin/published?category=<%= slug %>" class="cat-tab<%= activeCategory === slug ? ' active' : '' %>" style="--tab-color:<%= cat.color %>"><%= cat.label %></a>
+        <% }); %>
+      </div>
+
+      <% if (articles.length === 0) { %>
+        <div class="empty-state">
+          <h2>No published articles</h2>
+          <p>Approve articles from the review queue to see them here.</p>
+        </div>
+      <% } else { %>
+        <div class="admin-grid">
+          <% articles.forEach(article => { %>
+            <% const catInfo = categories[article.category] || { label: article.category, color: '#888' }; %>
+            <div class="admin-card" data-id="<%= article.id %>">
+              <div class="admin-card__content">
+                <div class="admin-card__meta">
+                  <span class="news-card__tag" style="--tag-color:<%= catInfo.color %>"><%= catInfo.label %></span>
+                  <span class="news-card__dot"></span>
+                  <span><%= article.source %></span>
+                  <span class="news-card__dot"></span>
+                  <time><%= article.date_published %></time>
+                </div>
+                <h3 class="admin-card__title"><%= article.title %></h3>
+                <p class="admin-card__summary"><%= article.summary %></p>
+                <div class="admin-card__actions">
+                  <a href="/article/<%= article.slug %>" target="_blank" class="btn btn-sm btn-outline">View Live</a>
+                  <a href="/admin/edit/<%= article.id %>" class="btn btn-sm btn-outline">Edit</a>
+                  <button class="btn btn-sm btn-danger-outline" onclick="unpublishArticle('<%= article.id %>')">Unpublish</button>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+    </main>
+  </div>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

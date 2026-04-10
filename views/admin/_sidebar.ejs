@@ -1,0 +1,22 @@
+<aside class="admin-sidebar">
+  <a href="/" class="admin-brand">
+    <span class="logo-dosys">Dosys</span>
+    <span style="color:var(--text-muted);font-size:0.75rem">Admin</span>
+  </a>
+  <nav class="admin-nav">
+    <a href="/admin/queue" class="admin-nav-link<%= page === 'queue' ? ' active' : '' %>">
+      <span>Review Queue</span>
+      <% if (typeof totalPending !== 'undefined' && totalPending > 0) { %>
+        <span class="badge"><%= totalPending %></span>
+      <% } %>
+    </a>
+    <a href="/admin/editors-picks" class="admin-nav-link<%= page === 'editors-picks' ? ' active' : '' %>">Editor's Picks</a>
+    <a href="/admin/published" class="admin-nav-link<%= page === 'published' ? ' active' : '' %>">Published</a>
+    <a href="/admin/analytics" class="admin-nav-link<%= page === 'analytics' ? ' active' : '' %>">Analytics</a>
+    <a href="/admin/settings" class="admin-nav-link<%= page === 'settings' ? ' active' : '' %>">Settings</a>
+  </nav>
+  <div class="admin-sidebar-footer">
+    <a href="/" class="admin-nav-link">← Public Site</a>
+    <a href="/admin/logout" class="admin-nav-link">Logout</a>
+  </div>
+</aside>

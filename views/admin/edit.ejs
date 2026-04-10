@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Article — Pharmacy News Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+  <div class="admin-layout">
+    <%- include('_sidebar', { page: 'edit', totalPending: 0 }) %>
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Edit Article</h1>
+        <div class="admin-actions">
+          <span class="status-badge status-<%= articleStatus %>"><%= articleStatus %></span>
+          <a href="/admin/<%= articleStatus === 'approved' ? 'published' : 'queue' %>" class="btn btn-sm btn-outline">← Back</a>
+        </div>
+      </div>
+
+      <form id="edit-form" class="edit-form" data-id="<%= article.id %>">
+        <div class="form-row">
+          <div class="form-group form-group-wide">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" value="<%= article.title %>" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group form-group-wide">
+            <label for="slug">Slug</label>
+            <input type="text" id="slug" name="slug" value="<%= article.slug %>">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group form-group-wide">
+            <label for="summary">Summary</label>
+            <textarea id="summary" name="summary" rows="3"><%= article.summary %></textarea>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" name="category">
+              <% Object.entries(categories).forEach(([slug, cat]) => { %>
+                <option value="<%= slug %>" <%= article.category === slug ? 'selected' : '' %>><%= cat.label %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="source">Source</label>
+            <input type="text" id="source" name="source" value="<%= article.source %>">
+          </div>
+          <div class="form-group">
+            <label for="region">Region</label>
+            <select id="region" name="region">
+              <option value="US" <%= article.region === 'US' ? 'selected' : '' %>>US</option>
+              <option value="EU" <%= article.region === 'EU' ? 'selected' : '' %>>EU</option>
+              <option value="Asia" <%= article.region === 'Asia' ? 'selected' : '' %>>Asia</option>
+              <option value="Global" <%= article.region === 'Global' ? 'selected' : '' %>>Global</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group form-group-wide">
+            <label for="source_url">Source URL</label>
+            <input type="url" id="source_url" name="source_url" value="<%= article.source_url || '' %>">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group form-group-wide">
+            <label for="body">Body (HTML)</label>
+            <textarea id="body" name="body" rows="15" class="mono"><%= article.body %></textarea>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tags">Tags (comma-separated)</label>
+            <input type="text" id="tags" name="tags" value="<%= (article.tags || []).join(', ') %>">
+          </div>
+          <div class="form-group">
+            <label for="drug_names">Drug Names (comma-separated)</label>
+            <input type="text" id="drug_names" name="drug_names" value="<%= (article.drug_names || []).join(', ') %>">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="companies">Companies (comma-separated)</label>
+            <input type="text" id="companies" name="companies" value="<%= (article.companies || []).join(', ') %>">
+          </div>
+          <div class="form-group">
+            <label for="therapeutic_area">Therapeutic Area</label>
+            <input type="text" id="therapeutic_area" name="therapeutic_area" value="<%= article.therapeutic_area || '' %>">
+          </div>
+          <div class="form-group">
+            <label for="priority">Priority</label>
+            <select id="priority" name="priority">
+              <option value="low" <%= article.priority === 'low' ? 'selected' : '' %>>Low</option>
+              <option value="medium" <%= article.priority === 'medium' ? 'selected' : '' %>>Medium</option>
+              <option value="high" <%= article.priority === 'high' ? 'selected' : '' %>>High</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group form-group-wide">
+            <label for="image">Image URL</label>
+            <input type="url" id="image" name="image" value="<%= article.image || '' %>">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group form-group-wide">
+            <label for="instagram_caption">Instagram Caption</label>
+            <textarea id="instagram_caption" name="instagram_caption" rows="6"><%= article.instagram_caption || '' %></textarea>
+            <button type="button" class="btn btn-sm btn-outline copy-caption" data-caption="<%= encodeURIComponent(article.instagram_caption || '') %>" style="margin-top:0.5rem">Copy Caption</button>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+          <a href="/admin/<%= articleStatus === 'approved' ? 'published' : 'queue' %>" class="btn btn-outline">Cancel</a>
+        </div>
+      </form>
+    </main>
+  </div>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review Queue — Pharmacy News Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+  <div class="admin-layout">
+    <%- include('_sidebar', { page: 'queue', totalPending }) %>
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Review Queue</h1>
+        <div class="admin-actions">
+          <button class="btn btn-sm btn-outline" id="bulk-approve-btn" disabled>Approve Selected</button>
+          <button class="btn btn-sm btn-danger-outline" id="bulk-decline-btn" disabled>Decline Selected</button>
+          <button class="btn btn-sm btn-primary" id="run-scrape-btn">Run Scraper</button>
+        </div>
+      </div>
+
+      <div class="category-tabs">
+        <a href="/admin/queue" class="cat-tab<%= !activeCategory || activeCategory === 'all' ? ' active' : '' %>">
+          All <span class="cat-count"><%= totalPending %></span>
+        </a>
+        <% Object.entries(categories).forEach(([slug, cat]) => { %>
+          <% const count = counts[slug] || 0; %>
+          <% if (count > 0) { %>
+            <a href="/admin/queue?category=<%= slug %>" class="cat-tab<%= activeCategory === slug ? ' active' : '' %>" style="--tab-color:<%= cat.color %>">
+              <%= cat.label %> <span class="cat-count"><%= count %></span>
+            </a>
+          <% } %>
+        <% }); %>
+      </div>
+
+      <% if (articles.length === 0) { %>
+        <div class="empty-state">
+          <h2>No pending articles</h2>
+          <p>Run the scraper to fetch new articles, or wait for the next scheduled run.</p>
+          <button class="btn btn-primary" id="run-scrape-empty">Run Scraper Now</button>
+        </div>
+      <% } else { %>
+        <div class="admin-grid">
+          <% articles.forEach(article => { %>
+            <% const catInfo = categories[article.category] || { label: article.category, color: '#888' }; %>
+            <div class="admin-card" data-id="<%= article.id %>">
+              <div class="admin-card__check">
+                <input type="checkbox" class="article-check" value="<%= article.id %>">
+              </div>
+              <div class="admin-card__content">
+                <div class="admin-card__meta">
+                  <span class="news-card__tag" style="--tag-color:<%= catInfo.color %>"><%= catInfo.label %></span>
+                  <% if (article.priority === 'high') { %>
+                    <span class="priority-badge high">HIGH</span>
+                  <% } %>
+                  <span class="news-card__dot"></span>
+                  <span><%= article.source %></span>
+                  <span class="news-card__dot"></span>
+                  <time><%= article.date_published %></time>
+                  <% if (article.region) { %>
+                    <span class="news-card__dot"></span>
+                    <span><%= article.region %></span>
+                  <% } %>
+                </div>
+                <h3 class="admin-card__title"><%= article.title %></h3>
+                <p class="admin-card__summary"><%= article.summary %></p>
+
+                <div class="admin-card__expand" style="display:none">
+                  <% if (article.source_url) { %>
+                    <p class="admin-card__url"><a href="<%= article.source_url %>" target="_blank" rel="noopener">View original →</a></p>
+                  <% } %>
+                  <% if (article.instagram_caption) { %>
+                    <div class="instagram-preview">
+                      <h4>Instagram Caption</h4>
+                      <pre class="caption-text"><%= article.instagram_caption %></pre>
+                      <button class="btn btn-sm btn-outline copy-caption" data-caption="<%= encodeURIComponent(article.instagram_caption) %>">Copy Caption</button>
+                    </div>
+                  <% } %>
+                  <% if (article.tags && article.tags.length > 0) { %>
+                    <div class="admin-card__tags">
+                      <% article.tags.forEach(tag => { %>
+                        <span class="article__tag"><%= tag %></span>
+                      <% }); %>
+                    </div>
+                  <% } %>
+                </div>
+
+                <div class="admin-card__actions">
+                  <button class="btn btn-sm btn-approve" onclick="approveArticle('<%= article.id %>')">Approve</button>
+                  <a href="/admin/edit/<%= article.id %>" class="btn btn-sm btn-outline">Edit</a>
+                  <button class="btn btn-sm btn-decline" onclick="declineArticle('<%= article.id %>')">Decline</button>
+                  <button class="btn btn-sm btn-ghost toggle-expand">More ▾</button>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+    </main>
+  </div>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

@@ -324,12 +324,34 @@ img {
   font-style: italic;
 }
 
+.article__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.article__tag {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
 .article__footer {
   max-width: 760px;
   margin: 0 auto;
   padding-bottom: 3rem;
   border-top: 1px solid var(--border);
   padding-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
 }
 
 /* === Footer === */

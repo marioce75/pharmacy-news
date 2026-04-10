@@ -1,9 +1,22 @@
 services:
   - type: web
     name: pharmacy-news
-    runtime: static
-    buildCommand: ""
-    staticPublishPath: .
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
+      - key: NODE_ENV
+        value: production
+      - key: TZ
+        value: America/Chicago
+    disk:
+      name: content-data
+      mountPath: /opt/render/project/src/content
+      sizeGB: 1
     headers:
       - path: /*
         name: X-Frame-Options
@@ -11,10 +24,3 @@ services:
       - path: /*
         name: X-Content-Type-Options
         value: nosniff
-      - path: /*
-        name: Cache-Control
-        value: public, max-age=300
-    routes:
-      - type: rewrite
-        source: /article
-        destination: /article.html

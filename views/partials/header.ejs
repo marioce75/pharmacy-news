@@ -1,0 +1,15 @@
+<header class="site-header">
+  <div class="container">
+    <a href="/" class="logo">
+      <span class="logo-dosys">Dosys</span>
+      <span class="logo-divider"></span>
+      <span class="logo-section">Pharmacy News</span>
+    </a>
+    <nav class="site-nav">
+      <a href="/" class="nav-link<%= activeCategory === 'all' || !activeCategory ? ' active' : '' %>" data-category="all">Latest</a>
+      <% Object.entries(categories).forEach(([slug, cat]) => { %>
+        <a href="/?category=<%= slug %>" class="nav-link<%= activeCategory === slug ? ' active' : '' %>" data-category="<%= slug %>"><%= cat.label %></a>
+      <% }); %>
+    </nav>
+  </div>
+</header>

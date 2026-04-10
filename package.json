@@ -1,0 +1,39 @@
+{
+  "name": "pharmacy-news",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "migrate": "node lib/migrate.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marioce75/pharmacy-news.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/marioce75/pharmacy-news/issues"
+  },
+  "homepage": "https://github.com/marioce75/pharmacy-news#readme",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.87.0",
+    "axios": "^1.15.0",
+    "cheerio": "^1.2.0",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.4.1",
+    "ejs": "^5.0.1",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "morgan": "^1.10.1",
+    "node-cron": "^4.2.1",
+    "rss-parser": "^3.13.0",
+    "slugify": "^1.6.9",
+    "string-similarity": "^4.0.4",
+    "uuid": "^13.0.0"
+  }
+}

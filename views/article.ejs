@@ -1,0 +1,61 @@
+<%
+  const catInfo = categories[article.category] || { label: article.category, color: '#888' };
+  const dateStr = new Date(article.date_published + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const heroImage = article.image ? article.image.replace('w=600&h=340', 'w=1200&h=500') : '';
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= article.title %> — Pharmacy News</title>
+  <meta name="description" content="<%= article.summary %>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <%- include('partials/header', { activeCategory: article.category }) %>
+
+  <main class="container">
+    <a href="/" class="back-link">← Back to all articles</a>
+    <article class="article">
+      <header class="article__header">
+        <div class="article__meta">
+          <span class="news-card__tag" style="--tag-color: <%= catInfo.color %>"><%= catInfo.label %></span>
+          <span class="news-card__dot"></span>
+          <span class="article__source"><%= article.source %></span>
+          <span class="news-card__dot"></span>
+          <time><%= dateStr %></time>
+          <% if (article.region) { %>
+            <span class="news-card__dot"></span>
+            <span><%= article.region %></span>
+          <% } %>
+        </div>
+        <h1 class="article__title"><%= article.title %></h1>
+        <p class="article__summary"><%= article.summary %></p>
+      </header>
+      <% if (heroImage) { %>
+        <img class="article__hero" src="<%= heroImage %>" alt="" loading="lazy">
+      <% } %>
+      <div class="article__body"><%- article.body %></div>
+      <% if (article.tags && article.tags.length > 0) { %>
+        <div class="article__tags">
+          <% article.tags.forEach(tag => { %>
+            <span class="article__tag"><%= tag %></span>
+          <% }); %>
+        </div>
+      <% } %>
+    </article>
+    <div class="article__footer">
+      <% if (article.source_url) { %>
+        <a href="<%= article.source_url %>" target="_blank" rel="noopener" class="back-link">View original source →</a>
+      <% } %>
+      <a href="/" class="back-link">← Back to all articles</a>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+</body>
+</html>
