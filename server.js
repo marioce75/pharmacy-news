@@ -1,11 +1,16 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 const morgan = require('morgan');
 const store = require('./lib/store');
 const scheduler = require('./lib/scheduler');
+
+const SESSIONS_DIR = path.join(__dirname, 'content', 'sessions');
+fs.mkdirSync(SESSIONS_DIR, { recursive: true });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,6 +25,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(session({
+  store: new FileStore({
+    path: SESSIONS_DIR,
+    ttl: 8 * 60 * 60, // seconds
+    retries: 0,
+    logFn: () => {} // silence routine info logs
+  }),
   secret: process.env.SESSION_SECRET || 'pharmacy-news-fallback-secret',
   resave: false,
   saveUninitialized: false,
