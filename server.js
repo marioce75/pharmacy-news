@@ -4,8 +4,8 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const morgan = require('morgan');
-const cron = require('node-cron');
 const store = require('./lib/store');
+const scheduler = require('./lib/scheduler');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,7 +27,7 @@ app.use(session({
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     sameSite: 'lax',
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    maxAge: 8 * 60 * 60 * 1000 // 8 hours
   }
 }));
 
@@ -75,21 +75,15 @@ app.use((err, req, res, next) => {
 // Ensure content directories exist
 store.ensureDirectories();
 
-// Schedule scraping — 4 AM CST daily (10:00 UTC)
-cron.schedule('0 10 * * *', async () => {
-  console.log('[CRON] Starting daily scrape...');
-  try {
-    const scraper = require('./scrapers');
-    const result = await scraper.runAll();
-    console.log(`[CRON] Scrape complete: ${result.newArticles} new, ${result.duplicates} dupes, ${result.errors} errors`);
-  } catch (err) {
-    console.error('[CRON] Scrape failed:', err.message);
-  }
-});
+// Schedule scraping — daily at 10:00 UTC (4 AM CST / 5 AM CDT)
+scheduler.startScheduledJobs();
 
 app.listen(PORT, () => {
   console.log(`Pharmacy News running at http://localhost:${PORT}`);
   if (!process.env.ANTHROPIC_API_KEY) {
     console.warn('[WARN] ANTHROPIC_API_KEY not set — PharmEditor AI analysis will be disabled');
+  }
+  if (!process.env.ADMIN_PASSWORD_HASH || !process.env.ADMIN_USERNAME) {
+    console.warn('[WARN] ADMIN_USERNAME and/or ADMIN_PASSWORD_HASH not set — admin login will fail');
   }
 });

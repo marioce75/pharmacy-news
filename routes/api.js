@@ -1,14 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const store = require('../lib/store');
+const { requireAdminApi } = require('../middleware/auth');
 
-// Auth middleware for admin API
-function requireAuth(req, res, next) {
-  if (req.session && req.session.authenticated) return next();
-  res.status(401).json({ error: 'Unauthorized' });
-}
-
-router.use('/admin', requireAuth);
+router.use('/admin', requireAdminApi);
 
 // Approve article
 router.post('/admin/approve/:id', async (req, res, next) => {

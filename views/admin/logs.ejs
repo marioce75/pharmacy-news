@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scrape Logs — Pharmacy News Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+  <div class="admin-layout">
+    <%- include('_sidebar', { page: 'logs', totalPending: 0 }) %>
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Scrape Logs</h1>
+        <div class="admin-actions">
+          <form method="POST" action="/admin/scrape/run" style="display:inline" id="scrape-form">
+            <button type="submit" class="btn btn-sm btn-primary" id="scrape-btn">▶ Run Scrape Now</button>
+          </form>
+        </div>
+      </div>
+
+      <% if (logs.length === 0) { %>
+        <div class="empty-state">
+          <h2>No scrape runs recorded</h2>
+          <p>Run the scraper manually or wait for the daily cron to capture the first run.</p>
+        </div>
+      <% } else { %>
+        <div class="chart-container" style="padding:0;overflow:hidden">
+          <table class="admin-table" style="width:100%">
+            <thead>
+              <tr>
+                <th>When (local)</th>
+                <th>Trigger</th>
+                <th>Status</th>
+                <th>Found</th>
+                <th>New</th>
+                <th>Dupes</th>
+                <th>Errors</th>
+                <th>Slate</th>
+                <th>Duration</th>
+                <th>Error Message</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% logs.forEach(l => { %>
+                <% const c = l.status === 'success' ? '#10b981' : l.status === 'failed' ? '#ef4444' : '#f59e0b'; %>
+                <tr>
+                  <td style="font-family:'DM Mono',monospace;font-size:0.8rem"><%= new Date(l.run_at).toLocaleString() %></td>
+                  <td><%= l.trigger %></td>
+                  <td style="color:<%= c %>;font-family:'DM Mono',monospace;font-size:0.75rem;text-transform:uppercase"><%= l.status %></td>
+                  <td><%= l.articles_found %></td>
+                  <td><%= l.articles_selected %></td>
+                  <td><%= l.duplicates %></td>
+                  <td><%= l.errors %></td>
+                  <td><%= l.slate_generated ? '✓' : '—' %></td>
+                  <td><%= ((l.duration_ms || 0) / 1000).toFixed(1) %>s</td>
+                  <td style="color:#ef4444;font-family:'DM Mono',monospace;font-size:0.75rem;max-width:300px;overflow:hidden;text-overflow:ellipsis"><%= l.error_message || '' %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </main>
+  </div>
+  <script>
+    document.getElementById('scrape-form')?.addEventListener('submit', () => {
+      const btn = document.getElementById('scrape-btn');
+      if (btn) { btn.disabled = true; btn.textContent = '⟳ Running…'; }
+    });
+  </script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

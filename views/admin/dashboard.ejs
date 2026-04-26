@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Pharmacy News Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+  <div class="admin-layout">
+    <%- include('_sidebar', { page: 'dashboard', totalPending }) %>
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Dashboard</h1>
+        <div class="admin-actions">
+          <form method="POST" action="/admin/scrape/run" style="display:inline" id="scrape-form">
+            <button type="submit" class="btn btn-sm btn-primary" id="scrape-btn">▶ Run Scrape Now</button>
+          </form>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:1rem;align-items:center;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:0.85rem;margin-bottom:1.5rem">
+        <span>TODAY · <%= todayStr %></span>
+        <span style="opacity:0.4">|</span>
+        <span>NEXT SCRAPE · <%= new Date(nextRunUTC).toUTCString() %></span>
+      </div>
+
+      <div class="stats-cards">
+        <div class="stat-card">
+          <div class="stat-value" style="color:#3B82F6"><%= todayPendingCount %></div>
+          <div class="stat-label">Articles Today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:#F59E0B"><%= stats.counts.pending %></div>
+          <div class="stat-label">Pending Review</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--signal-green)"><%= stats.thisWeek.approved %></div>
+          <div class="stat-label">Published This Week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--text)"><%= stats.counts.approved %></div>
+          <div class="stat-label">Total Published</div>
+        </div>
+      </div>
+
+      <div class="charts-grid" style="margin-top:1.5rem">
+        <div class="chart-container">
+          <h3>Last Scrape Run</h3>
+          <% if (lastLog) { %>
+            <% const statusColor = lastLog.status === 'success' ? '#10b981' : lastLog.status === 'failed' ? '#ef4444' : '#f59e0b'; %>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.9rem">
+              <div><span style="color:var(--text-muted)">Status:</span> <strong style="color:<%= statusColor %>;text-transform:uppercase;font-family:'DM Mono',monospace;font-size:0.8rem"><%= lastLog.status %></strong></div>
+              <div><span style="color:var(--text-muted)">Started:</span> <%= new Date(lastLog.run_at).toLocaleString() %></div>
+              <div><span style="color:var(--text-muted)">Trigger:</span> <%= lastLog.trigger %></div>
+              <div><span style="color:var(--text-muted)">Found:</span> <%= lastLog.articles_found %> · <span style="color:var(--text-muted)">New:</span> <%= lastLog.articles_selected %> · <span style="color:var(--text-muted)">Dupes:</span> <%= lastLog.duplicates %> · <span style="color:var(--text-muted)">Errors:</span> <%= lastLog.errors %></div>
+              <div><span style="color:var(--text-muted)">Duration:</span> <%= (lastLog.duration_ms / 1000).toFixed(1) %>s</div>
+              <% if (lastLog.error_message) { %>
+                <div style="color:#ef4444;font-family:'DM Mono',monospace;font-size:0.8rem;background:#1f0a0a;padding:0.5rem;border-radius:4px;margin-top:0.25rem"><%= lastLog.error_message %></div>
+              <% } %>
+            </div>
+          <% } else { %>
+            <p style="color:var(--text-dim)">No scrape runs recorded yet. Click <strong>Run Scrape Now</strong> to start one.</p>
+          <% } %>
+        </div>
+
+        <div class="chart-container">
+          <h3>Recent Runs</h3>
+          <% if (recentLogs && recentLogs.length > 0) { %>
+            <table class="admin-table">
+              <thead><tr><th>When</th><th>Trigger</th><th>Status</th><th>New</th></tr></thead>
+              <tbody>
+                <% recentLogs.forEach(l => { %>
+                  <% const c = l.status === 'success' ? '#10b981' : l.status === 'failed' ? '#ef4444' : '#f59e0b'; %>
+                  <tr>
+                    <td style="font-family:'DM Mono',monospace;font-size:0.8rem"><%= new Date(l.run_at).toLocaleString() %></td>
+                    <td><%= l.trigger %></td>
+                    <td style="color:<%= c %>;font-family:'DM Mono',monospace;font-size:0.75rem"><%= l.status %></td>
+                    <td><%= l.articles_selected %></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          <% } else { %>
+            <p style="color:var(--text-dim)">No runs yet.</p>
+          <% } %>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1rem">
+          <h2 style="font-family:'DM Serif Display',serif;font-size:1.5rem;margin:0">Pending — Top 5 by AI Score</h2>
+          <a href="/admin/queue" style="color:var(--signal-green);font-size:0.9rem">View full queue →</a>
+        </div>
+        <% if (recentPending.length === 0) { %>
+          <p style="color:var(--text-dim)">Nothing pending review.</p>
+        <% } else { %>
+          <div class="admin-grid">
+            <% recentPending.forEach(article => { %>
+              <% const catInfo = categories[article.category] || { label: article.category, color: '#888' }; %>
+              <% const score = typeof article.editorial_score === 'number' ? article.editorial_score : null; %>
+              <% const scoreColor = score === null ? '#9ca3af' : score >= 80 ? '#10b981' : score >= 60 ? '#f59e0b' : '#ef4444'; %>
+              <div class="admin-card" data-id="<%= article.id %>">
+                <div class="admin-card__content">
+                  <div class="admin-card__meta">
+                    <span class="news-card__tag" style="--tag-color:<%= catInfo.color %>"><%= catInfo.label %></span>
+                    <span class="news-card__dot"></span>
+                    <span><%= article.source %></span>
+                    <% if (score !== null) { %>
+                      <span class="news-card__dot"></span>
+                      <span style="color:<%= scoreColor %>;font-family:'DM Mono',monospace;font-weight:500">SCORE <%= score %></span>
+                    <% } %>
+                  </div>
+                  <h3 class="admin-card__title"><%= article.title %></h3>
+                  <p class="admin-card__summary"><%= article.summary %></p>
+                  <div class="admin-card__actions">
+                    <button class="btn btn-sm btn-approve" onclick="approveArticle('<%= article.id %>')">Approve</button>
+                    <a href="/admin/edit/<%= article.id %>" class="btn btn-sm btn-outline">View / Edit</a>
+                    <button class="btn btn-sm btn-decline" onclick="declineArticle('<%= article.id %>')">Decline</button>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </main>
+  </div>
+  <script>
+    document.getElementById('scrape-form')?.addEventListener('submit', () => {
+      const btn = document.getElementById('scrape-btn');
+      if (btn) { btn.disabled = true; btn.textContent = '⟳ Running…'; }
+    });
+  </script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

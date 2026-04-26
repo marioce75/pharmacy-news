@@ -1,13 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const store = require('../lib/store');
+const scrapeLog = require('../lib/scrape-log');
 const { CATEGORIES } = require('../config/categories');
-
-// Auth middleware
-function requireAuth(req, res, next) {
-  if (req.session && req.session.authenticated) return next();
-  res.redirect('/admin/login');
-}
+const { requireAdmin, verifyCredentials } = require('../middleware/auth');
 
 // Login page
 router.get('/login', (req, res) => {
@@ -19,29 +15,70 @@ router.get('/login', (req, res) => {
 });
 
 // Login handler
-router.post('/login', (req, res) => {
-  if (req.body.password === process.env.ADMIN_PASSWORD) {
+router.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  const ok = await verifyCredentials(username, password);
+  if (ok) {
     req.session.authenticated = true;
-    return res.redirect('/admin/queue');
+    req.session.username = username;
+    return res.redirect('/admin');
   }
-  res.render('admin/login', {
-    error: 'Invalid password',
+  res.status(401).render('admin/login', {
+    error: 'Invalid username or password',
     categories: CATEGORIES,
     activeCategory: null
   });
 });
 
-// Logout
+// Logout (POST per spec; keep GET for sidebar link compatibility)
+router.post('/logout', (req, res) => {
+  req.session.destroy(() => res.redirect('/admin/login'));
+});
 router.get('/logout', (req, res) => {
-  req.session.destroy();
-  res.redirect('/admin/login');
+  req.session.destroy(() => res.redirect('/admin/login'));
 });
 
 // All routes below require auth
-router.use(requireAuth);
+router.use(requireAdmin);
 
-// Dashboard redirect
-router.get('/', (req, res) => res.redirect('/admin/queue'));
+// Dashboard home
+router.get('/', async (req, res, next) => {
+  try {
+    const stats = await store.getStats();
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const pending = await store.listArticles('pending', { sortBy: 'editorial_score', sortDir: 'desc' });
+    const todayPending = pending.filter(a => (a.date_scraped || '').slice(0, 10) === todayStr);
+    const recentPending = pending.slice(0, 5);
+    const lastLog = await scrapeLog.getLastRun();
+    const recentLogs = await scrapeLog.listRecent(5);
+    const nextRunUTC = nextCronUTC();
+    res.render('admin/dashboard', {
+      stats,
+      todayPendingCount: todayPending.length,
+      recentPending,
+      lastLog,
+      recentLogs,
+      nextRunUTC,
+      todayStr,
+      categories: CATEGORIES,
+      activeCategory: null,
+      totalPending: stats.counts.pending,
+      page: 'dashboard'
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+function nextCronUTC() {
+  // Cron is "0 10 * * *" — daily at 10:00 UTC (4 AM CST / 5 AM CDT)
+  const now = new Date();
+  const next = new Date(Date.UTC(
+    now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 10, 0, 0
+  ));
+  if (next <= now) next.setUTCDate(next.getUTCDate() + 1);
+  return next.toISOString();
+}
 
 // Review queue
 router.get('/queue', async (req, res, next) => {
@@ -133,6 +170,35 @@ router.get('/settings', (req, res) => {
     activeCategory: null,
     page: 'settings'
   });
+});
+
+// Scrape run logs
+router.get('/logs', async (req, res, next) => {
+  try {
+    const logs = await scrapeLog.listRecent(100);
+    res.render('admin/logs', {
+      logs,
+      categories: CATEGORIES,
+      activeCategory: null,
+      page: 'logs'
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Manual scrape trigger (server-rendered form post)
+router.post('/scrape/run', async (req, res, next) => {
+  try {
+    const scheduler = require('../lib/scheduler');
+    scheduler.triggerManualScrape().catch((err) => {
+      console.error('[SCRAPE] Manual run failed:', err.message);
+    });
+    if (req.accepts('html')) return res.redirect('/admin/logs');
+    res.json({ success: true, message: 'Scraping started' });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // Editor's Picks

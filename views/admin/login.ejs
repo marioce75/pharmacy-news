@@ -22,8 +22,12 @@
       <% } %>
       <form method="POST" action="/admin/login">
         <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" placeholder="Admin username" autocomplete="username" autofocus required>
+        </div>
+        <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" id="password" name="password" placeholder="Enter admin password" autofocus required>
+          <input type="password" id="password" name="password" placeholder="Admin password" autocomplete="current-password" required>
         </div>
         <button type="submit" class="btn btn-primary btn-full">Sign In</button>
       </form>

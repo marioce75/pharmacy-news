@@ -4,6 +4,7 @@
     <span style="color:var(--text-muted);font-size:0.75rem">Admin</span>
   </a>
   <nav class="admin-nav">
+    <a href="/admin" class="admin-nav-link<%= page === 'dashboard' ? ' active' : '' %>">Dashboard</a>
     <a href="/admin/queue" class="admin-nav-link<%= page === 'queue' ? ' active' : '' %>">
       <span>Review Queue</span>
       <% if (typeof totalPending !== 'undefined' && totalPending > 0) { %>
@@ -13,6 +14,7 @@
     <a href="/admin/editors-picks" class="admin-nav-link<%= page === 'editors-picks' ? ' active' : '' %>">Editor's Picks</a>
     <a href="/admin/published" class="admin-nav-link<%= page === 'published' ? ' active' : '' %>">Published</a>
     <a href="/admin/analytics" class="admin-nav-link<%= page === 'analytics' ? ' active' : '' %>">Analytics</a>
+    <a href="/admin/logs" class="admin-nav-link<%= page === 'logs' ? ' active' : '' %>">Scrape Logs</a>
     <a href="/admin/settings" class="admin-nav-link<%= page === 'settings' ? ' active' : '' %>">Settings</a>
   </nav>
   <div class="admin-sidebar-footer">
