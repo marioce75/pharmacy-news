@@ -15,6 +15,10 @@ fs.mkdirSync(SESSIONS_DIR, { recursive: true });
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Render terminates TLS at its proxy and forwards HTTP — trust the
+// X-Forwarded-Proto header so secure cookies work in production.
+app.set('trust proxy', 1);
+
 // View engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
