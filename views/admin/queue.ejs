@@ -24,17 +24,22 @@
       </div>
 
       <div class="category-tabs">
-        <a href="/admin/queue" class="cat-tab<%= !activeCategory || activeCategory === 'all' ? ' active' : '' %>">
+        <a href="/admin/queue<%= peptideOnly ? '?peptide=1' : '' %>" class="cat-tab<%= !activeCategory || activeCategory === 'all' ? ' active' : '' %>">
           All <span class="cat-count"><%= totalPending %></span>
         </a>
         <% Object.entries(categories).forEach(([slug, cat]) => { %>
           <% const count = counts[slug] || 0; %>
           <% if (count > 0) { %>
-            <a href="/admin/queue?category=<%= slug %>" class="cat-tab<%= activeCategory === slug ? ' active' : '' %>" style="--tab-color:<%= cat.color %>">
+            <a href="/admin/queue?category=<%= slug %><%= peptideOnly ? '&peptide=1' : '' %>" class="cat-tab<%= activeCategory === slug ? ' active' : '' %>" style="--tab-color:<%= cat.color %>">
               <%= cat.label %> <span class="cat-count"><%= count %></span>
             </a>
           <% } %>
         <% }); %>
+        <% if (peptidePending > 0) { %>
+          <a href="/admin/queue?peptide=<%= peptideOnly ? '0' : '1' %><%= activeCategory && activeCategory !== 'all' ? '&category=' + activeCategory : '' %>" class="cat-tab<%= peptideOnly ? ' active' : '' %>" style="--tab-color:#8B5CF6;margin-left:0.5rem">
+            🧬 Peptides <span class="cat-count"><%= peptidePending %></span>
+          </a>
+        <% } %>
       </div>
 
       <% if (articles.length === 0) { %>

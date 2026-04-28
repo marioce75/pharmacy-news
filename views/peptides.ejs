@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peptide Therapeutics — Pharmacy News</title>
+  <meta name="description" content="News on peptide therapeutics: FDA-approved drugs (GLP-1s, insulins, peptide hormones), compounding policy, and longevity research. Curated by Dosys Health.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .lane-tabs { display:flex; gap:0.5rem; flex-wrap:wrap; margin:1.5rem 0 0; padding-bottom:0.5rem; }
+    .lane-tab {
+      display:inline-block; padding:0.5rem 1rem; border-radius:999px;
+      border:1px solid var(--border, #1f2937); background:transparent;
+      color:var(--text-muted, #9ca3af); font-family:'DM Mono',monospace;
+      font-size:0.8rem; text-decoration:none; transition:all 0.15s;
+    }
+    .lane-tab:hover { color:var(--text); border-color:var(--text-dim); }
+    .lane-tab.active { color:#0a0e17; background:#8B5CF6; border-color:#8B5CF6; }
+    .peptide-disclaimer {
+      margin-top:1rem; padding:0.75rem 1rem; border:1px solid #1f2937;
+      border-left:3px solid #8B5CF6; border-radius:4px;
+      color:var(--text-muted, #9ca3af); font-size:0.85rem; line-height:1.5;
+    }
+  </style>
+</head>
+<body>
+  <%- include('partials/header', { activeCategory: 'peptides' }) %>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Peptide Therapeutics</h1>
+      <p class="hero-subtitle">FDA-approved peptide drugs, compounding &amp; access policy, and longevity research — curated for pharmacy professionals.</p>
+      <nav class="lane-tabs">
+        <a href="/peptides" class="lane-tab<%= activeLane === 'all' ? ' active' : '' %>">All</a>
+        <a href="/peptides?lane=clinical" class="lane-tab<%= activeLane === 'clinical' ? ' active' : '' %>">Clinical / FDA</a>
+        <a href="/peptides?lane=compounding" class="lane-tab<%= activeLane === 'compounding' ? ' active' : '' %>">Compounding &amp; Access</a>
+        <a href="/peptides?lane=longevity" class="lane-tab<%= activeLane === 'longevity' ? ' active' : '' %>">Longevity Research</a>
+      </nav>
+      <p class="peptide-disclaimer">
+        Editorial coverage only. PharmacyNews.ai does not endorse, recommend, or link to retailers
+        of unapproved peptides. Reports about longevity / research peptides describe the regulatory
+        and scientific landscape; clinical decisions should involve a licensed prescriber.
+      </p>
+    </div>
+  </section>
+
+  <main class="container">
+    <section class="news-grid" id="news-grid">
+      <% if (!articles || articles.length === 0) { %>
+        <p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 3rem 0;">
+          No peptide articles published yet in this view.
+        </p>
+      <% } else { %>
+        <% articles.forEach(article => { %>
+          <%- include('partials/card', { article }) %>
+        <% }); %>
+      <% } %>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+
+  <script src="/js/news.js"></script>
+</body>
+</html>

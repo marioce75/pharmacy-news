@@ -10,6 +10,7 @@
       <% Object.entries(categories).forEach(([slug, cat]) => { %>
         <a href="/?category=<%= slug %>" class="nav-link<%= activeCategory === slug ? ' active' : '' %>" data-category="<%= slug %>"><%= cat.label %></a>
       <% }); %>
+      <a href="/peptides" class="nav-link<%= activeCategory === 'peptides' ? ' active' : '' %>" data-category="peptides">Peptides</a>
     </nav>
   </div>
 </header>

@@ -20,7 +20,8 @@ module.exports = {
   ],
   'drug-safety': [
     { name: 'FDA MedWatch', type: 'rss', url: 'https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/medwatch/rss.xml' },
-    { name: 'FDA Recalls', type: 'rss', url: 'https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/recalls/rss.xml' }
+    { name: 'FDA Recalls', type: 'rss', url: 'https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/recalls/rss.xml' },
+    { name: 'FDA Warning Letters', type: 'rss', url: 'https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/warning-letters/rss.xml', keywords: ['peptide', 'compound', 'glp-1', 'semaglutide', 'tirzepatide', 'unapproved'] }
   ],
   'industry': [
     { name: 'FiercePharma', type: 'rss', url: 'https://www.fiercepharma.com/rss/xml' },
@@ -29,7 +30,11 @@ module.exports = {
   ],
   'disease-research': [
     { name: 'Nature Medicine', type: 'rss', url: 'https://www.nature.com/nm.rss' },
-    { name: 'Science', type: 'rss', url: 'https://www.science.org/action/showFeed?type=etoc&feed=rss&jc=science' }
+    { name: 'Science', type: 'rss', url: 'https://www.science.org/action/showFeed?type=etoc&feed=rss&jc=science' },
+    { name: 'Nature Aging', type: 'rss', url: 'https://www.nature.com/nature-aging.rss' },
+    { name: 'Lifespan.io', type: 'rss', url: 'https://www.lifespan.io/feed/' },
+    { name: 'Longevity.Technology', type: 'rss', url: 'https://longevity.technology/news/feed/' },
+    { name: 'Endocrine Society', type: 'rss', url: 'https://www.endocrine.org/news-and-advocacy/news-room/rss' }
   ],
   'pharmacy-practice': [
     { name: 'Pharmacy Times', type: 'rss', url: 'https://www.pharmacytimes.com/rss' },

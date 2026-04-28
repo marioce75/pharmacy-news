@@ -84,14 +84,23 @@ function nextCronUTC() {
 router.get('/queue', async (req, res, next) => {
   try {
     const category = req.query.category;
+    const peptideOnly = req.query.peptide === '1';
     const options = category && category !== 'all' ? { category } : {};
-    const articles = await store.listArticles('pending', options);
+    let articles = await store.listArticles('pending', options);
+    if (peptideOnly) articles = articles.filter(a => a.is_peptide);
     const counts = await store.countByCategory('pending');
     const totalPending = Object.values(counts).reduce((s, n) => s + n, 0);
+
+    // Peptide count across all pending (independent of category filter)
+    const allPending = await store.listArticles('pending');
+    const peptidePending = allPending.filter(a => a.is_peptide).length;
+
     res.render('admin/queue', {
       articles,
       counts,
       totalPending,
+      peptideOnly,
+      peptidePending,
       activeCategory: category || 'all',
       categories: CATEGORIES,
       page: 'queue'

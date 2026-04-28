@@ -19,6 +19,26 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+// Peptide vertical — cross-cutting filter, not a category
+router.get('/peptides', async (req, res, next) => {
+  try {
+    const lane = req.query.lane; // 'clinical' | 'compounding' | 'longevity' | undefined
+    const approved = await store.listArticles('approved');
+    let articles = approved.filter(a => a.is_peptide);
+    if (lane && ['clinical', 'compounding', 'longevity'].includes(lane)) {
+      articles = articles.filter(a => Array.isArray(a.peptide_lanes) && a.peptide_lanes.includes(lane));
+    }
+    res.render('peptides', {
+      articles,
+      activeCategory: 'peptides',
+      activeLane: lane || 'all',
+      categories: CATEGORIES
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Article detail
 router.get('/article/:slug', async (req, res, next) => {
   try {
