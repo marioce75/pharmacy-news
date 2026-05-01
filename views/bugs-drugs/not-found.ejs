@@ -1,0 +1,13 @@
+<%- include('_head') %>
+<body class="bd-body">
+  <%- include('../partials/header', { activeCategory: 'bugs-drugs' }) %>
+  <main class="container bd-main">
+    <a href="/bugs-and-drugs" class="bd-back">← All Bugs &amp; Drugs</a>
+    <div class="bd-empty-page">
+      <h1>Not found</h1>
+      <p>The <%= what %> you're looking for doesn't exist in our index. <a href="/bugs-and-drugs">Browse all bugs &amp; drugs →</a></p>
+    </div>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

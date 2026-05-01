@@ -1,0 +1,124 @@
+<%- include('_head') %>
+<body class="bd-body">
+  <%- include('../partials/header', { activeCategory: 'bugs-drugs' }) %>
+  <%- include('_gate') %>
+
+  <main class="container bd-main">
+    <a href="/bugs-and-drugs" class="bd-back">← All Bugs &amp; Drugs</a>
+    <%- include('_disclaimer') %>
+
+    <header class="bd-drug-header">
+      <h1><%= drug.generic %></h1>
+      <% if (drug.brand && drug.brand.length) { %>
+        <p class="bd-drug-header__brand"><%= drug.brand.join(', ') %></p>
+      <% } %>
+      <div class="bd-drug-header__meta">
+        <span class="bd-pill"><%= drug.class %></span>
+        <% (drug.route || []).forEach(r => { %><span class="bd-pill bd-pill--route"><%= r %></span><% }) %>
+        <% if (drug.pregnancy) { %><span class="bd-pill bd-pill--pregnancy">Pregnancy: <%= drug.pregnancy %></span><% } %>
+      </div>
+    </header>
+
+    <section class="bd-block bd-drug-block">
+      <h2>Standard dosing (adult)</h2>
+      <ul class="bd-kv">
+        <% Object.entries(drug.adult || {}).forEach(([k, v]) => { %>
+          <% if (typeof v === 'string') { %>
+            <li><span class="bd-kv__k"><%= k.replace(/_/g, ' ') %></span><span class="bd-kv__v"><%= v %></span></li>
+          <% } %>
+        <% }) %>
+      </ul>
+    </section>
+
+    <% if (drug.pediatric) { %>
+    <section class="bd-block bd-drug-block">
+      <h2>Pediatric dosing</h2>
+      <ul class="bd-kv">
+        <% Object.entries(drug.pediatric).forEach(([k, v]) => { %>
+          <% if (typeof v !== 'object') { %>
+            <li><span class="bd-kv__k"><%= k.replace(/_/g, ' ') %></span><span class="bd-kv__v"><%= v %></span></li>
+          <% } %>
+        <% }) %>
+      </ul>
+    </section>
+    <% } %>
+
+    <% if (drug.renal && drug.renal.length) { %>
+    <section class="bd-block bd-drug-block">
+      <h2>Renal adjustment (Cockcroft-Gault)</h2>
+      <table class="bd-renal-table">
+        <thead><tr><th>CrCl (mL/min)</th><th>Dose</th></tr></thead>
+        <tbody>
+        <% drug.renal.forEach(r => { %>
+          <tr><td><%= r.crcl_min %>–<%= r.crcl_max %></td><td><%= r.dose %></td></tr>
+        <% }) %>
+        </tbody>
+      </table>
+    </section>
+    <% } %>
+
+    <% if (drug.hepatic) { %>
+    <section class="bd-block bd-drug-block">
+      <h2>Hepatic adjustment</h2>
+      <p><%= drug.hepatic %></p>
+    </section>
+    <% } %>
+
+    <% if (drug.notes) { %>
+    <section class="bd-block bd-drug-block">
+      <h2>Clinical notes</h2>
+      <p><%= drug.notes %></p>
+    </section>
+    <% } %>
+
+    <% if (drug.vancomyzer) { %>
+    <section class="bd-block bd-drug-block bd-vancomyzer">
+      <h2>Vancomycin AUC dosing</h2>
+      <p>This calculator only shows nominal/empiric dose ranges. Vancomycin dosing should be AUC-targeted (400–600 mg·h/L) per IDSA 2020.</p>
+      <a class="bd-btn bd-btn--primary" href="https://vancomyzer.com" target="_blank" rel="noopener noreferrer">Open vancomyzer.com →</a>
+    </section>
+    <% } %>
+
+    <section class="bd-block bd-drug-block bd-calc">
+      <h2>Dose calculator</h2>
+      <p class="bd-block__sub">Enter patient parameters. Output is a starting-point recommendation — verify against the FDA label before administering.</p>
+      <form id="bd-calc-form" class="bd-calc__form" novalidate>
+        <input type="hidden" name="drug_slug" value="<%= drug.slug %>">
+        <div class="bd-calc__row">
+          <label>Age (years)<input type="number" name="age" min="0" max="120" step="0.1" required></label>
+          <label>Sex
+            <select name="sex" required>
+              <option value="">Select</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </label>
+        </div>
+        <div class="bd-calc__row">
+          <label>Weight (kg)<input type="number" name="weight_kg" min="0.5" max="400" step="0.1" required></label>
+          <label>Height (cm)<input type="number" name="height_cm" min="30" max="250" step="0.1" required></label>
+        </div>
+        <div class="bd-calc__row">
+          <label>Serum creatinine (mg/dL)<input type="number" name="scr" min="0.1" max="25" step="0.01" required></label>
+        </div>
+        <button type="submit" class="bd-btn bd-btn--primary">Calculate</button>
+      </form>
+      <div id="bd-calc-result" class="bd-calc__result" hidden></div>
+    </section>
+
+    <% if (drug.label_url) { %>
+      <p class="bd-source-link">Verify against the FDA label: <a href="<%= drug.label_url %>" target="_blank" rel="noopener noreferrer">Prescribing information →</a></p>
+    <% } %>
+
+    <section class="bd-block">
+      <h2>Recent evidence (PubMed, last 2 years)</h2>
+      <div id="bd-pubmed" data-query="<%= drug.generic %>">
+        <p class="bd-empty">Loading…</p>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <script src="/js/bugs-drugs.js"></script>
+</body>
+</html>

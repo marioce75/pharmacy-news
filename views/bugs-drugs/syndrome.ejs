@@ -1,0 +1,63 @@
+<%- include('_head') %>
+<body class="bd-body">
+  <%- include('../partials/header', { activeCategory: 'bugs-drugs' }) %>
+  <%- include('_gate') %>
+
+  <main class="container bd-main">
+    <a href="/bugs-and-drugs" class="bd-back">← All Bugs &amp; Drugs</a>
+    <%- include('_disclaimer') %>
+
+    <header class="bd-org-header">
+      <div class="bd-org-header__tags">
+        <span class="bd-pill"><%= syndrome.category %></span>
+      </div>
+      <h1><%= syndrome.name %></h1>
+      <% if (syndrome.duration) { %><p class="bd-org-header__notes"><strong>Typical duration:</strong> <%= syndrome.duration %></p><% } %>
+    </header>
+
+    <section class="bd-block">
+      <h2>Empiric regimens</h2>
+      <% regimens.forEach(r => { %>
+        <article class="bd-regimen">
+          <header class="bd-regimen__head">
+            <h3><%= r.title %></h3>
+            <span class="bd-regimen__line bd-regimen__line--<%= r.line %>"><%= r.line %></span>
+          </header>
+          <ul class="bd-regimen__list">
+            <% (r.regimen || []).forEach(opt => { %>
+              <li>
+                <span class="bd-regimen__dose"><%= opt.dose_text %></span>
+                <% if (opt.caveat) { %><span class="bd-regimen__caveat"><%= opt.caveat %></span><% } %>
+                <% if (opt.drugs && opt.drugs.length) { %>
+                  <span class="bd-regimen__links">
+                    <% opt.drugs.forEach((dslug, i) => { %>
+                      <a href="/bugs-and-drugs/drug/<%= dslug %>"><%= dslug.replace(/-/g, ' ') %></a><% if (i < opt.drugs.length - 1) { %>, <% } %>
+                    <% }) %>
+                  </span>
+                <% } %>
+              </li>
+            <% }) %>
+          </ul>
+          <% if (r.duration) { %><p class="bd-regimen__meta"><strong>Duration:</strong> <%= r.duration %></p><% } %>
+          <% if (r.caveat) { %><p class="bd-regimen__meta bd-regimen__meta--caveat"><strong>Caveat:</strong> <%= r.caveat %></p><% } %>
+          <p class="bd-regimen__source">Source: <%= r.source %></p>
+        </article>
+      <% }) %>
+    </section>
+
+    <% if (syndrome.source) { %>
+      <p class="bd-source-link">Primary guideline: <a href="<%= syndrome.source.url %>" target="_blank" rel="noopener noreferrer"><%= syndrome.source.name %> →</a> (accessed <%= syndrome.source.accessed %>)</p>
+    <% } %>
+
+    <section class="bd-block">
+      <h2>Recent evidence (PubMed, last 2 years)</h2>
+      <div id="bd-pubmed" data-query="<%= syndrome.name %>">
+        <p class="bd-empty">Loading…</p>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <script src="/js/bugs-drugs.js"></script>
+</body>
+</html>

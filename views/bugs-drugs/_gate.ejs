@@ -1,0 +1,24 @@
+<% if (typeof ackRequired !== 'undefined' && ackRequired) { %>
+<div id="bd-gate" class="bd-gate" role="dialog" aria-modal="true" aria-labelledby="bd-gate-title">
+  <div class="bd-gate__panel">
+    <h2 id="bd-gate-title">Educational tool — not medical advice</h2>
+    <p>Bugs &amp; Drugs is a clinical decision <strong>support</strong> tool intended for licensed healthcare professionals. The content summarizes published guidelines (IDSA, CDC, FDA labels) and FDA prescribing information — it is not a substitute for clinical judgment.</p>
+    <ul>
+      <li>The prescriber is solely responsible for treatment decisions.</li>
+      <li>Always verify doses against the FDA label before administering.</li>
+      <li>Local antibiograms, allergies, comorbidities, and drug interactions may make the recommendations shown here inappropriate for an individual patient.</li>
+      <li>Information may not reflect the latest guideline change. Last reviewed: <span class="bd-gate__date">April 2026</span>.</li>
+      <li>Dosys Health LLC and PharmacyNews.ai disclaim all liability for decisions made using this tool.</li>
+    </ul>
+    <p>Do not enter Protected Health Information (PHI). Inputs to the dose calculator are not stored.</p>
+    <form method="POST" action="/bugs-and-drugs/acknowledge" id="bd-gate-form">
+      <label class="bd-gate__check">
+        <input type="checkbox" id="bd-gate-checkbox" required>
+        <span>I am a licensed healthcare professional. I understand this tool is educational and I am responsible for clinical decisions.</span>
+      </label>
+      <button type="submit" class="bd-btn bd-btn--primary" id="bd-gate-submit" disabled>Acknowledge &amp; continue</button>
+      <a href="/" class="bd-btn bd-btn--ghost">Leave</a>
+    </form>
+  </div>
+</div>
+<% } %>

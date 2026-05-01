@@ -1,0 +1,804 @@
+{
+  "cap-outpatient-healthy": {
+    "title": "CAP — Outpatient, no comorbidities, no MDR risk",
+    "syndrome": "cap",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["amoxicillin"], "dose_text": "Amoxicillin 1 g PO TID" },
+      { "drugs": ["doxycycline"], "dose_text": "Doxycycline 100 mg PO BID (alternative)" },
+      { "drugs": ["azithromycin"], "dose_text": "Azithromycin 500 mg PO ×1 then 250 mg PO daily ×4d (only if local pneumococcal macrolide resistance <25%)", "caveat": "Macrolide resistance >25% in most US regions; reserve for true exceptions" }
+    ],
+    "duration": "5 days minimum; longer if not clinically improved",
+    "source": "ATS/IDSA CAP 2019"
+  },
+  "cap-outpatient-comorbid": {
+    "title": "CAP — Outpatient with comorbidities (chronic heart/lung/liver/renal disease, DM, ETOH, malignancy, asplenia)",
+    "syndrome": "cap",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["amoxicillin-clavulanate", "doxycycline"], "dose_text": "Amox-clav 875/125 mg PO BID + doxycycline 100 mg PO BID" },
+      { "drugs": ["amoxicillin-clavulanate", "azithromycin"], "dose_text": "Amox-clav 875/125 mg PO BID + azithromycin 500 mg ×1 then 250 mg daily" },
+      { "drugs": ["levofloxacin"], "dose_text": "Levofloxacin 750 mg PO daily (monotherapy alternative)" }
+    ],
+    "duration": "5 days minimum",
+    "source": "ATS/IDSA CAP 2019"
+  },
+  "cap-inpatient-non-icu": {
+    "title": "CAP — Inpatient, non-ICU",
+    "syndrome": "cap",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ceftriaxone", "azithromycin"], "dose_text": "Ceftriaxone 1-2 g IV daily + azithromycin 500 mg IV/PO daily" },
+      { "drugs": ["levofloxacin"], "dose_text": "Levofloxacin 750 mg IV/PO daily (monotherapy)" }
+    ],
+    "duration": "5 days minimum",
+    "source": "ATS/IDSA CAP 2019"
+  },
+  "cap-inpatient-icu": {
+    "title": "CAP — ICU / severe",
+    "syndrome": "cap",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ceftriaxone", "azithromycin"], "dose_text": "Ceftriaxone 2 g IV daily + azithromycin 500 mg IV daily" },
+      { "drugs": ["ceftriaxone", "levofloxacin"], "dose_text": "Ceftriaxone 2 g IV daily + levofloxacin 750 mg IV daily" }
+    ],
+    "duration": "5-7 days; reassess at 48-72h",
+    "source": "ATS/IDSA CAP 2019"
+  },
+  "cap-mrsa-pseudo-risk": {
+    "title": "CAP — Empiric MRSA or Pseudomonas coverage (only if individual + local risk factors)",
+    "syndrome": "cap",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["vancomycin"], "dose_text": "Vancomycin AUC-targeted (use vancomyzer.com) — add only if MRSA risk factors present" },
+      { "drugs": ["linezolid"], "dose_text": "Linezolid 600 mg IV/PO BID (alternative MRSA agent)" },
+      { "drugs": ["piperacillin-tazobactam"], "dose_text": "Pip-tazo 4.5 g IV q6h (extended infusion preferred) — add only if Pseudomonas risk factors" },
+      { "drugs": ["cefepime"], "dose_text": "Cefepime 2 g IV q8h — alternative anti-pseudomonal" }
+    ],
+    "duration": "De-escalate at 48h if cultures negative",
+    "source": "IDSA 2023 CAP Clinical Pathway",
+    "caveat": "Per 2023 pathway: empiric MRSA AND Pseudomonas coverage should NOT be started together unless risk factors for both."
+  },
+  "hap-vap-empiric": {
+    "title": "HAP/VAP — Empiric (broad)",
+    "syndrome": "hap",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["vancomycin", "piperacillin-tazobactam"], "dose_text": "Vancomycin (AUC-targeted) + pip-tazo 4.5 g IV q6h (extended infusion)" },
+      { "drugs": ["vancomycin", "cefepime"], "dose_text": "Vancomycin (AUC-targeted) + cefepime 2 g IV q8h" },
+      { "drugs": ["linezolid", "meropenem"], "dose_text": "Linezolid 600 mg IV BID + meropenem 1 g IV q8h (extended infusion 3h)" }
+    ],
+    "duration": "7 days for most",
+    "source": "IDSA/ATS HAP/VAP 2016"
+  },
+  "aecb-treatment": {
+    "title": "AECOPD — Antibiotic-eligible exacerbation (Anthonisen criteria)",
+    "syndrome": "aecb",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["amoxicillin-clavulanate"], "dose_text": "Amox-clav 875/125 mg PO BID" },
+      { "drugs": ["doxycycline"], "dose_text": "Doxycycline 100 mg PO BID" },
+      { "drugs": ["azithromycin"], "dose_text": "Azithromycin 500 mg ×1 then 250 mg daily ×4d" }
+    ],
+    "duration": "5-7 days",
+    "source": "GOLD 2024"
+  },
+  "cystitis-first-line": {
+    "title": "Acute uncomplicated cystitis — First-line",
+    "syndrome": "cystitis",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["nitrofurantoin"], "dose_text": "Nitrofurantoin macrocrystals 100 mg PO BID × 5 days", "caveat": "Avoid if CrCl <30 mL/min (efficacy concerns); avoid in pyelonephritis" },
+      { "drugs": ["trimethoprim-sulfamethoxazole"], "dose_text": "TMP-SMX DS (160/800 mg) 1 tab PO BID × 3 days", "caveat": "Avoid if local E. coli resistance >20%" },
+      { "drugs": ["fosfomycin"], "dose_text": "Fosfomycin 3 g PO ×1" },
+      { "drugs": ["pivmecillinam"], "dose_text": "Pivmecillinam 185 mg PO TID × 3-7 days (Pivya, FDA 2024)" }
+    ],
+    "duration": "Drug-specific (above)",
+    "source": "IDSA Uncomplicated UTI 2010 + 2024 FDA Pivya approval"
+  },
+  "cystitis-alternatives": {
+    "title": "Cystitis — Alternatives / when first-line not appropriate",
+    "syndrome": "cystitis",
+    "line": "alt",
+    "regimen": [
+      { "drugs": ["ciprofloxacin"], "dose_text": "Ciprofloxacin 250 mg PO BID × 3 days", "caveat": "Reserve due to FQ collateral damage / BBW" },
+      { "drugs": ["levofloxacin"], "dose_text": "Levofloxacin 250 mg PO daily × 3 days" },
+      { "drugs": ["amoxicillin-clavulanate"], "dose_text": "Amox-clav 500/125 mg PO BID × 5-7 days (less effective)" },
+      { "drugs": ["gepotidacin"], "dose_text": "Gepotidacin (Blujepa) 1500 mg PO BID × 5 days (FDA 2025; female ≥12y, ≥40 kg)" },
+      { "drugs": ["sulopenem"], "dose_text": "Sulopenem etzadroxil/probenecid (Orlynvah) 500/500 mg PO BID × 5 days (FDA 2024; ESBL/FQ-resistant)" }
+    ],
+    "duration": "3-7 days drug-specific",
+    "source": "IDSA + FDA 2024-2025 new agent labels"
+  },
+  "pyelo-outpatient": {
+    "title": "Pyelonephritis — Outpatient, low MDR risk",
+    "syndrome": "pyelonephritis",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ciprofloxacin"], "dose_text": "Ciprofloxacin 500 mg PO BID × 7 days" },
+      { "drugs": ["levofloxacin"], "dose_text": "Levofloxacin 750 mg PO daily × 5 days" },
+      { "drugs": ["trimethoprim-sulfamethoxazole"], "dose_text": "TMP-SMX DS 1 tab PO BID × 14 days (only if susceptible; consider initial IV/IM long-acting agent)" }
+    ],
+    "duration": "5-14 days drug-specific",
+    "source": "IDSA Pyelonephritis 2010 + IDSA cUTI 2025"
+  },
+  "pyelo-inpatient": {
+    "title": "Pyelonephritis — Inpatient",
+    "syndrome": "pyelonephritis",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 1 g IV daily" },
+      { "drugs": ["piperacillin-tazobactam"], "dose_text": "Pip-tazo 3.375 g IV q6h (if MDR risk)" },
+      { "drugs": ["ertapenem"], "dose_text": "Ertapenem 1 g IV daily (ESBL or beta-lactam allergy)" }
+    ],
+    "duration": "Total 7-14 days; transition PO when clinically improved",
+    "source": "IDSA cUTI 2025"
+  },
+  "cuti-empiric": {
+    "title": "Complicated UTI / CAUTI — Empiric (no known MDR)",
+    "syndrome": "cuti",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 1-2 g IV daily" },
+      { "drugs": ["piperacillin-tazobactam"], "dose_text": "Pip-tazo 3.375-4.5 g IV q6h" },
+      { "drugs": ["cefepime"], "dose_text": "Cefepime 2 g IV q8h (if Pseudomonas risk)" }
+    ],
+    "duration": "7 days if rapid response; 10-14 days if delayed",
+    "source": "IDSA cUTI 2025"
+  },
+  "cuti-esbl": {
+    "title": "ESBL Enterobacterales cUTI / pyelonephritis",
+    "syndrome": "cuti",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["trimethoprim-sulfamethoxazole"], "dose_text": "TMP-SMX 5 mg/kg (TMP) IV/PO BID — preferred if susceptible" },
+      { "drugs": ["ciprofloxacin"], "dose_text": "Cipro 400 mg IV q12h or 500-750 mg PO BID — preferred if susceptible" },
+      { "drugs": ["ertapenem"], "dose_text": "Ertapenem 1 g IV daily — preferred when FQ/SMX not options" },
+      { "drugs": ["meropenem"], "dose_text": "Meropenem 1 g IV q8h — for severely ill" }
+    ],
+    "duration": "7-14 days",
+    "source": "IDSA AMR Guidance 2024 v3.0"
+  },
+  "cellulitis-mild": {
+    "title": "Cellulitis — Non-purulent, mild (outpatient)",
+    "syndrome": "ssti-cellulitis",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["cephalexin"], "dose_text": "Cephalexin 500 mg PO QID" },
+      { "drugs": ["dicloxacillin"], "dose_text": "Dicloxacillin 500 mg PO QID" },
+      { "drugs": ["clindamycin"], "dose_text": "Clindamycin 300-450 mg PO QID (PCN allergy)" }
+    ],
+    "duration": "5 days; extend if not improved",
+    "source": "IDSA SSTI 2014"
+  },
+  "cellulitis-moderate-severe": {
+    "title": "Cellulitis — Moderate to severe (IV)",
+    "syndrome": "ssti-cellulitis",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["cefazolin"], "dose_text": "Cefazolin 1-2 g IV q8h" },
+      { "drugs": ["nafcillin"], "dose_text": "Nafcillin 1-2 g IV q4-6h (MSSA)" },
+      { "drugs": ["clindamycin"], "dose_text": "Clindamycin 600 mg IV q8h (PCN allergy)" }
+    ],
+    "duration": "5-10 days",
+    "source": "IDSA SSTI 2014"
+  },
+  "ssti-purulent-mild": {
+    "title": "Purulent SSTI — Mild (I&D usually sufficient)",
+    "syndrome": "ssti-purulent",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["incision-drainage"], "dose_text": "Incision and drainage alone for simple abscess" }
+    ],
+    "duration": "I&D",
+    "source": "IDSA SSTI 2014"
+  },
+  "ssti-purulent-moderate": {
+    "title": "Purulent SSTI — Moderate (covers MRSA empirically)",
+    "syndrome": "ssti-purulent",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["trimethoprim-sulfamethoxazole"], "dose_text": "TMP-SMX DS 1-2 tabs PO BID" },
+      { "drugs": ["doxycycline"], "dose_text": "Doxycycline 100 mg PO BID" },
+      { "drugs": ["clindamycin"], "dose_text": "Clindamycin 300-450 mg PO QID" }
+    ],
+    "duration": "5-10 days post-I&D",
+    "source": "IDSA SSTI 2014"
+  },
+  "ssti-purulent-severe": {
+    "title": "Purulent SSTI — Severe (IV, MRSA covered)",
+    "syndrome": "ssti-purulent",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["vancomycin"], "dose_text": "Vancomycin AUC-targeted (vancomyzer.com)" },
+      { "drugs": ["linezolid"], "dose_text": "Linezolid 600 mg IV/PO BID" },
+      { "drugs": ["daptomycin"], "dose_text": "Daptomycin 6 mg/kg IV daily (NOT pneumonia)" }
+    ],
+    "duration": "5-14 days",
+    "source": "IDSA SSTI 2014"
+  },
+  "nec-fasc-empiric": {
+    "title": "Necrotizing fasciitis — Empiric",
+    "syndrome": "nec-fasc",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["vancomycin", "piperacillin-tazobactam", "clindamycin"], "dose_text": "Vancomycin + pip-tazo 4.5 g IV q6h + clindamycin 900 mg IV q8h (toxin suppression)" },
+      { "drugs": ["meropenem", "vancomycin", "clindamycin"], "dose_text": "Meropenem 1 g IV q8h + vancomycin + clindamycin (severe/MDR)" }
+    ],
+    "duration": "Until source-controlled and afebrile 48-72h",
+    "source": "IDSA SSTI 2014",
+    "caveat": "Surgical debridement is the most important intervention. Antibiotics alone insufficient."
+  },
+  "dfi-mild": {
+    "title": "Diabetic foot — Mild (outpatient, no bone, MRSA risk-stratified)",
+    "syndrome": "diabetic-foot",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["cephalexin"], "dose_text": "Cephalexin 500 mg PO QID" },
+      { "drugs": ["amoxicillin-clavulanate"], "dose_text": "Amox-clav 875/125 mg PO BID" },
+      { "drugs": ["trimethoprim-sulfamethoxazole"], "dose_text": "TMP-SMX DS BID + amoxicillin (MRSA + strep coverage)" }
+    ],
+    "duration": "1-2 weeks",
+    "source": "IDSA/IWGDF DFI 2023"
+  },
+  "dfi-moderate": {
+    "title": "Diabetic foot — Moderate",
+    "syndrome": "diabetic-foot",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ampicillin-sulbactam"], "dose_text": "Ampicillin-sulbactam 3 g IV q6h" },
+      { "drugs": ["ertapenem"], "dose_text": "Ertapenem 1 g IV daily" },
+      { "drugs": ["ceftriaxone", "metronidazole"], "dose_text": "Ceftriaxone 1-2 g IV daily + metronidazole 500 mg IV/PO q8h" }
+    ],
+    "duration": "1-3 weeks",
+    "source": "IDSA/IWGDF DFI 2023"
+  },
+  "dfi-severe": {
+    "title": "Diabetic foot — Severe / limb-threatening",
+    "syndrome": "diabetic-foot",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["vancomycin", "piperacillin-tazobactam"], "dose_text": "Vancomycin + pip-tazo 4.5 g IV q6h" },
+      { "drugs": ["vancomycin", "meropenem"], "dose_text": "Vancomycin + meropenem 1 g IV q8h (if ESBL/MDR risk)" },
+      { "drugs": ["daptomycin", "piperacillin-tazobactam"], "dose_text": "Daptomycin 6 mg/kg + pip-tazo (vanc-intolerant)" }
+    ],
+    "duration": "Soft tissue 2-4 wk; osteo 4-6 wk if no resection",
+    "source": "IDSA/IWGDF DFI 2023"
+  },
+  "osteo-empiric": {
+    "title": "Osteomyelitis — Empiric (pending culture)",
+    "syndrome": "osteo",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["vancomycin", "ceftriaxone"], "dose_text": "Vancomycin + ceftriaxone 2 g IV daily" },
+      { "drugs": ["vancomycin", "cefepime"], "dose_text": "Vancomycin + cefepime 2 g IV q8h (Pseudomonas risk)" }
+    ],
+    "duration": "Hold antibiotics for biopsy when feasible",
+    "source": "IDSA Osteomyelitis 2015"
+  },
+  "osteo-mssa": {
+    "title": "Osteomyelitis — MSSA",
+    "syndrome": "osteo",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["nafcillin"], "dose_text": "Nafcillin 2 g IV q4h" },
+      { "drugs": ["cefazolin"], "dose_text": "Cefazolin 2 g IV q8h" }
+    ],
+    "duration": "4-6 weeks",
+    "source": "IDSA Vertebral Osteo 2015"
+  },
+  "osteo-mrsa": {
+    "title": "Osteomyelitis — MRSA",
+    "syndrome": "osteo",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["vancomycin"], "dose_text": "Vancomycin AUC-targeted (vancomyzer.com)" },
+      { "drugs": ["daptomycin"], "dose_text": "Daptomycin 6-8 mg/kg IV daily" }
+    ],
+    "duration": "4-6 weeks",
+    "source": "IDSA MRSA 2011 + Vertebral Osteo 2015"
+  },
+  "septic-arthritis-empiric": {
+    "title": "Septic arthritis — Empiric (adult, native joint)",
+    "syndrome": "septic-arthritis",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["vancomycin", "ceftriaxone"], "dose_text": "Vancomycin + ceftriaxone 1-2 g IV daily" }
+    ],
+    "duration": "2-4 weeks; longer for S. aureus",
+    "source": "IDSA Bone & Joint guidance"
+  },
+  "ie-native-empiric": {
+    "title": "Native-valve IE — Empiric (acute, severe)",
+    "syndrome": "ie",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["vancomycin", "ceftriaxone"], "dose_text": "Vancomycin + ceftriaxone 2 g IV q12h" }
+    ],
+    "duration": "Pending blood cultures; tailor",
+    "source": "AHA/IDSA IE 2015"
+  },
+  "ie-mssa": {
+    "title": "Native-valve IE — MSSA",
+    "syndrome": "ie",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["nafcillin"], "dose_text": "Nafcillin 2 g IV q4h × 6 weeks" },
+      { "drugs": ["cefazolin"], "dose_text": "Cefazolin 2 g IV q8h × 6 weeks" }
+    ],
+    "duration": "6 weeks",
+    "source": "AHA/IDSA IE 2015"
+  },
+  "ie-mrsa": {
+    "title": "Native-valve IE — MRSA",
+    "syndrome": "ie",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["vancomycin"], "dose_text": "Vancomycin AUC-targeted × 6 weeks" },
+      { "drugs": ["daptomycin"], "dose_text": "Daptomycin 8-10 mg/kg IV daily × 6 weeks" }
+    ],
+    "duration": "6 weeks",
+    "source": "AHA/IDSA IE 2015"
+  },
+  "ie-vgs": {
+    "title": "Native-valve IE — Viridans strep (PCN MIC ≤0.12)",
+    "syndrome": "ie",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["penicillin-g"], "dose_text": "Aqueous PCN G 12-18 MU/24h IV continuous or divided q4h × 4 weeks" },
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 2 g IV daily × 4 weeks" }
+    ],
+    "duration": "4 weeks (2 wk if combo with gent in selected pts)",
+    "source": "AHA/IDSA IE 2015"
+  },
+  "ie-enterococcus": {
+    "title": "Native-valve IE — E. faecalis",
+    "syndrome": "ie",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ampicillin", "ceftriaxone"], "dose_text": "Ampicillin 2 g IV q4h + ceftriaxone 2 g IV q12h × 6 weeks" },
+      { "drugs": ["ampicillin", "gentamicin"], "dose_text": "Ampicillin 2 g IV q4h + gentamicin 3 mg/kg/d divided q8h × 4-6 wk" }
+    ],
+    "duration": "6 weeks (4 wk if symptoms <3mo and native valve)",
+    "source": "AHA/IDSA IE 2015"
+  },
+  "meningitis-empiric-adult": {
+    "title": "Bacterial meningitis — Adult 18-50, community",
+    "syndrome": "meningitis",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["vancomycin", "ceftriaxone"], "dose_text": "Vancomycin AUC-targeted + ceftriaxone 2 g IV q12h" },
+      { "drugs": ["dexamethasone"], "dose_text": "Add dexamethasone 0.15 mg/kg IV q6h × 4 days, ideally before/with first dose" }
+    ],
+    "duration": "Tailor to organism (S. pneumo 10-14d, N. mening 7d)",
+    "source": "IDSA Bacterial Meningitis 2004"
+  },
+  "meningitis-empiric-elderly": {
+    "title": "Bacterial meningitis — Adult >50 or immunocompromised (cover Listeria)",
+    "syndrome": "meningitis",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["vancomycin", "ceftriaxone", "ampicillin"], "dose_text": "Vancomycin + ceftriaxone 2 g IV q12h + ampicillin 2 g IV q4h" },
+      { "drugs": ["dexamethasone"], "dose_text": "+ Dexamethasone 0.15 mg/kg IV q6h × 4d" }
+    ],
+    "duration": "Listeria — 21 days",
+    "source": "IDSA Bacterial Meningitis 2004"
+  },
+  "meningitis-empiric-postneuro": {
+    "title": "Healthcare-associated meningitis (post-neurosurgery, shunt, head trauma)",
+    "syndrome": "meningitis",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["vancomycin", "cefepime"], "dose_text": "Vancomycin + cefepime 2 g IV q8h" },
+      { "drugs": ["vancomycin", "meropenem"], "dose_text": "Vancomycin + meropenem 2 g IV q8h" }
+    ],
+    "duration": "Tailor; CSF reassessment",
+    "source": "IDSA Healthcare-Associated Meningitis 2017"
+  },
+  "iai-mild": {
+    "title": "Community-acquired IAI — Mild-to-moderate",
+    "syndrome": "intra-abdominal",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ceftriaxone", "metronidazole"], "dose_text": "Ceftriaxone 1-2 g IV daily + metronidazole 500 mg IV/PO q8h" },
+      { "drugs": ["ertapenem"], "dose_text": "Ertapenem 1 g IV daily" },
+      { "drugs": ["ampicillin-sulbactam"], "dose_text": "Amp-sulbactam — NOT recommended (high E. coli resistance)" }
+    ],
+    "duration": "4 days post-source-control (STOP-IT)",
+    "source": "SIS/IDSA IAI 2017"
+  },
+  "iai-moderate": {
+    "title": "Healthcare-acquired or severe community IAI",
+    "syndrome": "intra-abdominal",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["piperacillin-tazobactam"], "dose_text": "Pip-tazo 4.5 g IV q6h" },
+      { "drugs": ["meropenem"], "dose_text": "Meropenem 1 g IV q8h" },
+      { "drugs": ["cefepime", "metronidazole"], "dose_text": "Cefepime 2 g IV q8h + metronidazole 500 mg IV q8h" }
+    ],
+    "duration": "4-7 days post-source-control",
+    "source": "SIS/IDSA IAI 2017"
+  },
+  "iai-severe": {
+    "title": "Severe IAI / septic shock — broad with MDR coverage",
+    "syndrome": "intra-abdominal",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["meropenem", "vancomycin"], "dose_text": "Meropenem 1 g IV q8h + vancomycin (if MRSA/VRE risk)" },
+      { "drugs": ["aztreonam-avibactam"], "dose_text": "Emblaveo 6 g loading then 1.5 g IV q6h (cIAI w/ MBL CRE — FDA 2025)" }
+    ],
+    "duration": "Reassess at 48-72h",
+    "source": "SIS/IDSA IAI 2017 + IDSA AMR 2024 v3.0"
+  },
+  "cdi-initial": {
+    "title": "CDI — Initial episode (non-fulminant)",
+    "syndrome": "cdi",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["fidaxomicin"], "dose_text": "Fidaxomicin 200 mg PO BID × 10 days (preferred)" },
+      { "drugs": ["vancomycin-oral"], "dose_text": "Vancomycin 125 mg PO QID × 10 days (alternative)" }
+    ],
+    "duration": "10 days",
+    "source": "IDSA/SHEA CDI 2021"
+  },
+  "cdi-recurrent": {
+    "title": "CDI — Recurrent (1st recurrence)",
+    "syndrome": "cdi",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["fidaxomicin"], "dose_text": "Fidaxomicin 200 mg PO BID × 10 days OR extended-pulse 200 mg BID days 1-5 then once every other day days 7-25" },
+      { "drugs": ["vancomycin-oral"], "dose_text": "Vancomycin tapered/pulsed regimen" },
+      { "drugs": ["bezlotoxumab"], "dose_text": "+ Bezlotoxumab 10 mg/kg IV ×1 (recurrence prevention)" }
+    ],
+    "duration": "10 days+ taper",
+    "source": "IDSA/SHEA CDI 2021"
+  },
+  "cdi-fulminant": {
+    "title": "CDI — Fulminant (hypotension, ileus, megacolon)",
+    "syndrome": "cdi",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["vancomycin-oral", "metronidazole"], "dose_text": "Vancomycin 500 mg PO/NG QID + metronidazole 500 mg IV q8h; consider rectal vanco if ileus" }
+    ],
+    "duration": "Tailor; surgical consult",
+    "source": "IDSA/SHEA CDI 2021"
+  },
+  "fn-empiric": {
+    "title": "Febrile neutropenia — Empiric (high-risk)",
+    "syndrome": "neutropenic-fever",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["cefepime"], "dose_text": "Cefepime 2 g IV q8h (monotherapy)" },
+      { "drugs": ["piperacillin-tazobactam"], "dose_text": "Pip-tazo 4.5 g IV q6h" },
+      { "drugs": ["meropenem"], "dose_text": "Meropenem 1 g IV q8h (if ESBL or recent broad-spectrum exposure)" },
+      { "drugs": ["vancomycin"], "dose_text": "+ Vancomycin only if specific indication (CR-BSI, soft tissue, MRSA colonization, hemodynamic instability)" }
+    ],
+    "duration": "Until ANC recovery and afebrile 48h",
+    "source": "IDSA Neutropenic Fever 2010 + 2024 ASCO/IDSA"
+  },
+  "sepsis-empiric": {
+    "title": "Septic shock — Broad empiric while source unclear",
+    "syndrome": "sepsis",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["vancomycin", "piperacillin-tazobactam"], "dose_text": "Vancomycin + pip-tazo 4.5 g IV q6h" },
+      { "drugs": ["vancomycin", "meropenem"], "dose_text": "Vancomycin + meropenem 1 g IV q8h (if pip-tazo allergy or MDR risk)" }
+    ],
+    "duration": "Reassess and de-escalate at 48-72h",
+    "source": "Surviving Sepsis 2021"
+  },
+  "gas-pharyngitis": {
+    "title": "Group A strep pharyngitis",
+    "syndrome": "pharyngitis",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["amoxicillin"], "dose_text": "Amoxicillin 1000 mg PO daily OR 500 mg PO BID × 10 days (peds: 50 mg/kg/d max 1000 mg)" },
+      { "drugs": ["penicillin-vk"], "dose_text": "PCN VK 500 mg PO BID-TID × 10 days" },
+      { "drugs": ["cephalexin"], "dose_text": "Cephalexin 500 mg PO BID × 10 days (PCN allergy, non-anaphylactic)" }
+    ],
+    "duration": "10 days (5d 2nd-gen ceph alternative)",
+    "source": "IDSA GAS Pharyngitis 2012"
+  },
+  "abrs-treatment": {
+    "title": "Acute bacterial rhinosinusitis",
+    "syndrome": "sinusitis",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["amoxicillin-clavulanate"], "dose_text": "Amox-clav 875/125 mg PO BID (high-dose 2000/125 ER if risk factors)" },
+      { "drugs": ["doxycycline"], "dose_text": "Doxycycline 100 mg PO BID (PCN allergy)" }
+    ],
+    "duration": "5-7 days adults; 10-14 days peds",
+    "source": "IDSA ABRS 2012"
+  },
+  "aom-peds": {
+    "title": "Acute otitis media (pediatric)",
+    "syndrome": "otitis-media",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["amoxicillin"], "dose_text": "Amoxicillin 80-90 mg/kg/d divided BID (max 4 g/d)" },
+      { "drugs": ["amoxicillin-clavulanate"], "dose_text": "Amox-clav 90/6.4 mg/kg/d divided BID (recent abx, recurrent, conjunctivitis)" }
+    ],
+    "duration": "10 days <2y or severe; 5-7d if older with mild disease",
+    "source": "AAP AOM 2013"
+  },
+  "gc-uncomplicated": {
+    "title": "Uncomplicated gonorrhea (cervix/urethra/rectum)",
+    "syndrome": "sti-gc-ct",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 500 mg IM ×1 (1 g IM if ≥150 kg)" },
+      { "drugs": ["doxycycline"], "dose_text": "+ Doxycycline 100 mg PO BID × 7d if chlamydia not excluded" },
+      { "drugs": ["zoliflodacin"], "dose_text": "Zoliflodacin 3 g PO ×1 (FDA 2025; alternative for ceftriaxone-allergic)" }
+    ],
+    "duration": "Single dose",
+    "source": "CDC STI 2021 + 2025 zoliflodacin label"
+  },
+  "chlamydia-treatment": {
+    "title": "Chlamydia (urogenital, rectal)",
+    "syndrome": "sti-gc-ct",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["doxycycline"], "dose_text": "Doxycycline 100 mg PO BID × 7 days (preferred)" },
+      { "drugs": ["azithromycin"], "dose_text": "Azithromycin 1 g PO ×1 (alternative; pregnancy)" }
+    ],
+    "duration": "7 days",
+    "source": "CDC STI 2021"
+  },
+  "pid-outpatient": {
+    "title": "Pelvic inflammatory disease — Outpatient",
+    "syndrome": "pid",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ceftriaxone", "doxycycline", "metronidazole"], "dose_text": "Ceftriaxone 500 mg IM ×1 + doxycycline 100 mg PO BID × 14d + metronidazole 500 mg PO BID × 14d" }
+    ],
+    "duration": "14 days",
+    "source": "CDC STI 2021"
+  },
+  "syphilis-treatment": {
+    "title": "Syphilis treatment by stage",
+    "syndrome": "syphilis",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["benzathine-penicillin-g"], "dose_text": "Early (primary, secondary, early latent): Bicillin LA 2.4 MU IM ×1" },
+      { "drugs": ["benzathine-penicillin-g"], "dose_text": "Late latent / unknown duration / tertiary (non-CNS): Bicillin LA 2.4 MU IM weekly ×3" },
+      { "drugs": ["penicillin-g"], "dose_text": "Neurosyphilis: Aqueous PCN G 18-24 MU/d IV continuous or 3-4 MU IV q4h × 10-14 days" }
+    ],
+    "duration": "Stage-dependent",
+    "source": "CDC STI 2021"
+  },
+  "esbl-cystitis": {
+    "title": "ESBL-E cystitis",
+    "syndrome": "cuti",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["nitrofurantoin"], "dose_text": "Nitrofurantoin 100 mg PO BID × 5d" },
+      { "drugs": ["trimethoprim-sulfamethoxazole"], "dose_text": "TMP-SMX DS BID × 3-5d" },
+      { "drugs": ["ciprofloxacin"], "dose_text": "Ciprofloxacin 250 mg PO BID × 3d" },
+      { "drugs": ["fosfomycin"], "dose_text": "Fosfomycin 3 g PO ×1 (E. coli only; not preferred for Klebsiella)" }
+    ],
+    "duration": "Drug-specific",
+    "source": "IDSA AMR 2024 v3.0"
+  },
+  "esbl-pyelo": {
+    "title": "ESBL-E pyelonephritis / cUTI (preferred)",
+    "syndrome": "cuti",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["trimethoprim-sulfamethoxazole"], "dose_text": "TMP-SMX 5 mg/kg (TMP) IV/PO BID" },
+      { "drugs": ["ciprofloxacin"], "dose_text": "Cipro 400 mg IV q12h or 500-750 mg PO BID" },
+      { "drugs": ["levofloxacin"], "dose_text": "Levofloxacin 750 mg IV/PO daily" },
+      { "drugs": ["ertapenem"], "dose_text": "Ertapenem 1 g IV daily — when FQ/SMX not options" }
+    ],
+    "duration": "7-14 days",
+    "source": "IDSA AMR 2024 v3.0"
+  },
+  "esbl-bsi": {
+    "title": "ESBL-E bacteremia",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["meropenem"], "dose_text": "Meropenem 1 g IV q8h (preferred)" },
+      { "drugs": ["ertapenem"], "dose_text": "Ertapenem 1 g IV daily — for non-critically ill, source-controlled" }
+    ],
+    "duration": "≥7 days; often 10-14",
+    "source": "IDSA AMR 2024 v3.0"
+  },
+  "cre-kpc": {
+    "title": "CRE — KPC carbapenemase",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["meropenem-vaborbactam"], "dose_text": "Meropenem-vaborbactam 4 g IV q8h" },
+      { "drugs": ["ceftazidime-avibactam"], "dose_text": "Ceftazidime-avibactam 2.5 g IV q8h" },
+      { "drugs": ["imipenem-relebactam"], "dose_text": "Imipenem-relebactam 1.25 g IV q6h" }
+    ],
+    "duration": "Source-dependent",
+    "source": "IDSA AMR 2024 v3.0"
+  },
+  "cre-mbl": {
+    "title": "CRE — Metallo-beta-lactamase (NDM/VIM/IMP)",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["aztreonam-avibactam"], "dose_text": "Aztreonam-avibactam (Emblaveo, 2025) 6 g IV load then 1.5 g IV q6h" },
+      { "drugs": ["ceftazidime-avibactam", "aztreonam"], "dose_text": "Ceftaz-avi 2.5 g IV q8h + aztreonam 2 g IV q6-8h (legacy combination)" },
+      { "drugs": ["cefiderocol"], "dose_text": "Cefiderocol 2 g IV q8h" }
+    ],
+    "duration": "Source-dependent",
+    "source": "IDSA AMR 2024 v3.0"
+  },
+  "cre-oxa48": {
+    "title": "CRE — OXA-48-like",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ceftazidime-avibactam"], "dose_text": "Ceftazidime-avibactam 2.5 g IV q8h" },
+      { "drugs": ["cefiderocol"], "dose_text": "Cefiderocol 2 g IV q8h (alternative)" }
+    ],
+    "duration": "Source-dependent",
+    "source": "IDSA AMR 2024 v3.0"
+  },
+  "pseudomonas-treatment": {
+    "title": "Pseudomonas aeruginosa (susceptible)",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["piperacillin-tazobactam"], "dose_text": "Pip-tazo 4.5 g IV q6h (extended infusion)" },
+      { "drugs": ["cefepime"], "dose_text": "Cefepime 2 g IV q8h" },
+      { "drugs": ["meropenem"], "dose_text": "Meropenem 1-2 g IV q8h" },
+      { "drugs": ["ceftazidime"], "dose_text": "Ceftazidime 2 g IV q8h" }
+    ],
+    "duration": "Source-dependent",
+    "source": "IDSA AMR 2024 v3.0"
+  },
+  "pseudomonas-dtr": {
+    "title": "DTR Pseudomonas",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ceftolozane-tazobactam"], "dose_text": "Ceftolozane-tazobactam 1.5-3 g IV q8h (preferred)" },
+      { "drugs": ["ceftazidime-avibactam"], "dose_text": "Ceftazidime-avibactam 2.5 g IV q8h" },
+      { "drugs": ["imipenem-relebactam"], "dose_text": "Imipenem-relebactam 1.25 g IV q6h" },
+      { "drugs": ["cefiderocol"], "dose_text": "Cefiderocol 2 g IV q8h" }
+    ],
+    "duration": "Source-dependent",
+    "source": "IDSA AMR 2024 v3.0"
+  },
+  "acinetobacter-crab": {
+    "title": "CRAB (carbapenem-resistant A. baumannii)",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["sulbactam-durlobactam"], "dose_text": "Sulbactam-durlobactam (Xacduro, 2023) 1 g + 1 g IV q6h (3h infusion)" },
+      { "drugs": ["ampicillin-sulbactam"], "dose_text": "High-dose ampicillin-sulbactam 9-12 g/day sulbactam component (e.g., 27 g/d amp-sulb continuous or divided)" },
+      { "drugs": ["minocycline"], "dose_text": "Minocycline 200 mg IV/PO q12h (combination)" }
+    ],
+    "duration": "Tailor",
+    "source": "IDSA AMR 2024 v3.0"
+  },
+  "steno-treatment": {
+    "title": "Stenotrophomonas maltophilia",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["trimethoprim-sulfamethoxazole", "minocycline"], "dose_text": "TMP-SMX (10-15 mg/kg/d TMP) + minocycline 200 mg IV/PO q12h" },
+      { "drugs": ["trimethoprim-sulfamethoxazole", "cefiderocol"], "dose_text": "TMP-SMX + cefiderocol 2 g IV q8h" },
+      { "drugs": ["minocycline", "tigecycline"], "dose_text": "Minocycline + tigecycline (TMP-SMX-intolerant)" }
+    ],
+    "duration": "Tailor",
+    "source": "IDSA AMR 2024 v3.0"
+  },
+  "mssa-bacteremia": {
+    "title": "MSSA bacteremia",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["nafcillin"], "dose_text": "Nafcillin 2 g IV q4h" },
+      { "drugs": ["cefazolin"], "dose_text": "Cefazolin 2 g IV q8h" }
+    ],
+    "duration": "≥14 days uncomplicated; longer if endocarditis or metastatic foci",
+    "source": "IDSA S. aureus practice guidance"
+  },
+  "mrsa-bacteremia": {
+    "title": "MRSA bacteremia",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["vancomycin"], "dose_text": "Vancomycin AUC-targeted (vancomyzer.com)" },
+      { "drugs": ["daptomycin"], "dose_text": "Daptomycin 8-10 mg/kg IV daily (NOT pneumonia)" }
+    ],
+    "duration": "≥14 days uncomplicated; longer if endocarditis or metastatic foci",
+    "source": "IDSA MRSA 2011"
+  },
+  "mrsa-ssti": {
+    "title": "MRSA SSTI",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["trimethoprim-sulfamethoxazole"], "dose_text": "TMP-SMX DS 1-2 tabs PO BID" },
+      { "drugs": ["doxycycline"], "dose_text": "Doxycycline 100 mg PO BID" },
+      { "drugs": ["clindamycin"], "dose_text": "Clindamycin 300-450 mg PO QID" },
+      { "drugs": ["linezolid"], "dose_text": "Linezolid 600 mg PO BID (severe/IV)" }
+    ],
+    "duration": "5-10 days",
+    "source": "IDSA MRSA 2011 + SSTI 2014"
+  },
+  "mrsa-pneumonia": {
+    "title": "MRSA pneumonia",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["vancomycin"], "dose_text": "Vancomycin AUC-targeted" },
+      { "drugs": ["linezolid"], "dose_text": "Linezolid 600 mg IV/PO BID" }
+    ],
+    "duration": "7-14 days",
+    "source": "IDSA HAP/VAP 2016 + MRSA 2011"
+  },
+  "vre-bacteremia": {
+    "title": "VRE bacteremia",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["daptomycin"], "dose_text": "Daptomycin 10-12 mg/kg IV daily (high-dose for VRE)" },
+      { "drugs": ["linezolid"], "dose_text": "Linezolid 600 mg IV/PO BID (cytopenias risk)" }
+    ],
+    "duration": "≥7-14 days",
+    "source": "IDSA practice guidance"
+  },
+  "vre-uti": {
+    "title": "VRE cystitis",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["nitrofurantoin"], "dose_text": "Nitrofurantoin 100 mg PO BID × 5d (if susceptible)" },
+      { "drugs": ["fosfomycin"], "dose_text": "Fosfomycin 3 g PO every 48h ×3 doses" }
+    ],
+    "duration": "5 days+",
+    "source": "IDSA practice guidance"
+  },
+  "candidemia": {
+    "title": "Candidemia (non-neutropenic)",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["micafungin"], "dose_text": "Micafungin 100 mg IV daily" },
+      { "drugs": ["caspofungin"], "dose_text": "Caspofungin 70 mg IV ×1 then 50 mg IV daily" },
+      { "drugs": ["fluconazole"], "dose_text": "Fluconazole 800 mg IV ×1 then 400 mg IV/PO daily — only if low risk + susceptible (NOT C. glabrata, C. krusei, C. auris)" }
+    ],
+    "duration": "14 days from first negative blood culture",
+    "source": "IDSA Candidiasis 2016"
+  },
+  "candidemia-auris": {
+    "title": "Candidemia — C. auris",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["micafungin"], "dose_text": "Micafungin 100 mg IV daily" },
+      { "drugs": ["liposomal-amphotericin-b"], "dose_text": "Liposomal amphoB 5 mg/kg IV daily (echinocandin-resistant)" }
+    ],
+    "duration": "14d after negative cultures + clinical resolution",
+    "source": "IDSA + CDC C. auris guidance"
+  },
+  "aspergillosis": {
+    "title": "Invasive aspergillosis",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["voriconazole"], "dose_text": "Voriconazole 6 mg/kg IV q12h ×2, then 4 mg/kg IV q12h" },
+      { "drugs": ["isavuconazole"], "dose_text": "Isavuconazole 372 mg q8h ×6 doses then 372 mg daily" }
+    ],
+    "duration": "≥6-12 weeks",
+    "source": "IDSA Aspergillosis 2016"
+  },
+  "pcp-treatment": {
+    "title": "PCP (Pneumocystis jirovecii pneumonia)",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["trimethoprim-sulfamethoxazole"], "dose_text": "TMP-SMX 15-20 mg/kg/d (TMP component) IV/PO divided q6-8h" },
+      { "drugs": ["prednisone"], "dose_text": "+ Prednisone 40 mg PO BID ×5d, then 40 mg daily ×5d, then 20 mg daily ×11d if PaO2 <70 or A-a >35" }
+    ],
+    "duration": "21 days",
+    "source": "IDSA Pneumocystis 2018"
+  }
+}

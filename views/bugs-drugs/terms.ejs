@@ -1,0 +1,50 @@
+<%- include('_head') %>
+<body class="bd-body">
+  <%- include('../partials/header', { activeCategory: 'bugs-drugs' }) %>
+  <main class="container bd-main">
+    <a href="/bugs-and-drugs" class="bd-back">← Back to Bugs &amp; Drugs</a>
+    <article class="bd-terms">
+      <h1>Bugs &amp; Drugs — Terms of Use &amp; Disclaimer</h1>
+      <p class="bd-terms__date"><strong>Last updated:</strong> April 2026</p>
+
+      <h2>1. Educational use only</h2>
+      <p>Bugs &amp; Drugs is a clinical decision <strong>support</strong> tool intended for use by licensed healthcare professionals. The content is informational and educational only. It is <strong>not</strong> medical advice, diagnosis, or treatment, and it does <strong>not</strong> establish a clinician–patient relationship between Dosys Health LLC, PharmacyNews.ai, and any user or patient.</p>
+
+      <h2>2. Prescriber responsibility</h2>
+      <p>The prescriber is solely responsible for verifying every dose, drug choice, route, and duration against authoritative sources (FDA prescribing information, current published guidelines, the institutional formulary, and the patient's complete clinical picture) before issuing any prescription or administration order. Bugs &amp; Drugs displays paraphrased excerpts and structured summaries of published guidelines and FDA labels. It does not replace, override, or warrant those sources.</p>
+
+      <h2>3. No warranty</h2>
+      <p>The information on Bugs &amp; Drugs is provided "as is" without any warranty, express or implied, including warranties of accuracy, completeness, currency, fitness for a particular purpose, or non-infringement. Guidelines, FDA labels, and antimicrobial resistance patterns change frequently. The site may not reflect the most recent guideline revision, label update, drug approval, or safety alert. Users should always confirm against the original source.</p>
+
+      <h2>4. Calculator output</h2>
+      <p>The dose calculator uses validated formulas (Cockcroft-Gault for adult creatinine clearance; bedside Schwartz for pediatric) and FDA-label-derived renal-adjustment buckets. Output is a <em>starting-point</em> recommendation and may not be appropriate for an individual patient because of factors not captured by the inputs (allergies, drug interactions, hepatic function, organ-specific PK considerations, fluid status, dialysis modality, augmented renal clearance, obesity at extremes, pregnancy, critical illness, neonatal status, and others). Users must independently confirm the recommendation, adjust for the individual patient, and verify against the FDA label.</p>
+
+      <h2>5. No PHI</h2>
+      <p>Do not enter Protected Health Information (PHI) or any patient-identifying information into the dose calculator or any other input on this site. Calculator inputs are not stored on the server. The calculator endpoint sets <code>Cache-Control: no-store</code>. We make no representation that interactions are encrypted or HIPAA-compliant for PHI.</p>
+
+      <h2>6. Limitation of liability</h2>
+      <p>To the fullest extent permitted by law, Dosys Health LLC, PharmacyNews.ai, and their officers, directors, employees, contractors, and contributors disclaim all liability for any direct, indirect, incidental, consequential, special, or exemplary damages arising out of or in connection with the use of, or inability to use, Bugs &amp; Drugs, including but not limited to damages arising from reliance on any content, calculation, link, or recommendation displayed on the site, even if advised of the possibility of such damages.</p>
+
+      <h2>7. External links</h2>
+      <p>Bugs &amp; Drugs links to external sources (idsociety.org, cdc.gov, accessdata.fda.gov, dailymed.nlm.nih.gov, pubmed.ncbi.nlm.nih.gov, vancomyzer.com, and others). We do not control and are not responsible for the content of those external sites.</p>
+
+      <h2>8. Source attribution</h2>
+      <p>Regimens are paraphrased from published guidelines and FDA labels — they are not verbatim reproductions. Each regimen entry cites the source guideline and access date. Users are encouraged to read the original guideline and label.</p>
+
+      <h2>9. Changes to these Terms</h2>
+      <p>These Terms may be updated. Continued use of Bugs &amp; Drugs after changes constitutes acceptance.</p>
+
+      <h2>10. Governing law</h2>
+      <p>These Terms are governed by the laws of the State of Texas, without regard to conflict-of-law principles. Any disputes shall be resolved in the state or federal courts located in Travis County, Texas.</p>
+
+      <h2>11. Contact</h2>
+      <p>Questions or corrections: contact Dosys Health LLC via <a href="https://dosys.health">dosys.health</a>.</p>
+
+      <hr>
+
+      <p class="bd-terms__counsel"><em>Notice for counsel: this draft was prepared for legal review. Please update governing-law jurisdiction (currently Texas — confirm Dosys Health LLC state of incorporation), confirm the entity name and signature blocks, and consider an arbitration clause and class-action waiver if appropriate.</em></p>
+    </article>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

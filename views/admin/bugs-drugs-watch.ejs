@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bugs &amp; Drugs Watch — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+  <div class="admin-layout">
+    <%- include('_sidebar', { page: 'bugs-drugs-watch', totalPending: 0 }) %>
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Bugs &amp; Drugs Watch</h1>
+        <div class="admin-actions">
+          <form method="POST" action="/admin/bugs-drugs-watch/run" style="display:inline">
+            <button type="submit" class="btn btn-sm btn-primary">▶ Run watch now</button>
+          </form>
+        </div>
+      </div>
+      <p style="color:var(--text-muted);margin-bottom:1.25rem;font-size:0.9rem">
+        Weekly scan (Mondays 11:00 UTC) for new FDA antibiotic/antifungal approvals and recent PubMed signals not yet reflected in <code>content/bugs-drugs/drugs.json</code>. Results are advisory — drugs.json updates require human review.
+      </p>
+
+      <% if (entries.length === 0) { %>
+        <div class="empty-state">
+          <h2>No watch runs recorded yet</h2>
+          <p>Run the watch manually to capture the first scan.</p>
+        </div>
+      <% } else { %>
+        <% entries.forEach(e => { %>
+          <article style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:1rem">
+            <header style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.75rem">
+              <strong><%= e.run_at %></strong>
+              <span style="color:var(--text-muted);font-size:0.85rem"><%= e.summary || '' %></span>
+            </header>
+
+            <% if (e.new_or_unmatched_fda && e.new_or_unmatched_fda.length) { %>
+              <h3 style="font-size:0.95rem;color:var(--signal-green);margin-bottom:0.5rem">FDA — unmatched approvals</h3>
+              <ul style="font-size:0.88rem;line-height:1.55;margin-bottom:0.75rem">
+                <% e.new_or_unmatched_fda.forEach(h => { %>
+                  <li>
+                    <strong><%= (h.products || []).join(' · ') %></strong>
+                    <span style="color:var(--text-muted)"> — <%= h.sponsor %> (App #<%= h.application_number %>)</span>
+                  </li>
+                <% }) %>
+              </ul>
+            <% } %>
+
+            <% if (e.pubmed_signals && e.pubmed_signals.length) { %>
+              <h3 style="font-size:0.95rem;color:var(--signal-green);margin-bottom:0.5rem">PubMed signal</h3>
+              <% e.pubmed_signals.forEach(s => { %>
+                <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.3rem">Query: <code><%= s.query %></code></p>
+                <ul style="font-size:0.85rem;margin-bottom:0.75rem">
+                  <% s.articles.slice(0, 3).forEach(a => { %>
+                    <li><a href="<%= a.url %>" target="_blank" rel="noopener noreferrer"><%= a.title %></a> <span style="color:var(--text-dim)">— <%= a.journal %>, <%= a.pubdate %></span></li>
+                  <% }) %>
+                </ul>
+              <% }) %>
+            <% } %>
+
+            <% if (e.errors && e.errors.length) { %>
+              <details style="margin-top:0.5rem">
+                <summary style="color:#f87171;cursor:pointer;font-size:0.85rem">Errors (<%= e.errors.length %>)</summary>
+                <ul style="color:var(--text-muted);font-size:0.82rem;margin-top:0.4rem">
+                  <% e.errors.forEach(err => { %><li><%= err %></li><% }) %>
+                </ul>
+              </details>
+            <% } %>
+          </article>
+        <% }) %>
+      <% } %>
+    </main>
+  </div>
+</body>
+</html>

@@ -60,10 +60,12 @@ app.use((req, res, next) => {
 const publicRoutes = require('./routes/public');
 const adminRoutes = require('./routes/admin');
 const apiRoutes = require('./routes/api');
+const bugsDrugsRoutes = require('./routes/bugs-drugs');
 
 app.use('/', publicRoutes);
 app.use('/admin', adminRoutes);
 app.use('/api', apiRoutes);
+app.use('/bugs-and-drugs', bugsDrugsRoutes);
 
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'ok' }));

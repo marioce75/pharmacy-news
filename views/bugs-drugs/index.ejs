@@ -1,0 +1,71 @@
+<%- include('_head') %>
+<body class="bd-body">
+  <%- include('../partials/header', { activeCategory: 'bugs-drugs' }) %>
+  <%- include('_gate') %>
+
+  <section class="bd-hero">
+    <div class="container">
+      <h1>Bugs &amp; Drugs</h1>
+      <p class="bd-hero__sub">Evidence-based empiric regimens by organism or syndrome, plus a renal-adjusted dose calculator. Sources: IDSA, CDC, FDA labels.</p>
+      <%- include('_disclaimer') %>
+
+      <div class="bd-search">
+        <input type="search" id="bd-search-input" class="bd-search__input" placeholder="Search a bug, syndrome, or drug — e.g. MRSA, pyelonephritis, meropenem" autocomplete="off" autofocus>
+        <ul id="bd-search-results" class="bd-search__results" role="listbox" aria-label="Search results"></ul>
+      </div>
+    </div>
+  </section>
+
+  <main class="container bd-main">
+    <section class="bd-block">
+      <h2>Browse by syndrome</h2>
+      <div class="bd-tag-grid">
+        <% syndromes.forEach(s => { %>
+          <a class="bd-tag" href="/bugs-and-drugs/syndrome/<%= s.slug %>"><%= s.name %></a>
+        <% }) %>
+      </div>
+    </section>
+
+    <section class="bd-block">
+      <h2>Browse by organism</h2>
+      <div class="bd-org-groups">
+        <% const groups = { 'Gram-positive': [], 'Gram-negative': [], 'Anaerobic': [], 'Atypical / intracellular': [], 'Mycobacteria': [], 'Fungi': [], 'Viruses': [], 'Other': [] };
+           organisms.forEach(o => {
+             if (o.gram === 'positive') groups['Gram-positive'].push(o);
+             else if (o.gram === 'negative') groups['Gram-negative'].push(o);
+             else if (o.gram === 'anaerobe') groups['Anaerobic'].push(o);
+             else if (o.gram === 'atypical' || o.gram === 'spirochete') groups['Atypical / intracellular'].push(o);
+             else if (o.gram === 'afb') groups['Mycobacteria'].push(o);
+             else if (o.gram === 'fungus') groups['Fungi'].push(o);
+             else if (o.gram === 'virus') groups['Viruses'].push(o);
+             else groups['Other'].push(o);
+           });
+        %>
+        <% Object.entries(groups).forEach(([label, list]) => { if (list.length === 0) return; %>
+          <div class="bd-org-group">
+            <h3><%= label %> <span class="bd-count"><%= list.length %></span></h3>
+            <ul class="bd-org-list">
+              <% list.forEach(o => { %>
+                <li><a href="/bugs-and-drugs/organism/<%= o.slug %>"><%= o.name %></a><% if (o.full_name && o.full_name !== o.name) { %><span class="bd-org-list__sub"><%= o.full_name %></span><% } %></li>
+              <% }) %>
+            </ul>
+          </div>
+        <% }) %>
+      </div>
+    </section>
+
+    <section class="bd-block">
+      <h2>Dose calculator</h2>
+      <p class="bd-block__sub">Enter patient parameters and a drug to get an empiric dose recommendation with renal adjustment.</p>
+      <div class="bd-drug-grid">
+        <% Object.values(drugs).slice().sort((a,b) => a.generic.localeCompare(b.generic)).forEach(d => { %>
+          <a class="bd-drug-chip" href="/bugs-and-drugs/drug/<%= d.slug %>"><%= d.generic %><span class="bd-drug-chip__class"><%= d.class %></span></a>
+        <% }) %>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <script src="/js/bugs-drugs.js"></script>
+</body>
+</html>

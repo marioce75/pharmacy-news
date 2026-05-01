@@ -210,6 +210,34 @@ router.post('/scrape/run', async (req, res, next) => {
   }
 });
 
+// Bugs & Drugs antibiotic-watch log + manual trigger
+router.get('/bugs-drugs-watch', async (req, res, next) => {
+  try {
+    const fs = require('fs').promises;
+    const path = require('path');
+    const logFile = path.join(__dirname, '..', 'content', 'bugs-drugs', 'watch-log.json');
+    let entries = [];
+    try { entries = JSON.parse(await fs.readFile(logFile, 'utf8')); } catch {}
+    res.render('admin/bugs-drugs-watch', {
+      entries: entries.slice(0, 30),
+      categories: CATEGORIES,
+      activeCategory: null,
+      page: 'bugs-drugs-watch'
+    });
+  } catch (err) { next(err); }
+});
+
+router.post('/bugs-drugs-watch/run', async (req, res, next) => {
+  try {
+    const scheduler = require('../lib/scheduler');
+    scheduler.triggerManualBugsDrugsWatch().catch((err) => {
+      console.error('[BD-WATCH] Manual run failed:', err.message);
+    });
+    if (req.accepts('html')) return res.redirect('/admin/bugs-drugs-watch');
+    res.json({ success: true, message: 'Bugs & Drugs watch started' });
+  } catch (err) { next(err); }
+});
+
 // Editor's Picks
 router.get('/editors-picks', async (req, res, next) => {
   try {

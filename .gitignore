@@ -1,4 +1,15 @@
 .DS_Store
 .env
 node_modules/
-content/
+
+# Runtime article workflow state — do not commit
+content/pending/
+content/approved/
+content/declined/
+content/slates/
+content/feedback/
+content/logs/
+content/sessions/
+
+# Bugs & Drugs runtime watch log (seed JSON files in same dir ARE tracked)
+content/bugs-drugs/watch-log.json
