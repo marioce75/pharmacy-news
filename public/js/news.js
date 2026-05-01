@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   navLinks.forEach(link => {
     link.addEventListener('click', async (e) => {
+      const href = link.getAttribute('href') || '';
+      if (href && href !== '/' && !href.startsWith('/?')) return; // let non-homepage links navigate normally
       e.preventDefault();
       const category = link.dataset.category;
 
