@@ -70,6 +70,11 @@ async function runAll() {
 
       let catNew = 0, catDup = 0;
       for (const article of articles) {
+        if (!article.source_url) {
+          console.warn(`  [SKIP] "${article.title}" — no source URL, cannot verify`);
+          errors++;
+          continue;
+        }
         const isDup = await dedup.isDuplicate(article);
         if (isDup) {
           duplicates++;
@@ -94,6 +99,11 @@ async function runAll() {
   try {
     const peptideItems = await runPeptideSpecialty();
     for (const article of peptideItems) {
+      if (!article.source_url) {
+        console.warn(`  [SKIP] "${article.title}" — no source URL, cannot verify`);
+        errors++;
+        continue;
+      }
       const isDup = await dedup.isDuplicate(article);
       if (isDup) {
         duplicates++;
