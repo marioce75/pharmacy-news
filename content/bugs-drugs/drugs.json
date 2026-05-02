@@ -1333,5 +1333,513 @@
     "label_url": "https://www.fda.gov/media/155050/download",
     "pregnancy": "Not assigned (data accumulating)",
     "notes": "Massive drug-drug interactions via ritonavir CYP3A4 inhibition. CHECK before prescribing."
+  },
+  "remdesivir": {
+    "slug": "remdesivir",
+    "generic": "Remdesivir",
+    "brand": ["Veklury"],
+    "class": "RNA polymerase inhibitor (SARS-CoV-2)",
+    "route": ["IV"],
+    "adult": { "default": "200 mg IV on day 1, then 100 mg IV daily on days 2-3 (3-day outpatient course); hospitalized: 5-10 day course" },
+    "pediatric": { "min_weight_kg": 3, "dose": "≥40 kg: same as adult; 3-<40 kg: 5 mg/kg IV day 1 then 2.5 mg/kg IV daily", "min_age_days": 0 },
+    "weight_basis": "fixed",
+    "renal": [
+      { "crcl_min": 30, "crcl_max": 999, "dose": "Standard dose" },
+      { "crcl_min": 0, "crcl_max": 29, "dose": "Avoid (sulfobutylether beta-cyclodextrin vehicle accumulates); use only if benefit outweighs risk" }
+    ],
+    "hepatic": "Caution in significant hepatic impairment (ALT >5× ULN)",
+    "label_url": "https://www.fda.gov/media/137566/download",
+    "pregnancy": "Insufficient data; used in severe COVID-19 when benefit outweighs risk",
+    "notes": "COVID-19 treatment. 3-day IV course for outpatient high-risk; 5-day inpatient. Start within 7 days of symptom onset."
+  },
+  "molnupiravir": {
+    "slug": "molnupiravir",
+    "generic": "Molnupiravir",
+    "brand": ["Lagevrio"],
+    "class": "RNA polymerase mutagenic nucleoside (SARS-CoV-2)",
+    "route": ["PO"],
+    "adult": { "default": "800 mg PO BID ×5 days; start within 5 days of symptom onset" },
+    "pediatric": { "notes": "Not approved in patients <18 years (concerns about bone/cartilage development)" },
+    "weight_basis": "fixed",
+    "renal": [
+      { "crcl_min": 0, "crcl_max": 999, "dose": "No renal adjustment required" }
+    ],
+    "hepatic": "No adjustment",
+    "label_url": "https://www.fda.gov/media/155054/download",
+    "pregnancy": "Contraindicated (mutagenic potential — embryofetal toxicity in animal studies)",
+    "notes": "Last-resort COVID-19 antiviral; inferior to nirmatrelvir/ritonavir. Use only when no alternatives available. Contraindicated in pregnancy."
+  },
+  "isoniazid": {
+    "slug": "isoniazid",
+    "generic": "Isoniazid",
+    "brand": ["INH", "Nydrazid"],
+    "class": "Antimycobacterial (TB first-line)",
+    "route": ["PO", "IM"],
+    "adult": { "default": "5 mg/kg (max 300 mg) PO daily; DOT 3×/week: 15 mg/kg (max 900 mg)" },
+    "pediatric": { "mg_per_kg_per_dose": 10, "frequency": "daily", "max_per_dose_mg": 300, "min_age_months": 0, "notes": "10 mg/kg/day (max 300 mg); DOT 3×/week: 20-30 mg/kg (max 900 mg)" },
+    "weight_basis": "tbw",
+    "renal": [
+      { "crcl_min": 0, "crcl_max": 999, "dose": "No adjustment (hepatically metabolized)" }
+    ],
+    "hepatic": "Hold if ALT >3× ULN with symptoms or >5× ULN asymptomatic",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=isoniazid",
+    "pregnancy": "C (use with pyridoxine 25 mg/day)",
+    "notes": "ALWAYS co-administer pyridoxine (B6) 25-50 mg/day to prevent peripheral neuropathy. Monitor LFTs monthly. Slow vs. fast acetylators. Part of RIPE regimen for active TB."
+  },
+  "rifampin": {
+    "slug": "rifampin",
+    "generic": "Rifampin",
+    "brand": ["Rifadin"],
+    "class": "Rifamycin (RNA polymerase inhibitor)",
+    "route": ["PO", "IV"],
+    "adult": { "default": "10 mg/kg (max 600 mg) PO/IV daily; MAC: 600 mg 3×/week" },
+    "pediatric": { "mg_per_kg_per_dose": 10, "frequency": "daily", "max_per_dose_mg": 600, "min_age_months": 0, "notes": "10-20 mg/kg/day (max 600 mg); meningococcal prophylaxis: 10 mg/kg q12h ×2 days" },
+    "weight_basis": "tbw",
+    "renal": [
+      { "crcl_min": 0, "crcl_max": 999, "dose": "No adjustment" }
+    ],
+    "hepatic": "Use with caution; avoid if severe hepatic impairment (Child-Pugh C)",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=rifampin",
+    "pregnancy": "C",
+    "notes": "Potent CYP inducer — extensive drug interactions (anticoagulants, antiretrovirals, azoles, oral contraceptives, etc.). Orange discoloration of body fluids (counsel patients). Part of RIPE regimen for active TB."
+  },
+  "rifabutin": {
+    "slug": "rifabutin",
+    "generic": "Rifabutin",
+    "brand": ["Mycobutin"],
+    "class": "Rifamycin (RNA polymerase inhibitor)",
+    "route": ["PO"],
+    "adult": { "default": "300 mg PO daily; MAC prophylaxis: 300 mg PO daily; H. pylori: 150 mg PO BID" },
+    "pediatric": { "notes": "Limited pediatric data; used for MAC in HIV-infected children" },
+    "weight_basis": "fixed",
+    "renal": [
+      { "crcl_min": 30, "crcl_max": 999, "dose": "No adjustment" },
+      { "crcl_min": 0, "crcl_max": 29, "dose": "Reduce dose by 50%" }
+    ],
+    "hepatic": "Use with caution",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=rifabutin",
+    "pregnancy": "B",
+    "notes": "Less potent CYP inducer than rifampin; preferred in HIV patients on protease inhibitors. Used in MAC pulmonary treatment and H. pylori quadruple regimens. Orange urine discoloration."
+  },
+  "pyrazinamide": {
+    "slug": "pyrazinamide",
+    "generic": "Pyrazinamide",
+    "brand": ["PZA"],
+    "class": "Antimycobacterial (TB first-line)",
+    "route": ["PO"],
+    "adult": { "default": "20-25 mg/kg (max 2000 mg) PO daily; DOT 3×/week: 35 mg/kg (max 3000 mg)" },
+    "pediatric": { "mg_per_kg_per_dose": 30, "frequency": "daily", "max_per_dose_mg": 2000, "min_age_months": 0, "notes": "30-40 mg/kg/day (max 2 g)" },
+    "weight_basis": "tbw",
+    "renal": [
+      { "crcl_min": 30, "crcl_max": 999, "dose": "No adjustment" },
+      { "crcl_min": 0, "crcl_max": 30, "dose": "25-35 mg/kg 3×/week; consult ID" }
+    ],
+    "hepatic": "Hold if ALT >3× ULN with symptoms or >5× ULN",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=pyrazinamide",
+    "pregnancy": "C",
+    "notes": "Intensive phase only (first 2 months of RIPE). Monitor uric acid (hyperuricemia common). Monitor LFTs. Given only during first 2 months of TB therapy."
+  },
+  "ethambutol": {
+    "slug": "ethambutol",
+    "generic": "Ethambutol",
+    "brand": ["Myambutol", "EMB"],
+    "class": "Antimycobacterial (TB first-line)",
+    "route": ["PO"],
+    "adult": { "default": "15-20 mg/kg (max 1600 mg) PO daily; DOT 3×/week: 50 mg/kg (max 2500 mg)" },
+    "pediatric": { "mg_per_kg_per_dose": 20, "frequency": "daily", "max_per_dose_mg": 1000, "min_age_months": 0, "notes": "15-25 mg/kg/day; use with caution in young children unable to report visual changes" },
+    "weight_basis": "tbw",
+    "renal": [
+      { "crcl_min": 50, "crcl_max": 999, "dose": "Standard dose" },
+      { "crcl_min": 30, "crcl_max": 50, "dose": "15-25 mg/kg q24-36h" },
+      { "crcl_min": 0, "crcl_max": 30, "dose": "15-25 mg/kg 3×/week" }
+    ],
+    "hepatic": "No adjustment",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=ethambutol",
+    "pregnancy": "C",
+    "notes": "Monitor visual acuity and color discrimination monthly (optic neuritis — dose-dependent). Part of RIPE regimen. Can be stopped once susceptibility to INH+RIF+PZA confirmed."
+  },
+  "ganciclovir": {
+    "slug": "ganciclovir",
+    "generic": "Ganciclovir",
+    "brand": ["Cytovene"],
+    "class": "Antiviral — CMV (guanosine nucleoside analogue)",
+    "route": ["IV"],
+    "adult": { "default": "5 mg/kg IV q12h (induction); 5 mg/kg IV daily (maintenance)" },
+    "pediatric": { "mg_per_kg_per_dose": 5, "frequency": "q12h", "min_age_months": 0, "notes": "Induction: 5 mg/kg IV q12h; Congenital CMV (neonates): 6 mg/kg IV q12h × 6 weeks" },
+    "weight_basis": "tbw",
+    "renal": [
+      { "crcl_min": 70, "crcl_max": 999, "dose": "5 mg/kg q12h" },
+      { "crcl_min": 50, "crcl_max": 69, "dose": "2.5 mg/kg q12h" },
+      { "crcl_min": 25, "crcl_max": 49, "dose": "2.5 mg/kg q24h" },
+      { "crcl_min": 10, "crcl_max": 24, "dose": "1.25 mg/kg q24h" },
+      { "crcl_min": 0, "crcl_max": 10, "dose": "1.25 mg/kg 3×/week" }
+    ],
+    "hepatic": "No adjustment",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=ganciclovir",
+    "pregnancy": "C (teratogenic/embryotoxic in animals — use only if benefit outweighs risk)",
+    "notes": "Monitor CBC weekly (neutropenia, thrombocytopenia). IV formulation for serious CMV disease. Oral valganciclovir preferred for step-down."
+  },
+  "valganciclovir": {
+    "slug": "valganciclovir",
+    "generic": "Valganciclovir",
+    "brand": ["Valcyte"],
+    "class": "Antiviral — CMV (prodrug of ganciclovir)",
+    "route": ["PO"],
+    "adult": { "default": "900 mg PO BID (induction ×21 days); 900 mg PO daily (maintenance)" },
+    "pediatric": { "notes": "Dose (mg) = 7 × BSA × CrCl (Schwartz); max single dose 900 mg; ≥4 months old" },
+    "weight_basis": "bsa",
+    "renal": [
+      { "crcl_min": 60, "crcl_max": 999, "dose": "900 mg BID (induction) or 900 mg daily (maintenance)" },
+      { "crcl_min": 40, "crcl_max": 59, "dose": "450 mg BID (induction) or 450 mg daily (maintenance)" },
+      { "crcl_min": 25, "crcl_max": 39, "dose": "450 mg daily (induction) or 450 mg q2days (maintenance)" },
+      { "crcl_min": 10, "crcl_max": 24, "dose": "200 mg daily (induction) or 100 mg daily (maintenance)" },
+      { "crcl_min": 0, "crcl_max": 10, "dose": "Avoid or use ganciclovir IV with HD dosing" }
+    ],
+    "hepatic": "No adjustment",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=valganciclovir",
+    "pregnancy": "C (teratogenic/embryotoxic)",
+    "notes": "Oral prodrug of ganciclovir. Monitor CBC weekly. Preferred over IV ganciclovir for non-severe CMV once tolerating oral. Take with food."
+  },
+  "flucytosine": {
+    "slug": "flucytosine",
+    "generic": "Flucytosine (5-FC)",
+    "brand": ["Ancobon"],
+    "class": "Antifungal — pyrimidine analogue",
+    "route": ["PO"],
+    "adult": { "default": "25 mg/kg PO q6h (100 mg/kg/day) — for cryptococcal meningitis induction with amphotericin B" },
+    "pediatric": { "mg_per_kg_per_dose": 25, "frequency": "q6h", "min_age_months": 0, "notes": "25 mg/kg q6h; monitor levels and CBC closely" },
+    "weight_basis": "tbw",
+    "renal": [
+      { "crcl_min": 40, "crcl_max": 999, "dose": "25 mg/kg q6h" },
+      { "crcl_min": 20, "crcl_max": 39, "dose": "25 mg/kg q12h" },
+      { "crcl_min": 10, "crcl_max": 19, "dose": "25 mg/kg q24h" },
+      { "crcl_min": 0, "crcl_max": 9, "dose": "25 mg/kg q48h; monitor levels" }
+    ],
+    "hepatic": "No adjustment",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=flucytosine",
+    "pregnancy": "C",
+    "notes": "Used only in combination (never monotherapy — resistance develops rapidly). Monitor bone marrow (leukopenia, thrombocytopenia). Target serum level 25-100 mcg/mL (2h post-dose). Used with amphotericin B for cryptococcal meningitis induction."
+  },
+  "amphotericin-b": {
+    "slug": "amphotericin-b",
+    "generic": "Amphotericin B deoxycholate",
+    "brand": ["Fungizone"],
+    "class": "Polyene antifungal",
+    "route": ["IV"],
+    "adult": { "default": "0.7-1 mg/kg IV daily (cryptococcal meningitis, histoplasma); 1-1.5 mg/kg/day (invasive aspergillosis — liposomal preferred)" },
+    "pediatric": { "mg_per_kg_per_dose": 1, "frequency": "daily", "min_age_months": 0, "notes": "0.5-1.5 mg/kg/day IV depending on indication" },
+    "weight_basis": "tbw",
+    "renal": [
+      { "crcl_min": 0, "crcl_max": 999, "dose": "No dose adjustment; nephrotoxicity is cumulative — monitor SCr daily; prehydrate with NS" }
+    ],
+    "hepatic": "No adjustment",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=amphotericin+b",
+    "pregnancy": "B",
+    "notes": "Significant nephrotoxicity and infusion reactions (rigors, fever, hypokalemia). Premedicate with acetaminophen/diphenhydramine. Liposomal formulation (AmBisome) preferred when available (less toxicity). NOT interchangeable mg-for-mg with liposomal amphotericin B."
+  },
+  "permethrin": {
+    "slug": "permethrin",
+    "generic": "Permethrin 5% cream",
+    "brand": ["Elimite", "Acticin"],
+    "class": "Pediculicide/scabicide (pyrethroid)",
+    "route": ["Topical"],
+    "adult": { "default": "Apply 5% cream from neck to soles; wash off after 8-14 hours; repeat in 7-14 days (2 applications total)" },
+    "pediatric": { "notes": "Safe for infants ≥2 months; apply including face/scalp for infants. Repeat in 7-14 days.", "min_age_months": 2 },
+    "weight_basis": "fixed",
+    "renal": [
+      { "crcl_min": 0, "crcl_max": 999, "dose": "No adjustment (topical)" }
+    ],
+    "hepatic": "No adjustment",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=permethrin",
+    "pregnancy": "B",
+    "notes": "First-line topical scabicide. Treat all household contacts simultaneously. Wash bedding/clothing. 1% rinse for lice (different from 5% cream for scabies)."
+  },
+  "ivermectin": {
+    "slug": "ivermectin",
+    "generic": "Ivermectin",
+    "brand": ["Stromectol"],
+    "class": "Antiparasitic (avermectin)",
+    "route": ["PO"],
+    "adult": { "default": "200 mcg/kg PO single dose with food; repeat in 7-14 days (scabies: 2 doses; crusted: 5+ doses)" },
+    "pediatric": { "mg_per_kg_per_dose": 0.2, "frequency": "single dose (repeat x2)", "min_weight_kg": 15, "notes": "Safe ≥15 kg; 200 mcg/kg single dose; take with food. Not approved <15 kg." },
+    "weight_basis": "tbw",
+    "renal": [
+      { "crcl_min": 0, "crcl_max": 999, "dose": "No adjustment" }
+    ],
+    "hepatic": "Caution in severe hepatic impairment",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=ivermectin",
+    "pregnancy": "C (avoid; use permethrin instead)",
+    "notes": "Oral option for classic scabies; mandatory for crusted scabies. Treat contacts. NOT approved <15 kg or in pregnancy. Take with food (increases bioavailability). Also used for strongyloidiasis, onchocerciasis."
+  },
+  "tinidazole": {
+    "slug": "tinidazole",
+    "generic": "Tinidazole",
+    "brand": ["Tindamax"],
+    "class": "Nitroimidazole antiprotozoal/antibacterial",
+    "route": ["PO"],
+    "adult": { "default": "2 g PO single dose (Giardia, trichomoniasis); 2 g PO daily ×3-5 days (amebiasis); BV: 2 g PO single dose or 1 g PO daily ×5 days" },
+    "pediatric": { "mg_per_kg_per_dose": 50, "frequency": "single dose", "max_per_dose_mg": 2000, "min_age_months": 36, "notes": "50 mg/kg (max 2 g) single dose for Giardia; ≥3 years old" },
+    "weight_basis": "tbw",
+    "renal": [
+      { "crcl_min": 0, "crcl_max": 999, "dose": "No adjustment (supplemental dose after HD)" }
+    ],
+    "hepatic": "Use with caution; reduce dose in severe impairment",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=tinidazole",
+    "pregnancy": "C (avoid first trimester; fetal alcohol-like risk with alcohol use)",
+    "notes": "Avoid alcohol during and for 72h after treatment (disulfiram-like reaction). Similar spectrum to metronidazole but longer half-life (single-dose dosing possible). Higher Giardia cure rates than metronidazole."
+  },
+  "albendazole": {
+    "slug": "albendazole",
+    "generic": "Albendazole",
+    "brand": ["Albenza"],
+    "class": "Anthelmintic/antiprotozoal (benzimidazole)",
+    "route": ["PO"],
+    "adult": { "default": "400 mg PO daily ×5 days (Giardia); 400 mg PO BID (echinococcus, neurocysticercosis — up to 28-day cycles)" },
+    "pediatric": { "mg_per_kg_per_dose": 7.5, "frequency": "BID", "max_per_day_mg": 800, "min_age_months": 12, "notes": "Giardia: 400 mg daily ×5 days (≥2y); Echinococcus: 7.5 mg/kg BID" },
+    "weight_basis": "tbw",
+    "renal": [
+      { "crcl_min": 0, "crcl_max": 999, "dose": "No adjustment" }
+    ],
+    "hepatic": "Monitor LFTs; hold if significant elevation",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=albendazole",
+    "pregnancy": "C (teratogenic in animals; avoid 1st trimester)",
+    "notes": "Take with fatty meal (increases bioavailability). Used for Giardia, echinococcus, neurocysticercosis, strongyloidiasis. Monitor LFTs and CBC with prolonged use."
+  },
+  "nitazoxanide": {
+    "slug": "nitazoxanide",
+    "generic": "Nitazoxanide",
+    "brand": ["Alinia"],
+    "class": "Antiprotozoal (pyruvate:ferredoxin oxidoreductase inhibitor)",
+    "route": ["PO"],
+    "adult": { "default": "500 mg PO BID ×3 days (Giardia, Cryptosporidium)" },
+    "pediatric": { "notes": "1-3 years: 100 mg (5 mL) PO BID ×3 days; 4-11 years: 200 mg (10 mL) PO BID ×3 days; ≥12 years: 500 mg tablet PO BID ×3 days", "min_age_year": 1 },
+    "weight_basis": "fixed",
+    "renal": [
+      { "crcl_min": 0, "crcl_max": 999, "dose": "No adjustment" }
+    ],
+    "hepatic": "Use with caution; no specific guidance",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=nitazoxanide",
+    "pregnancy": "B",
+    "notes": "Take with food. Active against Giardia, Cryptosporidium, and some activity vs. Clostridium difficile (limited evidence). Turns urine bright yellow."
+  },
+  "atovaquone-proguanil": {
+    "slug": "atovaquone-proguanil",
+    "generic": "Atovaquone-proguanil",
+    "brand": ["Malarone"],
+    "class": "Antimalarial (bc1 complex inhibitor + antifolate)",
+    "route": ["PO"],
+    "adult": { "default": "4 adult tabs (250/100 mg each = 1000/400 mg) PO once daily ×3 days with food (treatment); prophylaxis: 1 adult tab PO daily" },
+    "pediatric": { "notes": "Treatment: 5-8 kg: 2 pediatric tabs daily ×3d; 9-10 kg: 3 tabs; 11-20 kg: 1 adult tab; 21-30 kg: 2 adult tabs; 31-40 kg: 3 adult tabs; >40 kg: 4 adult tabs. Prophylaxis: weight-based dosing, see label.", "min_weight_kg": 5 },
+    "weight_basis": "fixed",
+    "renal": [
+      { "crcl_min": 30, "crcl_max": 999, "dose": "Standard dose" },
+      { "crcl_min": 0, "crcl_max": 30, "dose": "Avoid for treatment; caution with prophylaxis" }
+    ],
+    "hepatic": "No adjustment for mild/moderate",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=atovaquone+proguanil",
+    "pregnancy": "C",
+    "notes": "Take with food or milky drink (bioavailability increases 3-fold with fatty food). Active against chloroquine-resistant P. falciparum. Not active against P. vivax hypnozoites (add primaquine for radical cure)."
+  },
+  "artemether-lumefantrine": {
+    "slug": "artemether-lumefantrine",
+    "generic": "Artemether-lumefantrine",
+    "brand": ["Coartem"],
+    "class": "Antimalarial (artemisinin combination)",
+    "route": ["PO"],
+    "adult": { "default": "≥35 kg: 4 tabs (20/120 mg each) PO at hours 0, 8, 24, 36, 48, 60 (6 doses over 3 days) — take with food/fat" },
+    "pediatric": { "notes": "5-<15 kg: 1 tab per dose; 15-<25 kg: 2 tabs; 25-<35 kg: 3 tabs; ≥35 kg: 4 tabs — same 6-dose schedule", "min_weight_kg": 5 },
+    "weight_basis": "fixed",
+    "renal": [
+      { "crcl_min": 0, "crcl_max": 999, "dose": "No adjustment (no data in severe renal impairment)" }
+    ],
+    "hepatic": "Caution in moderate-severe hepatic impairment",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=artemether+lumefantrine",
+    "pregnancy": "C (limited data; avoid in 1st trimester if artesunate available; use if benefit > risk)",
+    "notes": "First-line for uncomplicated P. falciparum malaria. Must be taken with fatty food (essential for lumefantrine absorption). QTc prolongation risk — avoid with QTc-prolonging drugs."
+  },
+  "chloroquine": {
+    "slug": "chloroquine",
+    "generic": "Chloroquine phosphate",
+    "brand": ["Aralen"],
+    "class": "4-aminoquinoline antimalarial",
+    "route": ["PO"],
+    "adult": { "default": "1 g (600 mg base) PO immediately, then 500 mg (300 mg base) at 6h, 24h, 48h (total 2.5 g over 48h)" },
+    "pediatric": { "mg_per_kg_per_dose": 10, "frequency": "see schedule", "max_per_dose_mg": 600, "min_age_months": 0, "notes": "10 mg base/kg then 5 mg base/kg at 6h, 24h, 48h (max base 600/300 mg)" },
+    "weight_basis": "tbw",
+    "renal": [
+      { "crcl_min": 10, "crcl_max": 999, "dose": "Standard dose" },
+      { "crcl_min": 0, "crcl_max": 10, "dose": "50% of normal dose" }
+    ],
+    "hepatic": "Use with caution",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=chloroquine",
+    "pregnancy": "C (safe at treatment doses)",
+    "notes": "Active only against chloroquine-sensitive P. vivax, P. ovale, P. malariae, P. knowlesi. NOT for P. falciparum (resistance nearly universal). QTc prolongation — cardiac monitoring in high doses. Retinal toxicity with long-term use."
+  },
+  "primaquine": {
+    "slug": "primaquine",
+    "generic": "Primaquine phosphate",
+    "brand": ["Primaquine"],
+    "class": "8-aminoquinoline antimalarial",
+    "route": ["PO"],
+    "adult": { "default": "30 mg base PO daily ×14 days (radical cure P. vivax/P. ovale); 15 mg base daily ×14 days (G6PD intermediate)" },
+    "pediatric": { "mg_per_kg_per_dose": 0.5, "frequency": "daily", "max_per_dose_mg": 30, "min_age_months": 6, "notes": "0.5 mg base/kg/day (max 30 mg) PO ×14 days; check G6PD first" },
+    "weight_basis": "tbw",
+    "renal": [
+      { "crcl_min": 0, "crcl_max": 999, "dose": "No formal adjustment; use with caution" }
+    ],
+    "hepatic": "Avoid in severe hepatic impairment",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=primaquine",
+    "pregnancy": "C (CONTRAINDICATED — hemolytic anemia risk in fetus; defer radical cure until after delivery)",
+    "notes": "MUST CHECK G6PD before use — can cause life-threatening hemolytic anemia in G6PD deficiency. Used for radical cure of P. vivax and P. ovale (kills liver hypnozoites to prevent relapse). NOT effective against P. falciparum blood stages."
+  },
+  "pyrimethamine": {
+    "slug": "pyrimethamine",
+    "generic": "Pyrimethamine",
+    "brand": ["Daraprim"],
+    "class": "Antifolate antiprotozoal (dihydrofolate reductase inhibitor)",
+    "route": ["PO"],
+    "adult": { "default": "200 mg PO loading ×1, then 50-75 mg PO daily (toxoplasmosis acute); maintenance: 25-50 mg PO daily" },
+    "pediatric": { "notes": "Congenital toxo: 1 mg/kg/day PO ×6 months then 1 mg/kg 3×/week ×6 months; older children: 2 mg/kg/day ×3 days then 1 mg/kg/day (max 25 mg)" },
+    "weight_basis": "tbw",
+    "renal": [
+      { "crcl_min": 0, "crcl_max": 999, "dose": "No adjustment" }
+    ],
+    "hepatic": "No adjustment",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=pyrimethamine",
+    "pregnancy": "C (folate antagonist — ALWAYS use with leucovorin)",
+    "notes": "ALWAYS co-administer leucovorin (folinic acid) 10-25 mg PO daily to prevent bone marrow toxicity. Monitor CBC weekly during acute therapy. Used with sulfadiazine (first-line) or clindamycin (sulfa-intolerant) for toxoplasmosis."
+  },
+  "sulfadiazine": {
+    "slug": "sulfadiazine",
+    "generic": "Sulfadiazine",
+    "brand": ["Sulfadiazine"],
+    "class": "Sulfonamide antiparasitic",
+    "route": ["PO"],
+    "adult": { "default": "1-1.5 g PO q6h (4-6 g/day) — acute toxoplasmosis; maintenance: 0.5-1 g PO q6h" },
+    "pediatric": { "notes": "Congenital toxo: 50 mg/kg PO BID (max 4 g/day)" },
+    "weight_basis": "tbw",
+    "renal": [
+      { "crcl_min": 30, "crcl_max": 999, "dose": "Standard dose" },
+      { "crcl_min": 0, "crcl_max": 30, "dose": "Use with caution; reduce dose and monitor" }
+    ],
+    "hepatic": "Avoid in severe impairment",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=sulfadiazine",
+    "pregnancy": "C (avoid near term — neonatal jaundice risk)",
+    "notes": "Used with pyrimethamine + leucovorin for toxoplasmosis. Maintain adequate hydration (crystalluria risk). Cross-reactivity with other sulfonamides. Monitor CBC and renal function."
+  },
+  "leucovorin": {
+    "slug": "leucovorin",
+    "generic": "Leucovorin (folinic acid)",
+    "brand": ["Wellcovorin"],
+    "class": "Folate rescue agent (adjunct to antifolates)",
+    "route": ["PO", "IV"],
+    "adult": { "default": "10-25 mg PO daily (with pyrimethamine); 25 mg PO weekly (with TMP-SMX for PCP prevention)" },
+    "pediatric": { "notes": "5-10 mg PO 3×/week with pyrimethamine; congenital toxo: 10 mg PO 3×/week with each pyrimethamine dose" },
+    "weight_basis": "fixed",
+    "renal": [
+      { "crcl_min": 0, "crcl_max": 999, "dose": "No adjustment" }
+    ],
+    "hepatic": "No adjustment",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=leucovorin",
+    "pregnancy": "C",
+    "notes": "NOT the same as folic acid (will NOT rescue pyrimethamine toxicity). Given as rescue to prevent pyrimethamine-induced bone marrow suppression. Continue throughout pyrimethamine therapy and 1 week after."
+  },
+  "tetracycline": {
+    "slug": "tetracycline",
+    "generic": "Tetracycline HCl",
+    "brand": ["Sumycin"],
+    "class": "Tetracycline antibiotic",
+    "route": ["PO"],
+    "adult": { "default": "500 mg PO QID (H. pylori quadruple therapy component); 250-500 mg PO QID for general use" },
+    "pediatric": { "notes": "AVOID in children <8 years (permanent tooth discoloration)" },
+    "weight_basis": "fixed",
+    "renal": [
+      { "crcl_min": 50, "crcl_max": 999, "dose": "Standard dose" },
+      { "crcl_min": 10, "crcl_max": 50, "dose": "Reduce dose; extend interval" },
+      { "crcl_min": 0, "crcl_max": 10, "dose": "Avoid (accumulates; worsens azotemia)" }
+    ],
+    "hepatic": "Reduce dose in moderate-severe impairment",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=tetracycline",
+    "pregnancy": "D (avoid — fetal tooth discoloration, hepatotoxicity)",
+    "notes": "Must be taken on empty stomach (food/dairy reduces absorption >50%). Avoid with antacids, iron. Primarily used in H. pylori bismuth quadruple therapy. Inferior pharmacokinetics vs. doxycycline for systemic infections."
+  },
+  "rifaximin": {
+    "slug": "rifaximin",
+    "generic": "Rifaximin",
+    "brand": ["Xifaxan"],
+    "class": "Rifamycin derivative (non-absorbable)",
+    "route": ["PO"],
+    "adult": { "default": "200 mg PO TID ×3 days (traveler's diarrhea); 1650 mg PO daily (IBS-D); 550 mg PO BID (hepatic encephalopathy prevention)" },
+    "pediatric": { "min_age_year": 12, "notes": "Traveler's diarrhea ≥12 years: 200 mg TID ×3 days" },
+    "weight_basis": "fixed",
+    "renal": [
+      { "crcl_min": 0, "crcl_max": 999, "dose": "No adjustment (minimal systemic absorption)" }
+    ],
+    "hepatic": "Use with caution in Child-Pugh C (systemic exposure may increase)",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=rifaximin",
+    "pregnancy": "C",
+    "notes": "Minimally absorbed — acts in GI lumen. NOT effective for invasive infections. Used for traveler's diarrhea (non-invasive E. coli), H. pylori (limited role), hepatic encephalopathy, IBS-D."
+  },
+  "dexamethasone": {
+    "slug": "dexamethasone",
+    "generic": "Dexamethasone",
+    "brand": ["Decadron"],
+    "class": "Corticosteroid (adjunctive anti-inflammatory)",
+    "route": ["IV", "PO"],
+    "adult": { "default": "0.15 mg/kg IV q6h ×4 days (bacterial meningitis adjunct; start with or before first antibiotic dose)" },
+    "pediatric": { "mg_per_kg_per_dose": 0.15, "frequency": "q6h", "max_per_dose_mg": 10, "min_age_months": 0, "notes": "0.15 mg/kg IV q6h ×4 days for H. flu type b meningitis (strongest evidence)" },
+    "weight_basis": "tbw",
+    "renal": [{ "crcl_min": 0, "crcl_max": 999, "dose": "No adjustment" }],
+    "hepatic": "No adjustment",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=dexamethasone",
+    "pregnancy": "C",
+    "notes": "Adjunct for bacterial meningitis — reduces mortality and hearing loss (strongest evidence for H. flu type b and pneumococcal meningitis). Start before or with first antibiotic dose. Do NOT use with vancomycin (reduces CNS penetration). NOT recommended for Listeria meningitis."
+  },
+  "prednisone": {
+    "slug": "prednisone",
+    "generic": "Prednisone",
+    "brand": ["Deltasone"],
+    "class": "Corticosteroid (systemic)",
+    "route": ["PO"],
+    "adult": { "default": "40-60 mg PO daily ×5-21 days (PCP adjunct: 40 mg BID ×5 days then taper; ARDS/severe infection adjunct: variable)" },
+    "pediatric": { "mg_per_kg_per_dose": 1, "frequency": "daily", "max_per_dose_mg": 40, "notes": "PCP: 1 mg/kg BID ×5 days then taper" },
+    "weight_basis": "tbw",
+    "renal": [{ "crcl_min": 0, "crcl_max": 999, "dose": "No adjustment" }],
+    "hepatic": "Convert to prednisolone in significant liver disease",
+    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=prednisone",
+    "pregnancy": "C",
+    "notes": "Adjunct for severe PCP (PaO2 <70 mmHg or A-a gradient >35 mmHg) — reduces mortality. Start before or with TMP-SMX. Taper after initial 5 days. Also used for shingles pain prevention (PHN)."
+  },
+  "incision-drainage": {
+    "slug": "incision-drainage",
+    "generic": "Incision & Drainage (procedure)",
+    "brand": [],
+    "class": "Surgical procedure",
+    "route": ["Procedural"],
+    "adult": { "default": "Primary treatment for purulent skin and soft tissue infections (abscess, furuncle, carbuncle). Antibiotics are adjunctive." },
+    "pediatric": { "notes": "Same indication as adults; procedural technique may vary by age." },
+    "weight_basis": "fixed",
+    "renal": [{ "crcl_min": 0, "crcl_max": 999, "dose": "N/A — procedural" }],
+    "hepatic": "N/A",
+    "label_url": "https://www.ncbi.nlm.nih.gov/books/NBK537240/",
+    "pregnancy": "N/A",
+    "notes": "I&D alone is sufficient for mild purulent SSTIs in immunocompetent patients. Systemic antibiotics reserved for SIRS, immunocompromise, extensive involvement, or MRSA risk. This is a procedure, not a pharmacological agent — no dose calculator applies."
+  },
+  "bezlotoxumab": {
+    "slug": "bezlotoxumab",
+    "generic": "Bezlotoxumab",
+    "brand": ["Zinplava"],
+    "class": "Monoclonal antibody — anti-C. difficile toxin B",
+    "route": ["IV"],
+    "adult": { "default": "10 mg/kg IV single dose (infused over 60 minutes; administered during CDI antibiotic treatment)" },
+    "pediatric": { "notes": "Not approved in patients <18 years" },
+    "weight_basis": "tbw",
+    "renal": [
+      { "crcl_min": 0, "crcl_max": 999, "dose": "No adjustment" }
+    ],
+    "hepatic": "No adjustment",
+    "label_url": "https://www.fda.gov/drugs/drug-approvals-and-databases/drug-trials-snapshots-zinplava",
+    "pregnancy": "Not assigned",
+    "notes": "NOT an antibiotic — does not treat active CDI. Adjunct to reduce CDI recurrence in high-risk patients (age ≥65, immunocompromised, severe CDI, prior CDI episode). Must be given during a course of CDI antibiotic therapy. Heart failure risk — use cautiously in HF."
   }
 }

@@ -643,26 +643,33 @@
     "syndrome": null,
     "line": "first",
     "regimen": [
-      { "drugs": ["piperacillin-tazobactam"], "dose_text": "Pip-tazo 4.5 g IV q6h (extended infusion)" },
+      { "drugs": ["piperacillin-tazobactam"], "dose_text": "Pip-tazo 4.5 g IV q6h (extended infusion over 4h preferred)" },
       { "drugs": ["cefepime"], "dose_text": "Cefepime 2 g IV q8h" },
-      { "drugs": ["meropenem"], "dose_text": "Meropenem 1-2 g IV q8h" },
-      { "drugs": ["ceftazidime"], "dose_text": "Ceftazidime 2 g IV q8h" }
+      { "drugs": ["ceftazidime"], "dose_text": "Ceftazidime 2 g IV q8h" },
+      { "drugs": ["aztreonam"], "dose_text": "Aztreonam 2 g IV q8h (preferred for IgE-mediated PCN/cephalosporin allergy)" },
+      { "drugs": ["meropenem"], "dose_text": "Meropenem 1-2 g IV q8h (reserve; use only when other agents not viable)" },
+      { "drugs": ["ciprofloxacin"], "dose_text": "Ciprofloxacin 400 mg IV q8h or 750 mg PO BID (most active FQ vs. Pseudomonas)" },
+      { "drugs": ["tobramycin"], "dose_text": "Tobramycin 5-7 mg/kg IV q24h (UTI or combination; not monotherapy for systemic)" },
+      { "drugs": ["amikacin"], "dose_text": "Amikacin 15-20 mg/kg IV q24h (UTI or combination; reserve for tobramycin-resistant)" }
     ],
-    "duration": "Source-dependent",
-    "source": "IDSA AMR 2024 v3.0"
+    "duration": "UTI: 7d; bacteremia: 14d; HAP/VAP: 7-8d; osteomyelitis: 6+ weeks",
+    "source": "IDSA AMR Guidance 2022/2024",
+    "caveat": "Monotherapy preferred for susceptible strains (non-neutropenic). Reserve carbapenems to preserve activity. Aminoglycosides as monotherapy only for UTI or combination adjunct."
   },
   "pseudomonas-dtr": {
-    "title": "DTR Pseudomonas",
+    "title": "DTR-Pseudomonas (difficult-to-treat resistant)",
     "syndrome": null,
     "line": "first",
     "regimen": [
-      { "drugs": ["ceftolozane-tazobactam"], "dose_text": "Ceftolozane-tazobactam 1.5-3 g IV q8h (preferred)" },
+      { "drugs": ["ceftolozane-tazobactam"], "dose_text": "Ceftolozane-tazobactam 1.5-3 g IV q8h (preferred if susceptible)" },
       { "drugs": ["ceftazidime-avibactam"], "dose_text": "Ceftazidime-avibactam 2.5 g IV q8h" },
       { "drugs": ["imipenem-relebactam"], "dose_text": "Imipenem-relebactam 1.25 g IV q6h" },
-      { "drugs": ["cefiderocol"], "dose_text": "Cefiderocol 2 g IV q8h" }
+      { "drugs": ["aztreonam-avibactam"], "dose_text": "Aztreonam-avibactam 6.5 g IV q8h (MBL-producing strains; NDM, VIM, IMP)" },
+      { "drugs": ["cefiderocol"], "dose_text": "Cefiderocol 2 g IV q8h (pan-DTR, last resort)" }
     ],
-    "duration": "Source-dependent",
-    "source": "IDSA AMR 2024 v3.0"
+    "duration": "Source-dependent; typically 7-14 days",
+    "source": "IDSA AMR Guidance 2022/2024",
+    "caveat": "Aztreonam-avibactam is the agent of choice for MBL-producing DTR-Pseudomonas. Susceptibility testing required before selecting agent."
   },
   "acinetobacter-crab": {
     "title": "CRAB (carbapenem-resistant A. baumannii)",
@@ -800,5 +807,892 @@
     ],
     "duration": "21 days",
     "source": "IDSA Pneumocystis 2018"
+  },
+
+  "mssa-ssti": {
+    "title": "MSSA SSTI — Non-purulent cellulitis",
+    "syndrome": "ssti",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["cephalexin"], "dose_text": "Cephalexin 500 mg PO q6h (mild, outpatient)" },
+      { "drugs": ["dicloxacillin"], "dose_text": "Dicloxacillin 500 mg PO q6h (mild, outpatient; take on empty stomach)" },
+      { "drugs": ["cefazolin"], "dose_text": "Cefazolin 1-2 g IV q8h (moderate-severe, hospitalized)" },
+      { "drugs": ["nafcillin"], "dose_text": "Nafcillin/oxacillin 1-2 g IV q4h (severe, confirmed MSSA)" },
+      { "drugs": ["amoxicillin-clavulanate"], "dose_text": "Amoxicillin-clavulanate 875/125 mg PO BID (oral alternative with broader coverage)" }
+    ],
+    "duration": "5 days (re-evaluate; extend if not improving)",
+    "source": "IDSA SSTI Guidelines 2014",
+    "caveat": "Streptococcal coverage is primary goal for non-purulent cellulitis. For purulent MSSA (abscess with systemic signs): incision & drainage is primary therapy; add dicloxacillin/cephalexin PO or cefazolin/nafcillin IV if systemic signs present."
+  },
+
+  "vrsa-treatment": {
+    "title": "VRSA / VISA treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["linezolid"], "dose_text": "Linezolid 600 mg IV/PO q12h" },
+      { "drugs": ["daptomycin"], "dose_text": "Daptomycin 8-12 mg/kg IV q24h (high-dose; check MIC — cross-resistance possible)" },
+      { "drugs": ["ceftaroline"], "dose_text": "Ceftaroline 600 mg IV q8h (if susceptible — beta-lactam with MRSA activity)" }
+    ],
+    "duration": "4-6 weeks for bacteremia/endocarditis; individualized",
+    "source": "IDSA MRSA Guidelines 2011; UNMC VRSA guidance 2022",
+    "caveat": "VRSA (vancomycin MIC ≥16) and VISA (MIC 4-8): no RCT data. ID consultation mandatory. Combination therapy preferred for serious infection. Quinupristin-dalfopristin 7.5 mg/kg IV q8h is a last-resort option for E. faecium (not faecalis)."
+  },
+
+  "visa-treatment": {
+    "title": "VISA / hVISA treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["daptomycin"], "dose_text": "Daptomycin 8-10 mg/kg IV q24h (preferred; check VISA MIC)" },
+      { "drugs": ["linezolid"], "dose_text": "Linezolid 600 mg IV/PO q12h" },
+      { "drugs": ["ceftaroline"], "dose_text": "Ceftaroline 600 mg IV q8h ± daptomycin (synergy combination)" }
+    ],
+    "duration": "4-6 weeks for bacteremia; source-dependent",
+    "source": "IDSA MRSA 2011; expert consensus",
+    "caveat": "Vancomycin may still be used for hVISA if AUC/MIC targets achievable. Use vancomyzer.com for AUC-based dosing. ID consultation strongly recommended."
+  },
+
+  "cons-line": {
+    "title": "CoNS CLABSI (catheter-related bloodstream infection)",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["vancomycin"], "dose_text": "Vancomycin AUC-targeted (vancomyzer.com) + catheter removal preferred" },
+      { "drugs": ["daptomycin"], "dose_text": "Daptomycin 6 mg/kg IV q24h (catheter removed; non-endocarditis)" },
+      { "drugs": ["linezolid"], "dose_text": "Linezolid 600 mg IV/PO q12h (if vancomycin/daptomycin not suitable)" }
+    ],
+    "duration": "5-7 days (catheter removed, uncomplicated); 10-14 days (catheter retained with antibiotic lock therapy)",
+    "source": "IDSA CLABSI Guidelines 2009",
+    "caveat": "Most CoNS are methicillin-resistant — do NOT use beta-lactams empirically. Catheter removal strongly preferred (20% recurrence if retained). Rule out contamination (two sets). Echo if persistent bacteremia."
+  },
+
+  "spn-cap": {
+    "title": "S. pneumoniae CAP — Targeted (once susceptibilities known)",
+    "syndrome": "cap",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["amoxicillin"], "dose_text": "Amoxicillin 1 g PO q8h (penicillin-susceptible MIC ≤0.06)" },
+      { "drugs": ["penicillin-g"], "dose_text": "Penicillin G 2-4 MU IV q4-6h (penicillin-susceptible; hospitalized)" },
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 1-2 g IV q24h (penicillin-intermediate or resistant; non-meningeal breakpoint ≤1)" },
+      { "drugs": ["levofloxacin"], "dose_text": "Levofloxacin 750 mg IV/PO daily (penicillin-resistant or intolerant)" }
+    ],
+    "duration": "5 days (ATS/IDSA; extend if bacteremic)",
+    "source": "ATS/IDSA CAP 2019",
+    "caveat": "Macrolide resistance 30-40% in US — avoid azithromycin as targeted therapy unless susceptibility confirmed. Meningeal breakpoints are stricter (penicillin MIC ≤0.06 for meningitis)."
+  },
+
+  "spn-meningitis": {
+    "title": "S. pneumoniae meningitis — Targeted",
+    "syndrome": "meningitis",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["penicillin-g"], "dose_text": "Penicillin G 4 MU IV q4h (penicillin MIC ≤0.06 — susceptible)" },
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 2 g IV q12h (penicillin-intermediate/resistant; ceftriaxone MIC ≤0.5)" },
+      { "drugs": ["vancomycin", "ceftriaxone"], "dose_text": "Vancomycin + ceftriaxone 2 g IV q12h (ceftriaxone MIC >1 or susceptibility unknown)" }
+    ],
+    "duration": "10-14 days",
+    "source": "IDSA Meningitis Guidelines 2004",
+    "caveat": "Dexamethasone 0.15 mg/kg IV q6h ×4 days — start with or before first antibiotic dose to reduce mortality and hearing loss. Do NOT use dexamethasone with vancomycin (reduces CNS penetration)."
+  },
+
+  "gas-nec-fasc": {
+    "title": "GAS necrotizing fasciitis / Streptococcal TSS",
+    "syndrome": "ssti",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["penicillin-g", "clindamycin"], "dose_text": "Penicillin G 4 MU IV q4h PLUS clindamycin 900 mg IV q8h (combination required)" },
+      { "drugs": ["vancomycin", "clindamycin"], "dose_text": "Vancomycin 15-20 mg/kg IV q8-12h PLUS clindamycin 900 mg IV q8h (PCN allergy)" }
+    ],
+    "duration": "Until clinically improved/afebrile; typically 10-14+ days guided by surgical findings",
+    "source": "IDSA SSTI Guidelines 2014; CDC GAS guidance 2023",
+    "caveat": "SURGICAL DEBRIDEMENT IS PRIMARY THERAPY — emergent, aggressive. Clindamycin suppresses exotoxin synthesis (Eagle effect). IVIG 1-2 g/kg may be considered for streptococcal TSS. Do NOT delay surgery for antibiotics."
+  },
+
+  "gbs-treatment": {
+    "title": "Group B Streptococcus (GBS) bacteremia / meningitis",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["penicillin-g"], "dose_text": "Penicillin G 18-24 MU/day IV continuous or divided q4-6h (adults)" },
+      { "drugs": ["ampicillin"], "dose_text": "Ampicillin 2 g IV q4h (equivalent to penicillin G)" },
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 2 g IV q24h (adults; PCN allergy — non-anaphylactic)" },
+      { "drugs": ["vancomycin"], "dose_text": "Vancomycin AUC-targeted (PCN anaphylaxis history)" }
+    ],
+    "duration": "Bacteremia: 10-14 days; Meningitis: 14-21 days; Endocarditis: 4-6 weeks. Neonatal bacteremia: 10-14 days; neonatal meningitis: ≥14 days",
+    "source": "AAP/AAFP GBS guidance 2020",
+    "caveat": "Neonatal GBS: use ampicillin + gentamicin empirically, then de-escalate to penicillin G monotherapy once GBS confirmed. Adult GBS is serious — endocarditis risk; echo if bacteremia. All strains susceptible to beta-lactams."
+  },
+
+  "vgs-ie": {
+    "title": "Viridans streptococci infective endocarditis",
+    "syndrome": "ie",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["penicillin-g"], "dose_text": "Penicillin G 12-18 MU/day IV continuous or divided q4-6h ×4 weeks (PCN-susceptible MIC ≤0.125)" },
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 2 g IV/IM q24h ×4 weeks (equivalent to penicillin G; easier administration)" },
+      { "drugs": ["vancomycin"], "dose_text": "Vancomycin AUC-targeted ×4-6 weeks (PCN allergy)" },
+      { "drugs": ["ampicillin", "gentamicin"], "dose_text": "Ampicillin 12-20 g/day IV + gentamicin 3 mg/kg/day ×4 weeks (PCN-resistant VGS MIC >0.5)" }
+    ],
+    "duration": "4 weeks native valve; 6 weeks prosthetic valve. 2-week regimen (PCN + gentamicin) for uncomplicated native valve PCN-susceptible",
+    "source": "AHA/IDSA IE Guidelines 2015",
+    "caveat": "PCN-intermediate (MIC 0.125-0.5): PCN or ceftriaxone ×4 weeks + gentamicin ×first 2 weeks. Gentamicin target: peak 3-4 mcg/mL, trough <1 mcg/mL. Echo (TEE preferred) to characterize vegetation."
+  },
+
+  "s-milleri-abscess": {
+    "title": "Streptococcus anginosus group (milleri) abscess",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["penicillin-g"], "dose_text": "Penicillin G 12-18 MU/day IV divided q4-6h (induction — confirmed susceptible)" },
+      { "drugs": ["amoxicillin-clavulanate"], "dose_text": "Amoxicillin-clavulanate 875/125 mg PO BID (step-down or mild; covers polymicrobial/anaerobic co-infection)" },
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 2 g IV q24h + metronidazole 500 mg IV q8h (if anaerobic co-infection suspected)" },
+      { "drugs": ["clindamycin"], "dose_text": "Clindamycin 600 mg IV q8h (PCN allergy)" }
+    ],
+    "duration": "4-6 weeks deep-seated abscess (brain, liver, lung); 2-4 weeks simpler abscesses",
+    "source": "IDSA SSTI 2014; expert consensus",
+    "caveat": "Drainage is critical — antibiotics alone often insufficient. Often polymicrobial with anaerobes. All S. anginosus reliably susceptible to penicillin, amox-clav, ceftriaxone, and vancomycin."
+  },
+
+  "efaecalis-uti": {
+    "title": "Enterococcus faecalis UTI",
+    "syndrome": "uti",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["nitrofurantoin"], "dose_text": "Nitrofurantoin macrocrystals 100 mg PO q12h ×5-7 days (uncomplicated; susceptible)" },
+      { "drugs": ["amoxicillin"], "dose_text": "Amoxicillin 500 mg PO q8h ×5-7 days (uncomplicated)" },
+      { "drugs": ["fosfomycin"], "dose_text": "Fosfomycin 3 g PO single dose (uncomplicated cystitis)" },
+      { "drugs": ["ampicillin"], "dose_text": "Ampicillin 2 g IV q6h ×7-14 days (complicated/catheter-associated)" }
+    ],
+    "duration": "5-7 days uncomplicated; 7-14 days complicated",
+    "source": "IDSA UTI Guidelines 2010/2025",
+    "caveat": "Enterococcus is intrinsically resistant to cephalosporins — do not use ceftriaxone or cephalexin to treat enterococcal UTI. Confirm susceptibility (ampicillin-susceptible E. faecalis vs. VRE)."
+  },
+
+  "efaecalis-ie": {
+    "title": "Enterococcus faecalis infective endocarditis",
+    "syndrome": "ie",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ampicillin", "ceftriaxone"], "dose_text": "Ampicillin 2 g IV q4h PLUS ceftriaxone 2 g IV q12h ×6 weeks (preferred — less nephrotoxicity than aminoglycoside regimen)" },
+      { "drugs": ["ampicillin", "gentamicin"], "dose_text": "Ampicillin 12-20 g/day IV divided q4h PLUS gentamicin 3 mg/kg/day IV q8h ×4-6 weeks (alternative)" },
+      { "drugs": ["vancomycin", "gentamicin"], "dose_text": "Vancomycin + gentamicin (PCN allergy; VRE: substitute daptomycin for vancomycin)" }
+    ],
+    "duration": "4 weeks (symptoms <3 months, native valve); 6 weeks (symptoms >3 months, prosthetic valve, relapse)",
+    "source": "AHA/IDSA IE 2015; meta-analysis 2022",
+    "caveat": "Ampicillin + ceftriaxone increasingly preferred over aminoglycoside regimen (equal efficacy, less nephrotoxicity). Gentamicin target: peak 3-4 mcg/mL, trough <1 mcg/mL. Cephalosporins alone do NOT kill enterococci — they enhance ampicillin binding (saturation of PBPs)."
+  },
+
+  "efaecium-treatment": {
+    "title": "Enterococcus faecium (VRE) bacteremia / serious infection",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["linezolid"], "dose_text": "Linezolid 600 mg IV/PO q12h (FDA-approved for VRE)" },
+      { "drugs": ["daptomycin"], "dose_text": "Daptomycin 8-12 mg/kg IV q24h (high-dose; check MIC — standard 6 mg/kg may be insufficient)" },
+      { "drugs": ["tigecycline"], "dose_text": "Tigecycline 100 mg IV load then 50 mg IV q12h (bacteriostatic; caution in bacteremia — inferior outcomes)" }
+    ],
+    "duration": "Bacteremia: ≥14 days; Endocarditis: 6 weeks",
+    "source": "IDSA MRSA 2011; expert consensus 2023",
+    "caveat": "E. faecium more resistant than faecalis. Daptomycin combination (+ ampicillin or ceftaroline) may improve bacteremia outcomes. Linezolid toxicity (thrombocytopenia, neuropathy) with prolonged use — monitor CBC. For VRE UTI: nitrofurantoin (if susceptible) or fosfomycin."
+  },
+
+  "listeria-meningitis": {
+    "title": "Listeria monocytogenes meningitis",
+    "syndrome": "meningitis",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ampicillin", "gentamicin"], "dose_text": "Ampicillin 2 g IV q4h PLUS gentamicin 1.7 mg/kg IV q8h ×first 7 days (synergistic induction)" },
+      { "drugs": ["ampicillin"], "dose_text": "Ampicillin 2 g IV q4h monotherapy ×21 days (if gentamicin nephrotoxicity concern)" },
+      { "drugs": ["trimethoprim-sulfamethoxazole"], "dose_text": "TMP-SMX 5 mg/kg (trimethoprim component) IV/PO q6h ×21 days (PCN allergy — first alternative)" },
+      { "drugs": ["meropenem"], "dose_text": "Meropenem 2 g IV q8h ×21 days (PCN allergy, severe)" }
+    ],
+    "duration": "Minimum 21 days",
+    "source": "IDSA Meningitis 2004; Hopkins ABX Guide",
+    "caveat": "CEPHALOSPORINS HAVE NO LISTERIA ACTIVITY — never use as empiric monotherapy in at-risk patients (>50 years, immunocompromised, pregnant). Dexamethasone NOT recommended for Listeria meningitis (associated with worse outcomes). Must be in empiric coverage for at-risk groups."
+  },
+
+  "coryne-true-infection": {
+    "title": "Corynebacterium true infection (non-JK)",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["penicillin-g"], "dose_text": "Penicillin G 12-18 MU/day IV divided q4-6h ×10-14 days (susceptible strains)" },
+      { "drugs": ["ampicillin"], "dose_text": "Ampicillin 2 g IV q4h (alternative; C. pseudodiphtheriticum, C. striatum)" },
+      { "drugs": ["vancomycin"], "dose_text": "Vancomycin AUC-targeted (C. jeikeium/JK — multidrug-resistant species; vancomycin is DOC)" }
+    ],
+    "duration": "10-14 days; 14 days for diphtheria",
+    "source": "Expert consensus; CDC Diphtheria guidance",
+    "caveat": "C. jeikeium (JK) is highly MDR — vancomycin is drug of choice. For C. diphtheriae: diphtheria antitoxin (DAT) is cornerstone of therapy — request from CDC; erythromycin or penicillin G used to eliminate carriage. Always obtain susceptibilities on clinical isolates."
+  },
+
+  "b-cereus-treatment": {
+    "title": "Bacillus cereus serious infection",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["vancomycin"], "dose_text": "Vancomycin AUC-targeted (drug of choice — intrinsic beta-lactam resistance)" },
+      { "drugs": ["clindamycin"], "dose_text": "Clindamycin 600-900 mg IV q8h" },
+      { "drugs": ["ciprofloxacin"], "dose_text": "Ciprofloxacin 400 mg IV q12h (alternative for non-CNS infection)" },
+      { "drugs": ["linezolid"], "dose_text": "Linezolid 600 mg IV/PO q12h" }
+    ],
+    "duration": "7-14 days for serious infection; clinical guidance",
+    "source": "Expert consensus; Medscape B. cereus treatment",
+    "caveat": "B. cereus is intrinsically resistant to penicillin, amoxicillin, and most cephalosporins. For food poisoning/gastroenteritis: supportive care only (self-limited). Serious infections (bacteremia, endophthalmitis, meningitis) occur in immunocompromised or IV drug users. Ophthalmology consult mandatory for endophthalmitis."
+  },
+
+  "anthrax-treatment": {
+    "title": "Bacillus anthracis (anthrax)",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ciprofloxacin"], "dose_text": "Ciprofloxacin 400 mg IV q12h (systemic) or 500 mg PO q12h (cutaneous/PEP)" },
+      { "drugs": ["doxycycline"], "dose_text": "Doxycycline 100 mg IV/PO q12h (cutaneous/PEP alternative; poor CNS penetration — not for meningitis)" },
+      { "drugs": ["ciprofloxacin", "clindamycin"], "dose_text": "Ciprofloxacin 400 mg IV q12h + clindamycin 900 mg IV q8h (inhalational/systemic — combination required; clindamycin suppresses toxin synthesis)" }
+    ],
+    "duration": "Cutaneous natural acquisition: 7-10 days; bioterrorism PEP: 60 days; inhalational systemic: 60 days total (IV then step to PO)",
+    "source": "CDC MMWR 2023 Anthrax Guidelines",
+    "caveat": "Add anthrax antitoxin (obiltoxaximab or raxibacumab) for systemic/inhalational disease. Use cipro not doxy for CNS involvement. Notify public health immediately. Combination therapy for systemic disease. Anthrax vaccine if PEP scenario."
+  },
+
+  "meningococcus-treatment": {
+    "title": "Neisseria meningitidis meningitis",
+    "syndrome": "meningitis",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 2 g IV q12h ×7 days" },
+      { "drugs": ["penicillin-g"], "dose_text": "Penicillin G 4 MU IV q4h ×7 days (confirmed penicillin-susceptible)" },
+      { "drugs": ["ampicillin"], "dose_text": "Ampicillin 2 g IV q4h (alternative to penicillin G; same spectrum)" }
+    ],
+    "duration": "7 days",
+    "source": "IDSA Bacterial Meningitis 2004; CDC meningococcal guidance",
+    "caveat": "Notify public health. Close contacts require chemoprophylaxis: ciprofloxacin 500 mg PO single dose (check local FQ resistance) or rifampin 600 mg PO q12h ×2 days. Dexamethasone benefit limited for meningococcal disease but acceptable empirically. Isolation precautions until 24h of antibiotics."
+  },
+
+  "gc-disseminated": {
+    "title": "Disseminated gonococcal infection (DGI)",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 1 g IV/IM q24h; step-down to oral cefixime 400 mg PO BID once improved and susceptible" },
+      { "drugs": ["azithromycin"], "dose_text": "Azithromycin 1 g PO/IV daily (alternative if cephalosporin not feasible)" }
+    ],
+    "duration": "Arthritis-dermatitis: ≥7 days total; Meningitis: ≥2 weeks; Endocarditis: ≥4 weeks",
+    "source": "CDC STI Treatment Guidelines 2021",
+    "caveat": "Higher ceftriaxone dose (1 g) vs. uncomplicated gonorrhea (500 mg). Always test/treat for chlamydia co-infection. Oral step-down only after improvement and susceptibility confirmed. Test-of-cure recommended."
+  },
+
+  "moraxella-respiratory": {
+    "title": "Moraxella catarrhalis respiratory (AECOPD/sinusitis)",
+    "syndrome": "cap",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["amoxicillin-clavulanate"], "dose_text": "Amoxicillin-clavulanate 875/125 mg PO BID ×5-7 days" },
+      { "drugs": ["azithromycin"], "dose_text": "Azithromycin 500 mg PO day 1 then 250 mg days 2-5" },
+      { "drugs": ["doxycycline"], "dose_text": "Doxycycline 100 mg PO BID ×5-7 days" },
+      { "drugs": ["levofloxacin"], "dose_text": "Levofloxacin 750 mg PO daily ×5 days (structural lung disease or recent antibiotic use)" }
+    ],
+    "duration": "5 days for AECOPD",
+    "source": "GOLD AECOPD guidelines; IDSA CAP 2019",
+    "caveat": "Nearly 100% of M. catarrhalis produce beta-lactamase — amoxicillin alone is ineffective. Virtually all strains susceptible to amox-clav, azithromycin, doxycycline, and oral cephalosporins."
+  },
+
+  "hflu-respiratory": {
+    "title": "Haemophilus influenzae respiratory (AECOPD/pneumonia)",
+    "syndrome": "cap",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["amoxicillin-clavulanate"], "dose_text": "Amoxicillin-clavulanate 875/125 mg PO BID ×5-7 days (covers beta-lactamase producers)" },
+      { "drugs": ["azithromycin"], "dose_text": "Azithromycin 500 mg PO then 250 mg ×4 days" },
+      { "drugs": ["doxycycline"], "dose_text": "Doxycycline 100 mg PO BID ×5 days" },
+      { "drugs": ["ampicillin-sulbactam"], "dose_text": "Ampicillin-sulbactam 3 g IV q6h (hospitalized)" },
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 1-2 g IV q24h (hospitalized)" }
+    ],
+    "duration": "5-7 days",
+    "source": "IDSA CAP 2019; GOLD 2023",
+    "caveat": "~40-50% of H. influenzae produce beta-lactamase — use amox-clav empirically unless beta-lactamase negative confirmed. Non-typeable H. influenzae most common in AECOPD. Fluoroquinolones reserved for severe disease or prior antibiotic exposure."
+  },
+
+  "hflu-meningitis": {
+    "title": "Haemophilus influenzae meningitis",
+    "syndrome": "meningitis",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 2 g IV q12h (adults); 100 mg/kg/day IV q12h (children, max 4 g/day)" },
+      { "drugs": ["ampicillin"], "dose_text": "Ampicillin 2 g IV q4h (adults; only if beta-lactamase NEGATIVE confirmed)" },
+      { "drugs": ["meropenem"], "dose_text": "Meropenem 2 g IV q8h (beta-lactam allergy or resistant strains)" }
+    ],
+    "duration": "7-10 days",
+    "source": "IDSA Meningitis Guidelines 2004",
+    "caveat": "Dexamethasone 0.15 mg/kg IV q6h ×4 days — strong evidence for H. flu type b meningitis in children (reduces hearing loss). Do NOT use ampicillin empirically (up to 80% global resistance). Chemoprophylaxis for close contacts: rifampin 20 mg/kg/day (max 600 mg) PO q24h ×4 days."
+  },
+
+  "ecoli-uti": {
+    "title": "E. coli uncomplicated cystitis",
+    "syndrome": "uti",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["nitrofurantoin"], "dose_text": "Nitrofurantoin macrocrystals 100 mg PO BID ×5 days" },
+      { "drugs": ["trimethoprim-sulfamethoxazole"], "dose_text": "TMP-SMX DS (160/800 mg) PO BID ×3 days (if local resistance <20%)" },
+      { "drugs": ["fosfomycin"], "dose_text": "Fosfomycin 3 g PO single dose" },
+      { "drugs": ["pivmecillinam"], "dose_text": "Pivmecillinam 400 mg PO BID ×3-5 days (where available)" }
+    ],
+    "duration": "3-5 days (per agent)",
+    "source": "IDSA/ESCMID UTI Guidelines 2010; IDSA 2025 update",
+    "caveat": "Fluoroquinolones not first-line for uncomplicated cystitis (stewardship). Avoid nitrofurantoin in complicated UTI (poor tissue penetration). Fosfomycin NOT for pyelonephritis. Check local resistance before using TMP-SMX (aim <20%)."
+  },
+
+  "ecoli-pyelo": {
+    "title": "E. coli pyelonephritis",
+    "syndrome": "uti",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ciprofloxacin"], "dose_text": "Ciprofloxacin 500 mg PO BID ×7 days (outpatient, susceptible)" },
+      { "drugs": ["levofloxacin"], "dose_text": "Levofloxacin 750 mg PO daily ×5 days (outpatient alternative)" },
+      { "drugs": ["trimethoprim-sulfamethoxazole"], "dose_text": "TMP-SMX DS PO BID ×14 days (if susceptible; inferior to FQ)" },
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 1-2 g IV q24h (hospitalized)" },
+      { "drugs": ["ertapenem"], "dose_text": "Ertapenem 1 g IV q24h (ESBL suspected/confirmed)" }
+    ],
+    "duration": "Outpatient: 5-7 days (FQ); 14 days (TMP-SMX). Hospitalized: 7-14 days total",
+    "source": "IDSA/ESCMID 2010; IDSA AMR 2022/2024",
+    "caveat": "Avoid nitrofurantoin and fosfomycin (insufficient tissue/serum levels). If ESBL confirmed: prefer carbapenem over pip-tazo (MERINO trial — higher mortality with pip-tazo for ESBL bacteremia). Obtain urine culture before starting."
+  },
+
+  "ecoli-bsi": {
+    "title": "E. coli bacteremia / BSI",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 1-2 g IV q24h (susceptible strains; source controlled)" },
+      { "drugs": ["cefazolin"], "dose_text": "Cefazolin 2 g IV q8h (susceptible; uncomplicated source)" },
+      { "drugs": ["meropenem"], "dose_text": "Meropenem 1-2 g IV q8h (ESBL-producing E. coli)" },
+      { "drugs": ["ertapenem"], "dose_text": "Ertapenem 1 g IV q24h (ESBL; stable, source controlled)" }
+    ],
+    "duration": "14 days uncomplicated BSI; 4-6 weeks endovascular infection",
+    "source": "IDSA AMR Guidance 2022; Stanford GNR guide 2025",
+    "caveat": "Source control essential. Pip-tazo NOT recommended for ESBL-E bacteremia (MERINO trial). Oral step-down to ciprofloxacin or TMP-SMX feasible in stable patients. Follow-up blood cultures at 48-72h."
+  },
+
+  "kpn-treatment": {
+    "title": "Klebsiella pneumoniae (susceptible) treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 1-2 g IV q24h (bacteremia, pneumonia)" },
+      { "drugs": ["cefazolin"], "dose_text": "Cefazolin 2 g IV q8h (susceptible bacteremia, step-down candidate)" },
+      { "drugs": ["piperacillin-tazobactam"], "dose_text": "Piperacillin-tazobactam 4.5 g IV q6h (broad-spectrum empiric)" },
+      { "drugs": ["ciprofloxacin"], "dose_text": "Ciprofloxacin 500 mg PO BID (oral step-down; if susceptible)" }
+    ],
+    "duration": "UTI: 7-14 days; Bacteremia/CAP: 7-14 days; Liver abscess: 4-6 weeks",
+    "source": "IDSA AMR 2022/2024; Stanford GNR guide 2025",
+    "caveat": "K. pneumoniae intrinsically resistant to ampicillin. Always check for ESBL or KPC production — if present, treat as resistant (see IDSA AMR guidance). KPC-producing K. pneumoniae: ceftazidime-avibactam preferred."
+  },
+
+  "ampc-treatment": {
+    "title": "AmpC-producing Enterobacteriaceae (Enterobacter, Citrobacter freundii, Serratia, Morganella, Providencia)",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["cefepime"], "dose_text": "Cefepime 2 g IV q8h (preferred for Enterobacter cloacae, K. aerogenes, C. freundii — AmpC-stable)" },
+      { "drugs": ["meropenem"], "dose_text": "Meropenem 1-2 g IV q8h (invasive infections; Enterobacter with high inoculum)" },
+      { "drugs": ["ertapenem"], "dose_text": "Ertapenem 1 g IV q24h (stable, non-Pseudomonas infections)" },
+      { "drugs": ["ciprofloxacin"], "dose_text": "Ciprofloxacin 500 mg PO BID / 400 mg IV q12h (oral step-down; if susceptible — Serratia, Morganella)" }
+    ],
+    "duration": "Bacteremia 14 days; UTI 5-7 days; Pneumonia 7 days",
+    "source": "IDSA AmpC Guidance 2022 (CID 2022;74:2089)",
+    "caveat": "DO NOT use ceftriaxone or 3rd-gen cephalosporins for invasive E. cloacae, C. freundii, or K. aerogenes — AmpC derepression causes clinical treatment failure even when initially susceptible in vitro. Pip-tazo also NOT recommended for serious AmpC infections."
+  },
+
+  "proteus-uti": {
+    "title": "Proteus mirabilis UTI",
+    "syndrome": "uti",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["trimethoprim-sulfamethoxazole"], "dose_text": "TMP-SMX DS PO BID ×3 days (women, uncomplicated) or ×7 days (men, complicated)" },
+      { "drugs": ["ciprofloxacin"], "dose_text": "Ciprofloxacin 250 mg PO BID ×3 days (women) or 500 mg BID ×7-14 days (complicated)" },
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 1-2 g IV q24h (hospitalized; pyelonephritis)" },
+      { "drugs": ["ampicillin-sulbactam"], "dose_text": "Ampicillin-sulbactam 3 g IV q6h (if susceptible)" }
+    ],
+    "duration": "3 days uncomplicated women; 7-14 days complicated/pyelonephritis",
+    "source": "IDSA UTI Guidelines 2010/2025; Hopkins ABX Guide",
+    "caveat": "P. mirabilis intrinsically RESISTANT to nitrofurantoin and colistin — do NOT use. Produces urease → alkaline urine → struvite stones; complete treatment of stone-forming UTIs. Ampicillin resistance variable (10-20%)."
+  },
+
+  "nts-treatment": {
+    "title": "Salmonella non-typhi (NTS) gastroenteritis and bacteremia",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ciprofloxacin"], "dose_text": "Ciprofloxacin 500 mg PO BID ×5-7 days (bacteremia/high-risk; check FQ susceptibility)" },
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 2 g IV q24h ×7-14 days (bacteremia; preferred over FQ if resistance suspected)" },
+      { "drugs": ["azithromycin"], "dose_text": "Azithromycin 500 mg PO daily ×3-5 days (FQ-resistant NTS gastroenteritis)" }
+    ],
+    "duration": "Gastroenteritis (when treated): 3-5 days; Bacteremia: 10-14 days; Focal infection (osteo): 4-6 weeks",
+    "source": "IDSA Infectious Diarrhea 2017",
+    "caveat": "Antibiotics generally NOT indicated for uncomplicated immunocompetent NTS gastroenteritis (may prolong carriage). Treat if: age <12 months or >65 years, severe illness, HIV/immunocompromised, prosthetic hardware, hemoglobinopathy, sickle cell disease. Fluoroquinolone resistance increasing globally."
+  },
+
+  "typhoid-treatment": {
+    "title": "Salmonella typhi — typhoid fever",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["azithromycin"], "dose_text": "Azithromycin 1 g PO daily ×5-7 days (uncomplicated; preferred empiric — avoids FQ resistance)" },
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 2 g IV q24h ×10-14 days (complicated/severe; parenteral)" },
+      { "drugs": ["ciprofloxacin"], "dose_text": "Ciprofloxacin 500-750 mg PO BID or 400 mg IV q12h ×7-10 days (FQ-susceptible confirmed, non-travel from Pakistan/Iraq)" }
+    ],
+    "duration": "Uncomplicated azithromycin: 5-7 days; IV ceftriaxone: 10-14 days",
+    "source": "CDC Typhoid Fever Clinical Guidance 2023; AAFP 2021",
+    "caveat": "Most US typhoid acquired abroad (South Asia). Do NOT use FQ empirically for travel from Pakistan/Iraq (XDR strains resistant to: amp, chloramphenicol, TMP-SMX, cipro, 3rd-gen cephalosporins). XDR: azithromycin ± meropenem. Test-of-cure stool culture recommended."
+  },
+
+  "shigella-treatment": {
+    "title": "Shigella treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["azithromycin"], "dose_text": "Azithromycin 500 mg PO daily ×3 days (preferred empiric — increasing FQ resistance)" },
+      { "drugs": ["ciprofloxacin"], "dose_text": "Ciprofloxacin 500 mg PO BID ×3-5 days (if susceptibility confirmed)" },
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 1-2 g IV q24h ×3-5 days (severe; children hospitalized)" }
+    ],
+    "duration": "3-5 days",
+    "source": "IDSA Infectious Diarrhea 2017; CDC Shigella resistance alert 2023",
+    "caveat": "Treat: S. dysenteriae type 1 (all cases), immunocompromised, HCW, food handlers, or severe illness. FQ AND macrolide resistance increasing — check susceptibilities. Avoid antimotility agents. Report to public health."
+  },
+
+  "campy-treatment": {
+    "title": "Campylobacter treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["azithromycin"], "dose_text": "Azithromycin 500 mg PO daily ×3 days (preferred — ~47% FQ resistance in US)" },
+      { "drugs": ["ciprofloxacin"], "dose_text": "Ciprofloxacin 500 mg PO BID ×3-5 days (only if susceptibility confirmed)" }
+    ],
+    "duration": "3-5 days; 7+ days for bacteremia or immunocompromised",
+    "source": "IDSA Infectious Diarrhea 2017",
+    "caveat": "Most Campylobacter is self-limited in immunocompetent hosts — antibiotics often not required. FQ resistance ~47% in US — azithromycin preferred empirically. Guillain-Barré syndrome is a rare post-infectious sequela."
+  },
+
+  "yersinia-treatment": {
+    "title": "Yersinia enterocolitica (serious infection)",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ciprofloxacin"], "dose_text": "Ciprofloxacin 500 mg PO BID or 400 mg IV q12h ×7-10 days" },
+      { "drugs": ["trimethoprim-sulfamethoxazole"], "dose_text": "TMP-SMX DS PO BID ×7-10 days (alternative)" },
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 2 g IV q24h (bacteremia; severe)" },
+      { "drugs": ["doxycycline"], "dose_text": "Doxycycline 100 mg PO/IV BID (alternative)" }
+    ],
+    "duration": "5-7 days gastroenteritis; 10-14 days bacteremia",
+    "source": "IDSA Infectious Diarrhea 2017",
+    "caveat": "Antibiotics generally NOT recommended for uncomplicated Yersinia gastroenteritis in immunocompetent hosts (self-limited). Treat: bacteremia, immunocompromised, or mesenteric lymphadenitis with sepsis. Y. enterocolitica intrinsically resistant to ampicillin and 1st-gen cephalosporins."
+  },
+
+  "bcc-treatment": {
+    "title": "Burkholderia cepacia complex (CF exacerbation)",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["meropenem", "trimethoprim-sulfamethoxazole"], "dose_text": "Meropenem 2 g IV q8h PLUS TMP-SMX 15-20 mg/kg/day (trimethoprim) IV divided q6-8h — combination required" },
+      { "drugs": ["ceftazidime"], "dose_text": "Ceftazidime 2 g IV q8h (if susceptible; alternative to meropenem)" },
+      { "drugs": ["minocycline"], "dose_text": "Minocycline 100 mg IV/PO BID (combination component or alternative)" }
+    ],
+    "duration": "14-21 days for pulmonary exacerbation",
+    "source": "Hopkins ABX Guide; Cochrane review 2020",
+    "caveat": "Intrinsically resistant to aminoglycosides, polymyxins, and many beta-lactams. Combination therapy required — synergy between TMP-SMX and carbapenems. Susceptibility testing essential (≥18 genomovars with variable resistance). Cepacia syndrome (necrotizing pneumonia) has high mortality. ID consultation mandatory."
+  },
+
+  "vibrio-treatment": {
+    "title": "Vibrio vulnificus infection",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["doxycycline", "ceftriaxone"], "dose_text": "Doxycycline 100 mg IV/PO BID PLUS ceftriaxone 2 g IV q24h (combination — preferred)" },
+      { "drugs": ["doxycycline", "cefepime"], "dose_text": "Doxycycline 100 mg IV/PO BID PLUS cefepime 2 g IV q12h (alternative combination for severe cases)" },
+      { "drugs": ["ciprofloxacin"], "dose_text": "Ciprofloxacin 400 mg IV q12h (with doxycycline; alternative combination partner)" }
+    ],
+    "duration": "7-14 days; surgical debridement guides duration",
+    "source": "AAFP 2007; PMC5700324; AAC 2017",
+    "caveat": "Medical emergency — mortality >50% with septicemia. Start treatment IMMEDIATELY if raw shellfish exposure (especially oysters) + septic shock or wound infection after seawater. Aggressive surgical debridement for necrotizing wound infections — do not delay."
+  },
+
+  "legionella-treatment": {
+    "title": "Legionella pneumophila pneumonia (targeted)",
+    "syndrome": "cap",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["levofloxacin"], "dose_text": "Levofloxacin 750 mg IV/PO q24h ×7-14 days (severe or hospitalized; preferred)" },
+      { "drugs": ["azithromycin"], "dose_text": "Azithromycin 500 mg IV/PO q24h ×7-14 days (mild-moderate)" },
+      { "drugs": ["moxifloxacin"], "dose_text": "Moxifloxacin 400 mg IV/PO q24h (FQ alternative)" },
+      { "drugs": ["doxycycline"], "dose_text": "Doxycycline 100 mg IV/PO BID (alternative; second-line)" }
+    ],
+    "duration": "Immunocompetent: 7-10 days (mild) to 10-14 days (severe); Immunocompromised: 14-21 days",
+    "source": "ATS/IDSA CAP 2019; Sanford Guide",
+    "caveat": "Fluoroquinolones preferred for severe disease (faster defervescence, shorter LOS vs. macrolides). Beta-lactams ineffective (intracellular pathogen with intrinsic beta-lactamase). Excellent intracellular concentrations achieved with FQ and macrolides. IV-to-PO conversion without dose change for levofloxacin. Notify health department."
+  },
+
+  "mycoplasma-treatment": {
+    "title": "Mycoplasma pneumoniae / Chlamydophila pneumoniae (targeted)",
+    "syndrome": "cap",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["doxycycline"], "dose_text": "Doxycycline 100 mg PO BID ×5-7 days (adults; preferred — coverage for macrolide-resistant Mycoplasma)" },
+      { "drugs": ["azithromycin"], "dose_text": "Azithromycin 500 mg PO day 1 then 250 mg days 2-5 (outpatient; macrolide-susceptible)" },
+      { "drugs": ["levofloxacin"], "dose_text": "Levofloxacin 750 mg IV/PO daily (hospitalized; or macrolide/doxy intolerant)" },
+      { "drugs": ["moxifloxacin"], "dose_text": "Moxifloxacin 400 mg IV/PO daily (hospitalized alternative)" }
+    ],
+    "duration": "5-7 days",
+    "source": "ATS/IDSA CAP 2019; PMC5679202",
+    "caveat": "Beta-lactams have NO activity (no cell wall). Macrolide resistance ~30% in Asia (less common in US currently). If no improvement on azithromycin within 48-72h, switch to doxycycline or fluoroquinolone. Tetracyclines and fluoroquinolones preferred for adults."
+  },
+
+  "lyme-treatment": {
+    "title": "Borrelia burgdorferi — Lyme disease",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["doxycycline"], "dose_text": "Doxycycline 100 mg PO BID ×10 days (early localized EM); ×14-21 days (early disseminated); ×28 days (Lyme arthritis)" },
+      { "drugs": ["amoxicillin"], "dose_text": "Amoxicillin 500 mg PO TID ×14 days (pregnancy, children <8y; early localized/disseminated)" },
+      { "drugs": ["ceftriaxone"], "dose_text": "Ceftriaxone 2 g IV q24h ×14-21 days (neurological Lyme, Lyme meningitis, refractory arthritis, cardiac with AV block)" }
+    ],
+    "duration": "10 days early localized; 14-21 days disseminated/neuro; 28 days arthritis",
+    "source": "IDSA/AAN/ACR Lyme Disease Guidelines 2020",
+    "caveat": "Post-treatment Lyme disease syndrome (PTLDS): prolonged antibiotics NOT recommended. Azithromycin less effective — use only if other agents contraindicated. Do NOT use chronic antibiotic therapy for persistent symptoms. Jarisch-Herxheimer reaction may occur in first 24h."
+  },
+
+  "oral-anaerobes-treatment": {
+    "title": "Oral anaerobes / aspiration pneumonia",
+    "syndrome": "cap",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["ampicillin-sulbactam"], "dose_text": "Ampicillin-sulbactam 3 g IV q6h (hospitalized; covers oral anaerobes + streptococci)" },
+      { "drugs": ["amoxicillin-clavulanate"], "dose_text": "Amoxicillin-clavulanate 875/125 mg PO BID ×5-7 days (outpatient; classic aspiration with gingival disease)" },
+      { "drugs": ["ceftriaxone", "metronidazole"], "dose_text": "Ceftriaxone 2 g IV daily + metronidazole 500 mg IV q8h (lung abscess or empyema present)" },
+      { "drugs": ["clindamycin"], "dose_text": "Clindamycin 300-450 mg PO TID ×5-7 days (outpatient PCN allergy; note C. diff risk)" }
+    ],
+    "duration": "5-7 days uncomplicated aspiration pneumonia; 14-28 days lung abscess",
+    "source": "ATS/IDSA CAP 2019; CHEST 2024",
+    "caveat": "Per IDSA 2019: do NOT add routine anaerobic coverage for aspiration pneumonia unless lung abscess, empyema, or history of witnessed aspiration with gingival disease is present. Clindamycin monotherapy not routinely recommended (C. diff risk, limited evidence)."
+  },
+
+  "bacteroides-treatment": {
+    "title": "Bacteroides fragilis / intraabdominal anaerobic infection",
+    "syndrome": "iai",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["piperacillin-tazobactam"], "dose_text": "Piperacillin-tazobactam 4.5 g IV q6h (moderate-severe, hospital-acquired; monotherapy)" },
+      { "drugs": ["meropenem"], "dose_text": "Meropenem 1 g IV q8h (high-severity; monotherapy)" },
+      { "drugs": ["ceftriaxone", "metronidazole"], "dose_text": "Ceftriaxone 2 g IV q24h + metronidazole 500 mg IV q8h (mild-moderate community-acquired)" },
+      { "drugs": ["ertapenem"], "dose_text": "Ertapenem 1 g IV q24h (mild-moderate; convenient monotherapy)" },
+      { "drugs": ["amoxicillin-clavulanate"], "dose_text": "Amoxicillin-clavulanate 875/125 mg PO BID (oral step-down)" }
+    ],
+    "duration": "4-7 days source-controlled; up to 14 days if inadequate source control",
+    "source": "SIS/IDSA IAI Guidelines 2010; IDSA 2024 update",
+    "caveat": "Source control (drainage, surgery) is essential — antibiotics alone insufficient. Metronidazole NOT needed with pip-tazo or carbapenems (already cover anaerobes). Metronidazole IS needed with ceftazidime/cefepime (cephalosporins lack B. fragilis coverage). Clindamycin resistance increasing (20-30%)."
+  },
+
+  "c-perfringens-treatment": {
+    "title": "Clostridium perfringens — gas gangrene / clostridial myonecrosis",
+    "syndrome": "ssti",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["penicillin-g", "clindamycin"], "dose_text": "Penicillin G 4 MU IV q4h (24 MU/day) PLUS clindamycin 900 mg IV q8h (combination required)" },
+      { "drugs": ["clindamycin", "metronidazole"], "dose_text": "Clindamycin 900 mg IV q8h + metronidazole 500 mg IV q8h (PCN allergy)" },
+      { "drugs": ["meropenem", "clindamycin"], "dose_text": "Meropenem 1-2 g IV q8h + clindamycin 900 mg IV q8h (carbapenem + toxin suppressor; severe PCN allergy)" }
+    ],
+    "duration": "Until clinically resolved; typically 10-14+ days guided by surgery",
+    "source": "IDSA SSTI 2014; Medscape Gas Gangrene",
+    "caveat": "SURGICAL DEBRIDEMENT is primary and life-saving treatment — emergent. Clindamycin suppresses toxin synthesis (alpha-toxin). Hyperbaric oxygen NOT recommended (delays surgery, unproven). C. perfringens does NOT produce beta-lactamase — penicillin G fully active."
+  },
+
+  "actinomyces-treatment": {
+    "title": "Actinomyces treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["penicillin-g"], "dose_text": "Penicillin G 18-24 MU/day IV divided q4-6h ×2-6 weeks (induction until improvement)" },
+      { "drugs": ["amoxicillin"], "dose_text": "Amoxicillin 500-750 mg PO TID (step-down/maintenance; complete 6-12 months total)" },
+      { "drugs": ["amoxicillin-clavulanate"], "dose_text": "Amoxicillin-clavulanate 875/125 mg PO BID (step-down; covers polymicrobial co-infection)" },
+      { "drugs": ["doxycycline"], "dose_text": "Doxycycline 100 mg PO/IV BID ×6-12 months (PCN allergy)" }
+    ],
+    "duration": "6-12 months total (cervicofacial); 12 months (thoracic/abdominal/disseminated)",
+    "source": "PMC4094581; CID 2004; Hopkins ABX Guide",
+    "caveat": "Actinomyces is a gram-positive anaerobic rod — extremely susceptible to penicillin. Surgery often needed for bulky disease. Often co-infects with companion bacteria (Actinobacillus, Fusobacterium) — may need broader initial coverage. Short-course (<6 months) may be successful for cervicofacial disease if surgically addressed."
+  },
+
+  "nocardia-treatment": {
+    "title": "Nocardia treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["trimethoprim-sulfamethoxazole"], "dose_text": "TMP-SMX 1-2 DS tabs (160/800 mg each) PO BID — mild-moderate pulmonary/SSTI" },
+      { "drugs": ["imipenem-cilastatin", "amikacin"], "dose_text": "Imipenem 500 mg IV q6h PLUS amikacin 7.5 mg/kg IV q12h (severe/disseminated/CNS — induction 2-6 weeks; may add TMP-SMX as 3rd agent)" },
+      { "drugs": ["linezolid"], "dose_text": "Linezolid 600 mg IV/PO BID (sulfa intolerant; active against virtually all pathogenic Nocardia)" }
+    ],
+    "duration": "Pulmonary (immunocompetent): 6-12 months; Disseminated/CNS: 12 months; Cutaneous: 3-4 months",
+    "source": "PMC7764858; CDC EID 2023",
+    "caveat": "Species-specific susceptibility varies significantly (N. farcinica most resistant). AST should guide therapy. TMP-SMX monotherapy inadequate for CNS or disseminated disease. Neurosurgical drainage for brain abscess often required."
+  },
+
+  "tb-treatment": {
+    "title": "Tuberculosis (active pulmonary) — RIPE regimen",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["isoniazid", "rifampin", "pyrazinamide", "ethambutol"], "dose_text": "Isoniazid 5 mg/kg (max 300 mg) + rifampin 10 mg/kg (max 600 mg) + pyrazinamide 20-25 mg/kg (max 2 g) + ethambutol 15-20 mg/kg (max 1.6 g) — all PO daily ×2 months (intensive phase)" },
+      { "drugs": ["isoniazid", "rifampin"], "dose_text": "Isoniazid + rifampin (continuation phase ×4 months after RIPE — 6 months total)" }
+    ],
+    "duration": "6 months total (2 months RIPE + 4 months INH+RIF); extend to 9 months for cavitary disease with positive culture at month 2",
+    "source": "ATS/CDC/ERS/IDSA TB Treatment 2022/2025",
+    "caveat": "Always add pyridoxine (B6) 25-50 mg/day to prevent INH neuropathy. Directly Observed Therapy (DOT) strongly recommended. Ethambutol can be stopped if fully susceptible to INH+RIF+PZA. Monitor: LFTs (monthly), vision/color (ethambutol), uric acid (PZA). Drug-susceptibility testing mandatory. HIV co-infection: complex rifamycin-ART interactions — ID/HIV specialist required."
+  },
+
+  "mac-pulmonary": {
+    "title": "NTM / MAC pulmonary disease",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["azithromycin", "rifampin", "ethambutol"], "dose_text": "Azithromycin 250-500 mg PO 3×/week (M/W/F) PLUS rifampin 600 mg PO 3×/week PLUS ethambutol 25 mg/kg 3×/week (nodular/bronchiectatic disease — 3×/week intermittent regimen)" },
+      { "drugs": ["azithromycin", "rifampin", "ethambutol"], "dose_text": "Azithromycin 250-500 mg PO daily PLUS rifampin 600 mg PO daily PLUS ethambutol 15 mg/kg PO daily (fibrocavitary disease — daily regimen required)" },
+      { "drugs": ["clarithromycin", "rifabutin", "ethambutol"], "dose_text": "Clarithromycin 500 mg PO BID (3×/week for nodular; daily for cavitary) PLUS rifabutin 300 mg PO daily PLUS ethambutol 15-25 mg/kg (alternative if azithromycin not tolerated)" }
+    ],
+    "duration": "12 months after culture conversion (sputum negativity); often 18-24 months total",
+    "source": "ATS/ERS/ESCMID/IDSA NTM Guidelines 2020",
+    "caveat": "Treat only when meeting all three criteria: (1) positive sputum culture ≥2 times or 1 BAL culture, (2) radiographic evidence of disease, (3) symptoms with no other explanation. Macrolide MONOTHERAPY forbidden (rapid resistance). Consider amikacin IV or ALIS (Arikayce) for severe fibrocavitary disease."
+  },
+
+  "crypto-meningitis": {
+    "title": "Cryptococcal meningitis",
+    "syndrome": "meningitis",
+    "line": "first",
+    "regimen": [
+      { "drugs": ["liposomal-amphotericin-b", "flucytosine"], "dose_text": "Liposomal amphotericin B 3-4 mg/kg/day IV PLUS flucytosine 25 mg/kg PO q6h ×14 days (induction — IDSA preferred)" },
+      { "drugs": ["amphotericin-b", "flucytosine"], "dose_text": "Amphotericin B deoxycholate 0.7-1 mg/kg/day IV PLUS flucytosine 25 mg/kg PO q6h ×14 days (induction — if liposomal not available)" },
+      { "drugs": ["fluconazole"], "dose_text": "Fluconazole 400 mg PO daily ×8 weeks (consolidation after induction)" },
+      { "drugs": ["fluconazole"], "dose_text": "Fluconazole 200 mg PO daily (maintenance — ≥1 year; lifelong if HIV without immune reconstitution)" }
+    ],
+    "duration": "Induction: 14 days; Consolidation: 8 weeks; Maintenance: ≥12 months (lifelong in HIV without ART response)",
+    "source": "IDSA Cryptococcal Guidelines 2010; WHO 2022; ECMM/ISHAM/ASM 2024",
+    "caveat": "Monitor opening pressure at each LP — therapeutic LP daily if >25 cmH2O. Flucytosine: renal-dose-adjust, monitor bone marrow weekly. Avoid mannitol and steroids (no benefit; steroids harmful in HIV-negative crypto). IRIS can occur post-ART initiation in HIV."
+  },
+
+  "histo-treatment": {
+    "title": "Histoplasma capsulatum treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["itraconazole"], "dose_text": "Itraconazole 200 mg PO TID ×3 days (loading), then 200 mg PO BID ×12 weeks (mild-moderate pulmonary or disseminated)" },
+      { "drugs": ["liposomal-amphotericin-b", "itraconazole"], "dose_text": "Liposomal amphotericin B 3 mg/kg/day IV ×1-2 weeks, then itraconazole step-down ×≥12 months (moderately severe to severe or disseminated)" }
+    ],
+    "duration": "Mild pulmonary: 12 weeks; Disseminated: ≥12 months; CNS: ≥12 months after CSF normalizes",
+    "source": "IDSA Histoplasmosis Guidelines 2007; IDSA 2025 update",
+    "caveat": "Itraconazole TDM required — target serum level (itra + OH-itra) >1 mcg/mL. Capsule vs. solution bioavailability differs (solution preferred). Liposomal AmB preferred over deoxycholate when available. CNS histoplasmosis: L-AmB 5 mg/kg/day ×4-6 weeks then itraconazole ≥12 months."
+  },
+
+  "cocci-treatment": {
+    "title": "Coccidioides (Valley Fever) treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["fluconazole"], "dose_text": "Fluconazole 400 mg PO daily ×3-6 months (symptomatic pulmonary, moderate)" },
+      { "drugs": ["itraconazole"], "dose_text": "Itraconazole 200 mg PO BID ×3-6 months (alternative to fluconazole for bone/joint disease)" },
+      { "drugs": ["fluconazole"], "dose_text": "Fluconazole 400-1200 mg PO/IV daily (LIFELONG — coccidioidal meningitis is never cured without lifelong azole)" },
+      { "drugs": ["liposomal-amphotericin-b"], "dose_text": "Liposomal amphotericin B 3-5 mg/kg/day IV (severe/rapidly progressive until stabilized, then transition to azole)" }
+    ],
+    "duration": "Pulmonary: 3-6 months; Disseminated bone/soft tissue: individualized; Meningitis: LIFELONG",
+    "source": "IDSA Coccidioidomycosis Guidelines 2016",
+    "caveat": "Mild/asymptomatic primary pulmonary coccidioidomycosis may not require treatment. Meningitis: LIFELONG azole therapy (disease is never cured). Pregnant women with disseminated disease: use AmB (azoles teratogenic in pregnancy). Fluconazole <400 mg/day not effective for meningitis."
+  },
+
+  "blasto-treatment": {
+    "title": "Blastomyces dermatitidis treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["itraconazole"], "dose_text": "Itraconazole 200 mg PO TID ×3 days (loading), then 200 mg PO BID ×6-12 months (mild-moderate)" },
+      { "drugs": ["liposomal-amphotericin-b", "itraconazole"], "dose_text": "Liposomal amphotericin B 3-5 mg/kg/day IV ×1-2 weeks, then itraconazole step-down ×6-12 months total (moderately severe to severe/ARDS)" },
+      { "drugs": ["fluconazole"], "dose_text": "Fluconazole 800 mg PO daily (CNS blastomycosis maintenance — better CNS penetration than itraconazole; after AmB induction ≥4-6 weeks)" }
+    ],
+    "duration": "Mild-moderate: 6-12 months; Severe/CNS: ≥12 months",
+    "source": "IDSA Blastomycosis Guidelines 2008",
+    "caveat": "Itraconazole TDM required. Early L-AmB essential for severe pulmonary blastomycosis (can cause ARDS). CNS disease: use fluconazole (not itraconazole) for maintenance due to better CNS penetration. Voriconazole is off-label alternative."
+  },
+
+  "mucor-treatment": {
+    "title": "Mucormycosis treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["liposomal-amphotericin-b"], "dose_text": "Liposomal amphotericin B 5-10 mg/kg/day IV (start at 5 mg/kg; increase to 10 mg/kg for CNS/rhinocerebral or post-transplant)" },
+      { "drugs": ["isavuconazole"], "dose_text": "Isavuconazole 200 mg (as 372 mg isavuconazonium) IV q8h ×2 days (loading), then 200 mg IV/PO daily (step-down or when AmB not tolerated)" },
+      { "drugs": ["posaconazole"], "dose_text": "Posaconazole DR tablet 300 mg PO BID ×1 day then 300 mg PO daily (step-down from AmB; salvage)" }
+    ],
+    "duration": "Until clinical/radiographic resolution — often months; no fixed endpoint",
+    "source": "ECMM/MSG Global Guideline 2019; BMC ID 2025",
+    "caveat": "SURGICAL DEBRIDEMENT is cornerstone — remove all necrotic tissue. Reverse predisposing factors: control hyperglycemia, reduce immunosuppression. VORICONAZOLE HAS NO ACTIVITY against Mucor — do not use. Isavuconazole preferred over AmB when renal compromise present. ID + surgical + ENT/ophthalmology coordination essential."
+  },
+
+  "hsv-treatment": {
+    "title": "Herpes simplex virus (HSV) treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["valacyclovir"], "dose_text": "Valacyclovir 1 g PO BID ×7-10 days (primary genital HSV); 500 mg PO BID ×3 days (recurrent); 500-1000 mg PO daily (suppression)" },
+      { "drugs": ["acyclovir"], "dose_text": "Acyclovir 10 mg/kg IV q8h ×21 days (HSV encephalitis — IV formulation required; do NOT use valacyclovir for encephalitis)" },
+      { "drugs": ["acyclovir"], "dose_text": "Acyclovir 20 mg/kg IV q8h ×14-21 days (neonatal HSV — 21 days for CNS/disseminated; 14 days for SEM)" }
+    ],
+    "duration": "Primary mucocutaneous: 7-10 days; Encephalitis: 21 days; Neonatal: 14-21 days",
+    "source": "CDC STI Guidelines 2021; IDSA Encephalitis 2008",
+    "caveat": "HSV encephalitis: start IV acyclovir empirically — do not wait for CSF PCR. Full 21-day course even with improvement (shorter courses associated with relapse). Acyclovir-resistant HSV: foscarnet 40 mg/kg IV q8h. Renal dose-adjust IV acyclovir (nephrotoxicity); prehydrate."
+  },
+
+  "vzv-treatment": {
+    "title": "Varicella-zoster virus (VZV) / Herpes zoster treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["valacyclovir"], "dose_text": "Valacyclovir 1 g PO TID ×7 days (preferred — shingles immunocompetent adult; start within 72h of rash)" },
+      { "drugs": ["acyclovir"], "dose_text": "Acyclovir 10 mg/kg IV q8h ×7-10 days (disseminated VZV or severe immunocompromised; step down to oral when improving)" }
+    ],
+    "duration": "Uncomplicated: 7 days; Severe/disseminated: 10-14 days",
+    "source": "Medscape VZV; NIH HIV OI Guidelines; AAFP 2017",
+    "caveat": "Start within 72h of rash onset for maximum benefit (or any time if new lesions appearing). Immunocompromised: IV acyclovir for visceral, CNS, or disseminated disease. Consider prednisone 60 mg taper for severe pain or ophthalmic zoster (reduces PHN risk) in immunocompetent. Foscarnet for acyclovir-resistant VZV."
+  },
+
+  "cmv-treatment": {
+    "title": "Cytomegalovirus (CMV) treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["valganciclovir"], "dose_text": "Valganciclovir 900 mg PO BID ×21 days (induction); then 900 mg PO daily (maintenance) — non-severe CMV disease, tolerating oral" },
+      { "drugs": ["ganciclovir"], "dose_text": "Ganciclovir 5 mg/kg IV q12h ×21 days (induction — CMV retinitis immediate sight-threat; colitis; pneumonitis)" },
+      { "drugs": ["ganciclovir", "valganciclovir"], "dose_text": "IV ganciclovir 5 mg/kg q12h until clinical improvement, then step-down to valganciclovir 900 mg PO daily (CMV colitis/esophagitis)" }
+    ],
+    "duration": "Induction: 14-21 days; Maintenance: until immune reconstitution or per clinical response",
+    "source": "NIH/CDC/IDSA HIV OI Guidelines; AAO CMV retinitis",
+    "caveat": "Monitor CBC weekly (ganciclovir causes neutropenia/thrombocytopenia). Valganciclovir = oral prodrug; preferred over IV for non-severe disease. Renal dose-adjust both agents. Ganciclovir-resistant CMV: foscarnet 90-120 mg/kg IV q12h (nephrotoxic — monitor renal function and electrolytes closely)."
+  },
+
+  "flu-treatment": {
+    "title": "Influenza treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["oseltamivir"], "dose_text": "Oseltamivir 75 mg PO BID ×5 days (outpatient and hospitalized; preferred in pregnancy)" },
+      { "drugs": ["baloxavir"], "dose_text": "Baloxavir marboxil 40 mg PO single dose if <80 kg; 80 mg if ≥80 kg (outpatient only; equivalent to 5-day oseltamivir)" }
+    ],
+    "duration": "5 days standard; extend in immunocompromised or severe illness",
+    "source": "IDSA Influenza Guidelines 2018; CDC Influenza Antivirals 2024-25",
+    "caveat": "Start within 48h of symptom onset for greatest benefit; start regardless of timing in hospitalized, high-risk, or severe patients. Oseltamivir preferred in pregnancy, children, and hospitalized. Baloxavir: check antacid interactions. IV peramivir 600 mg single dose available for IV-only route (hospitalized)."
+  },
+
+  "rsv-treatment": {
+    "title": "RSV treatment / prophylaxis",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["oseltamivir"], "dose_text": "Supportive care is the primary treatment. No FDA-approved oral antiviral for immunocompetent patients. Aerosolized ribavirin (off-label): reserved for severe disease in highly immunocompromised (SCT pre-engraftment) — limited evidence." }
+    ],
+    "duration": "Supportive care duration by clinical course",
+    "source": "AAP RSV Recommendations 2025; CDC RSV Immunization Guidance 2023",
+    "caveat": "PROPHYLAXIS (not treatment): Nirsevimab (Beyfortus) 50 mg IM (<5 kg) or 100 mg IM (≥5 kg) — single dose per RSV season for infants <8 months. Replaced palivizumab (AAP 2025). Adult vaccines (RSVpreF, Arexvy, mRESVIA) available for adults ≥60 years. No antiviral treatment recommended for immunocompetent patients."
+  },
+
+  "covid-treatment": {
+    "title": "SARS-CoV-2 (COVID-19) treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["nirmatrelvir-ritonavir"], "dose_text": "Nirmatrelvir 300 mg + ritonavir 100 mg PO BID ×5 days (start within 5 days of symptom onset; first-line non-hospitalized high-risk)" },
+      { "drugs": ["remdesivir"], "dose_text": "Remdesivir 200 mg IV day 1, then 100 mg IV days 2-3 (3-day outpatient course; or 5-day inpatient course for hospitalized not requiring O2 or on low-flow O2)" },
+      { "drugs": ["molnupiravir"], "dose_text": "Molnupiravir 800 mg PO BID ×5 days (last resort only — inferior efficacy; contraindicated in pregnancy)" }
+    ],
+    "duration": "5 days standard antiviral",
+    "source": "IDSA COVID-19 Treatment Guidelines 2024/2025; NIH COVID-19 Treatment Guidelines",
+    "caveat": "Paxlovid: extensive CYP3A4 drug interactions via ritonavir — review full drug list before prescribing. Check nirmatrelvir dose for CrCl 30-60 (reduce to 150 mg BID). Monoclonal antibodies largely inactive against current variants. COVID-19 treatment landscape evolves — verify current guidance at covid19treatmentguidelines.nih.gov."
+  },
+
+  "hiv-defer": {
+    "title": "HIV antiretroviral therapy",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["nirmatrelvir-ritonavir"], "dose_text": "Refer to AIDSinfo (clinicalinfo.hiv.gov) — ART regimens updated continuously. Current preferred regimens are INSTI-based: bictegravir/TAF/emtricitabine (Biktarvy) or dolutegravir + 2 NRTIs. Resistance testing mandatory before initiating ART." }
+    ],
+    "duration": "Lifelong",
+    "source": "DHHS HHS ART Guidelines (updated continuously)",
+    "caveat": "This tool does not provide HIV ART recommendations. Please refer to AIDSinfo (clinicalinfo.hiv.gov) for current regimens, resistance profiles, and drug interactions. ID/HIV specialist consultation required."
+  },
+
+  "hpylori-treatment": {
+    "title": "Helicobacter pylori eradication",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["tetracycline", "metronidazole"], "dose_text": "Bismuth quadruple therapy (BQT) ×14 days — PREFERRED: PPI BID + bismuth 120-300 mg QID + tetracycline 500 mg QID + metronidazole 500 mg TID-QID (do NOT substitute doxycycline for tetracycline)" },
+      { "drugs": ["amoxicillin", "clarithromycin", "metronidazole"], "dose_text": "Concomitant quadruple ×14 days: amoxicillin 1 g BID + clarithromycin 500 mg BID + metronidazole 500 mg BID + PPI BID (only if local clarithromycin resistance <15%)" },
+      { "drugs": ["amoxicillin", "rifabutin"], "dose_text": "Rifabutin triple ×14 days: amoxicillin 1 g BID + rifabutin 150 mg BID + PPI BID (alternative first-line; especially if prior macrolide exposure)" }
+    ],
+    "duration": "14 days (superior to 10 days)",
+    "source": "ACG Clinical Guideline H. pylori 2024 (PMID 39626064)",
+    "caveat": "ACG 2024 recommends AGAINST empiric clarithromycin triple therapy (clarithromycin resistance >15% in US). Confirm eradication 4 weeks after completion (urea breath test or stool antigen — NOT serology). Tetracycline (not doxycycline) in BQT regimen. Vonoprazan-based regimens may be used where available."
+  },
+
+  "scabies-treatment": {
+    "title": "Scabies treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["permethrin"], "dose_text": "Permethrin 5% cream — apply from neck to soles; wash off after 8-14 hours; repeat in 7-14 days (2 applications total)" },
+      { "drugs": ["ivermectin"], "dose_text": "Ivermectin 200 mcg/kg PO single dose with food; repeat in 7-14 days (classic scabies)" },
+      { "drugs": ["ivermectin", "permethrin"], "dose_text": "Ivermectin 200 mcg/kg PO days 1, 2, 8, 9, 15 PLUS permethrin 5% cream daily ×7 days then 2×/week (crusted/Norwegian scabies — combination mandatory)" }
+    ],
+    "duration": "2 applications/doses for classic; weeks of combined therapy for crusted scabies",
+    "source": "CDC STI Treatment Guidelines Ectoparasites 2021; PMC11589009 2024",
+    "caveat": "Treat ALL household and close contacts simultaneously. Wash all bedding/clothing in hot water. Ivermectin NOT approved <15 kg or in pregnancy — use permethrin. Crusted scabies is highly contagious; isolation precautions in healthcare settings."
+  },
+
+  "giardia-treatment": {
+    "title": "Giardia lamblia treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["tinidazole"], "dose_text": "Tinidazole 2 g PO single dose (preferred — higher cure rate, simpler dosing)" },
+      { "drugs": ["metronidazole"], "dose_text": "Metronidazole 250 mg PO TID ×5-7 days" },
+      { "drugs": ["nitazoxanide"], "dose_text": "Nitazoxanide 500 mg PO BID ×3 days (adults; 200 mg BID ×3 days for children 4-11 years)" },
+      { "drugs": ["albendazole"], "dose_text": "Albendazole 400 mg PO daily ×5 days (alternative)" }
+    ],
+    "duration": "Single dose (tinidazole); 3 days (nitazoxanide); 5-7 days (metronidazole/albendazole)",
+    "source": "IDSA Infectious Diarrhea 2017; CDC Giardia clinical care",
+    "caveat": "Avoid alcohol with metronidazole/tinidazole (disulfiram-like reaction). Test-of-cure only in symptomatic patients. Pregnancy: paromomycin 25-35 mg/kg/day divided TID ×7 days (non-absorbable; safe)."
+  },
+
+  "malaria-treatment": {
+    "title": "Malaria treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["artemether-lumefantrine"], "dose_text": "Artemether-lumefantrine (Coartem) ≥35 kg: 4 tabs PO at hours 0, 8, 24, 36, 48, 60 with food — uncomplicated P. falciparum (or unknown species, chloroquine-resistant areas)" },
+      { "drugs": ["atovaquone-proguanil"], "dose_text": "Atovaquone-proguanil (Malarone) 4 adult tabs PO daily ×3 days with food — uncomplicated P. falciparum alternative" },
+      { "drugs": ["chloroquine"], "dose_text": "Chloroquine phosphate 1 g PO then 500 mg at 6h, 24h, 48h — P. vivax/ovale/malariae/knowlesi in chloroquine-sensitive areas" },
+      { "drugs": ["chloroquine", "primaquine"], "dose_text": "Chloroquine (as above) PLUS primaquine 30 mg base PO daily ×14 days after checking G6PD — radical cure for P. vivax/ovale (kills liver hypnozoites)" }
+    ],
+    "duration": "Uncomplicated: 3 days (artemether-lumefantrine, atovaquone-proguanil); Chloroquine: over 48h; Primaquine: 14 days additional",
+    "source": "CDC Malaria Treatment Tables 2023",
+    "caveat": "CHECK G6PD before primaquine. Severe/complicated malaria: IV artesunate (contact CDC Malaria Branch 770-488-7788 if unavailable). Chloroquine-resistant P. falciparum now near-universal — do NOT use chloroquine for falciparum. QTc monitoring with chloroquine/quinine at high doses."
+  },
+
+  "toxo-treatment": {
+    "title": "Toxoplasma gondii (CNS/disseminated) treatment",
+    "syndrome": null,
+    "line": "first",
+    "regimen": [
+      { "drugs": ["pyrimethamine", "sulfadiazine", "leucovorin"], "dose_text": "Pyrimethamine 200 mg PO load ×1, then 50-75 mg PO daily PLUS sulfadiazine 1-1.5 g PO q6h PLUS leucovorin 10-25 mg PO daily ×6 weeks (acute therapy)" },
+      { "drugs": ["pyrimethamine", "clindamycin", "leucovorin"], "dose_text": "Pyrimethamine 200 mg load then 50 mg daily + clindamycin 600 mg IV/PO q6h + leucovorin 25 mg daily ×6 weeks (sulfa-intolerant)" },
+      { "drugs": ["trimethoprim-sulfamethoxazole"], "dose_text": "TMP-SMX 5 mg/kg (trimethoprim component) IV/PO BID ×6 weeks (if pyrimethamine unavailable — similar efficacy, better tolerated)" }
+    ],
+    "duration": "Acute: 6 weeks; Maintenance: lifelong in HIV until CD4 >200 ×6 months on ART",
+    "source": "NIH/CDC/IDSA HIV OI Guidelines (AIDSinfo); CDC Toxoplasmosis",
+    "caveat": "Leucovorin (folinic acid) MUST be co-administered with pyrimethamine — prevents bone marrow suppression. Monitor CBC weekly during acute therapy. Steroids for CNS edema (>1 cm midline shift). Discontinue maintenance when CD4 >200 for >6 months on effective ART."
   }
 }
