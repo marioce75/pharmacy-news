@@ -1727,23 +1727,6 @@
     "pregnancy": "C (avoid near term — neonatal jaundice risk)",
     "notes": "Used with pyrimethamine + leucovorin for toxoplasmosis. Maintain adequate hydration (crystalluria risk). Cross-reactivity with other sulfonamides. Monitor CBC and renal function."
   },
-  "leucovorin": {
-    "slug": "leucovorin",
-    "generic": "Leucovorin (folinic acid)",
-    "brand": ["Wellcovorin"],
-    "class": "Folate rescue agent (adjunct to antifolates)",
-    "route": ["PO", "IV"],
-    "adult": { "default": "10-25 mg PO daily (with pyrimethamine); 25 mg PO weekly (with TMP-SMX for PCP prevention)" },
-    "pediatric": { "notes": "5-10 mg PO 3×/week with pyrimethamine; congenital toxo: 10 mg PO 3×/week with each pyrimethamine dose" },
-    "weight_basis": "fixed",
-    "renal": [
-      { "crcl_min": 0, "crcl_max": 999, "dose": "No adjustment" }
-    ],
-    "hepatic": "No adjustment",
-    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=leucovorin",
-    "pregnancy": "C",
-    "notes": "NOT the same as folic acid (will NOT rescue pyrimethamine toxicity). Given as rescue to prevent pyrimethamine-induced bone marrow suppression. Continue throughout pyrimethamine therapy and 1 week after."
-  },
   "tetracycline": {
     "slug": "tetracycline",
     "generic": "Tetracycline HCl",
@@ -1779,67 +1762,5 @@
     "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=rifaximin",
     "pregnancy": "C",
     "notes": "Minimally absorbed — acts in GI lumen. NOT effective for invasive infections. Used for traveler's diarrhea (non-invasive E. coli), H. pylori (limited role), hepatic encephalopathy, IBS-D."
-  },
-  "dexamethasone": {
-    "slug": "dexamethasone",
-    "generic": "Dexamethasone",
-    "brand": ["Decadron"],
-    "class": "Corticosteroid (adjunctive anti-inflammatory)",
-    "route": ["IV", "PO"],
-    "adult": { "default": "0.15 mg/kg IV q6h ×4 days (bacterial meningitis adjunct; start with or before first antibiotic dose)" },
-    "pediatric": { "mg_per_kg_per_dose": 0.15, "frequency": "q6h", "max_per_dose_mg": 10, "min_age_months": 0, "notes": "0.15 mg/kg IV q6h ×4 days for H. flu type b meningitis (strongest evidence)" },
-    "weight_basis": "tbw",
-    "renal": [{ "crcl_min": 0, "crcl_max": 999, "dose": "No adjustment" }],
-    "hepatic": "No adjustment",
-    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=dexamethasone",
-    "pregnancy": "C",
-    "notes": "Adjunct for bacterial meningitis — reduces mortality and hearing loss (strongest evidence for H. flu type b and pneumococcal meningitis). Start before or with first antibiotic dose. Do NOT use with vancomycin (reduces CNS penetration). NOT recommended for Listeria meningitis."
-  },
-  "prednisone": {
-    "slug": "prednisone",
-    "generic": "Prednisone",
-    "brand": ["Deltasone"],
-    "class": "Corticosteroid (systemic)",
-    "route": ["PO"],
-    "adult": { "default": "40-60 mg PO daily ×5-21 days (PCP adjunct: 40 mg BID ×5 days then taper; ARDS/severe infection adjunct: variable)" },
-    "pediatric": { "mg_per_kg_per_dose": 1, "frequency": "daily", "max_per_dose_mg": 40, "notes": "PCP: 1 mg/kg BID ×5 days then taper" },
-    "weight_basis": "tbw",
-    "renal": [{ "crcl_min": 0, "crcl_max": 999, "dose": "No adjustment" }],
-    "hepatic": "Convert to prednisolone in significant liver disease",
-    "label_url": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=prednisone",
-    "pregnancy": "C",
-    "notes": "Adjunct for severe PCP (PaO2 <70 mmHg or A-a gradient >35 mmHg) — reduces mortality. Start before or with TMP-SMX. Taper after initial 5 days. Also used for shingles pain prevention (PHN)."
-  },
-  "incision-drainage": {
-    "slug": "incision-drainage",
-    "generic": "Incision & Drainage (procedure)",
-    "brand": [],
-    "class": "Surgical procedure",
-    "route": ["Procedural"],
-    "adult": { "default": "Primary treatment for purulent skin and soft tissue infections (abscess, furuncle, carbuncle). Antibiotics are adjunctive." },
-    "pediatric": { "notes": "Same indication as adults; procedural technique may vary by age." },
-    "weight_basis": "fixed",
-    "renal": [{ "crcl_min": 0, "crcl_max": 999, "dose": "N/A — procedural" }],
-    "hepatic": "N/A",
-    "label_url": "https://www.ncbi.nlm.nih.gov/books/NBK537240/",
-    "pregnancy": "N/A",
-    "notes": "I&D alone is sufficient for mild purulent SSTIs in immunocompetent patients. Systemic antibiotics reserved for SIRS, immunocompromise, extensive involvement, or MRSA risk. This is a procedure, not a pharmacological agent — no dose calculator applies."
-  },
-  "bezlotoxumab": {
-    "slug": "bezlotoxumab",
-    "generic": "Bezlotoxumab",
-    "brand": ["Zinplava"],
-    "class": "Monoclonal antibody — anti-C. difficile toxin B",
-    "route": ["IV"],
-    "adult": { "default": "10 mg/kg IV single dose (infused over 60 minutes; administered during CDI antibiotic treatment)" },
-    "pediatric": { "notes": "Not approved in patients <18 years" },
-    "weight_basis": "tbw",
-    "renal": [
-      { "crcl_min": 0, "crcl_max": 999, "dose": "No adjustment" }
-    ],
-    "hepatic": "No adjustment",
-    "label_url": "https://www.fda.gov/drugs/drug-approvals-and-databases/drug-trials-snapshots-zinplava",
-    "pregnancy": "Not assigned",
-    "notes": "NOT an antibiotic — does not treat active CDI. Adjunct to reduce CDI recurrence in high-risk patients (age ≥65, immunocompromised, severe CDI, prior CDI episode). Must be given during a course of CDI antibiotic therapy. Heart failure risk — use cautiously in HF."
   }
 }

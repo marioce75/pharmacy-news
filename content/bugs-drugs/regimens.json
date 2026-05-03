@@ -188,7 +188,7 @@
     "syndrome": "ssti-purulent",
     "line": "first",
     "regimen": [
-      { "drugs": ["incision-drainage"], "dose_text": "Incision and drainage alone for simple abscess" }
+      { "drugs": [], "dose_text": "Incision and drainage alone for simple abscess (procedural — antibiotics are adjunctive)" }
     ],
     "duration": "I&D",
     "source": "IDSA SSTI 2014"
@@ -368,7 +368,7 @@
     "line": "first",
     "regimen": [
       { "drugs": ["vancomycin", "ceftriaxone"], "dose_text": "Vancomycin AUC-targeted + ceftriaxone 2 g IV q12h" },
-      { "drugs": ["dexamethasone"], "dose_text": "Add dexamethasone 0.15 mg/kg IV q6h × 4 days, ideally before/with first dose" }
+      { "drugs": [], "dose_text": "Add dexamethasone 0.15 mg/kg IV q6h × 4 days, ideally before/with first dose (adjunctive anti-inflammatory — not an antibiotic)" }
     ],
     "duration": "Tailor to organism (S. pneumo 10-14d, N. mening 7d)",
     "source": "IDSA Bacterial Meningitis 2004"
@@ -379,7 +379,7 @@
     "line": "first",
     "regimen": [
       { "drugs": ["vancomycin", "ceftriaxone", "ampicillin"], "dose_text": "Vancomycin + ceftriaxone 2 g IV q12h + ampicillin 2 g IV q4h" },
-      { "drugs": ["dexamethasone"], "dose_text": "+ Dexamethasone 0.15 mg/kg IV q6h × 4d" }
+      { "drugs": [], "dose_text": "+ Dexamethasone 0.15 mg/kg IV q6h × 4d (adjunctive anti-inflammatory — not an antibiotic)" }
     ],
     "duration": "Listeria — 21 days",
     "source": "IDSA Bacterial Meningitis 2004"
@@ -448,7 +448,7 @@
     "regimen": [
       { "drugs": ["fidaxomicin"], "dose_text": "Fidaxomicin 200 mg PO BID × 10 days OR extended-pulse 200 mg BID days 1-5 then once every other day days 7-25" },
       { "drugs": ["vancomycin-oral"], "dose_text": "Vancomycin tapered/pulsed regimen" },
-      { "drugs": ["bezlotoxumab"], "dose_text": "+ Bezlotoxumab 10 mg/kg IV ×1 (recurrence prevention)" }
+      { "drugs": [], "dose_text": "+ Bezlotoxumab 10 mg/kg IV ×1 (recurrence prevention — adjunctive monoclonal antibody, not an antibiotic)" }
     ],
     "duration": "10 days+ taper",
     "source": "IDSA/SHEA CDI 2021"
@@ -803,7 +803,7 @@
     "line": "first",
     "regimen": [
       { "drugs": ["trimethoprim-sulfamethoxazole"], "dose_text": "TMP-SMX 15-20 mg/kg/d (TMP component) IV/PO divided q6-8h" },
-      { "drugs": ["prednisone"], "dose_text": "+ Prednisone 40 mg PO BID ×5d, then 40 mg daily ×5d, then 20 mg daily ×11d if PaO2 <70 or A-a >35" }
+      { "drugs": [], "dose_text": "+ Prednisone 40 mg PO BID ×5d, then 40 mg daily ×5d, then 20 mg daily ×11d if PaO2 <70 or A-a >35 (adjunctive corticosteroid — not an antifungal)" }
     ],
     "duration": "21 days",
     "source": "IDSA Pneumocystis 2018"
@@ -1687,8 +1687,8 @@
     "syndrome": null,
     "line": "first",
     "regimen": [
-      { "drugs": ["pyrimethamine", "sulfadiazine", "leucovorin"], "dose_text": "Pyrimethamine 200 mg PO load ×1, then 50-75 mg PO daily PLUS sulfadiazine 1-1.5 g PO q6h PLUS leucovorin 10-25 mg PO daily ×6 weeks (acute therapy)" },
-      { "drugs": ["pyrimethamine", "clindamycin", "leucovorin"], "dose_text": "Pyrimethamine 200 mg load then 50 mg daily + clindamycin 600 mg IV/PO q6h + leucovorin 25 mg daily ×6 weeks (sulfa-intolerant)" },
+      { "drugs": ["pyrimethamine", "sulfadiazine"], "dose_text": "Pyrimethamine 200 mg PO load ×1, then 50-75 mg PO daily PLUS sulfadiazine 1-1.5 g PO q6h PLUS leucovorin 10-25 mg PO daily ×6 weeks (acute therapy)" },
+      { "drugs": ["pyrimethamine", "clindamycin"], "dose_text": "Pyrimethamine 200 mg load then 50 mg daily + clindamycin 600 mg IV/PO q6h + leucovorin 25 mg daily ×6 weeks (sulfa-intolerant)" },
       { "drugs": ["trimethoprim-sulfamethoxazole"], "dose_text": "TMP-SMX 5 mg/kg (trimethoprim component) IV/PO BID ×6 weeks (if pyrimethamine unavailable — similar efficacy, better tolerated)" }
     ],
     "duration": "Acute: 6 weeks; Maintenance: lifelong in HIV until CD4 >200 ×6 months on ART",
