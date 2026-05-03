@@ -186,6 +186,18 @@
     `;
   }
 
+  // === Section collapse toggles ===
+  document.querySelectorAll('.bd-section-toggle').forEach(btn => {
+    const panelId = btn.getAttribute('aria-controls');
+    const panel = document.getElementById(panelId);
+    if (!panel) return;
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+      panel.classList.toggle('is-collapsed', expanded);
+    });
+  });
+
   // === PubMed Recent Evidence widget ===
   const pubmedDiv = document.getElementById('bd-pubmed');
   if (pubmedDiv && pubmedDiv.dataset.query) {
