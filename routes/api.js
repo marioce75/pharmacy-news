@@ -5,14 +5,31 @@ const { requireAdminApi } = require('../middleware/auth');
 
 router.use('/admin', requireAdminApi);
 
-// Approve article
+const MIN_BODY_LENGTH = 100;
+
+function hasPublishableBody(article) {
+  return typeof article.body === 'string' && article.body.trim().length >= MIN_BODY_LENGTH;
+}
+
+async function ensureBody(id) {
+  const pharmeditor = require('../lib/pharmeditor');
+  const pending = await store.readArticle('pending', id);
+  if (hasPublishableBody(pending)) return pending;
+  return await pharmeditor.writeBody(id);
+}
+
+// Approve article — generates 5-min read body, then moves to approved
 router.post('/admin/approve/:id', async (req, res, next) => {
   try {
+    await ensureBody(req.params.id);
     const article = await store.moveArticle('pending', 'approved', req.params.id);
     const pharmeditor = require('../lib/pharmeditor');
     pharmeditor.recordFeedback(req.params.id, article.editorial_score || null, 'approved');
     res.json({ success: true, article });
   } catch (err) {
+    if (err.message && err.message.includes('Body generation')) {
+      return res.status(502).json({ error: err.message, code: 'BODY_GEN_FAILED' });
+    }
     next(err);
   }
 });
@@ -106,11 +123,12 @@ router.post('/admin/bulk-approve', async (req, res, next) => {
     const results = [];
     for (const id of ids) {
       try {
+        await ensureBody(id);
         const article = await store.moveArticle('pending', 'approved', id);
         pharmeditor.recordFeedback(id, article.editorial_score || null, 'approved');
         results.push({ id, success: true });
-      } catch {
-        results.push({ id, success: false });
+      } catch (err) {
+        results.push({ id, success: false, error: err.message });
       }
     }
     res.json({ success: true, results });
@@ -166,11 +184,12 @@ router.post('/admin/approve-slate', async (req, res, next) => {
     const results = [];
     for (const item of slate.recommended_slate) {
       try {
+        await ensureBody(item.id);
         const article = await store.moveArticle('pending', 'approved', item.id);
         pharmeditor.recordFeedback(item.id, item.score || null, 'approved');
         results.push({ id: item.id, success: true });
-      } catch {
-        results.push({ id: item.id, success: false });
+      } catch (err) {
+        results.push({ id: item.id, success: false, error: err.message });
       }
     }
     res.json({ success: true, results, approved: results.filter(r => r.success).length });

@@ -9,20 +9,36 @@ function showToast(message, type = 'success') {
 
 // === Article actions ===
 async function approveArticle(id) {
+  const card = document.querySelector(`[data-id="${id}"]`);
+  const approveBtn = card && card.querySelector('.btn-approve');
+  const originalLabel = approveBtn && approveBtn.textContent;
+  if (approveBtn) {
+    approveBtn.disabled = true;
+    approveBtn.textContent = 'Writing article…';
+  }
+  showToast('Writing 5-min read… (~30s)', 'info');
   try {
     const res = await fetch(`/api/admin/approve/${id}`, { method: 'POST' });
-    if (!res.ok) throw new Error('Failed to approve');
-    const card = document.querySelector(`[data-id="${id}"]`);
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      if (data.code === 'BODY_GEN_FAILED') {
+        showToast(`Article body generation failed: ${data.error}`, 'error');
+        if (approveBtn) { approveBtn.disabled = false; approveBtn.textContent = originalLabel; }
+        return;
+      }
+      throw new Error('Failed to approve');
+    }
     if (card) {
       card.style.transition = 'opacity 0.3s, transform 0.3s';
       card.style.opacity = '0';
       card.style.transform = 'translateX(50px)';
       setTimeout(() => card.remove(), 300);
     }
-    showToast('Article approved');
+    showToast('Article approved & published');
     updatePendingCount(-1);
   } catch (err) {
     showToast('Failed to approve article', 'error');
+    if (approveBtn) { approveBtn.disabled = false; approveBtn.textContent = originalLabel; }
   }
 }
 
