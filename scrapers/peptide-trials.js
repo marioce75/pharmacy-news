@@ -57,7 +57,7 @@ function buildArticle(study) {
   const headline = phases.length ? `[${phases.join('/')}] ${title}` : title;
 
   const slug = slugify(`${id}-${title}`, { lower: true, strict: true }).slice(0, 80);
-  const category = 'trials-ongoing';
+  const category = 'disease-research';
   const catInfo = getCategoryInfo(category);
 
   return {
