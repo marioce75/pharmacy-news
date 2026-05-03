@@ -10,7 +10,7 @@
       <%- include('_disclaimer') %>
 
       <div class="bd-search">
-        <input type="search" id="bd-search-input" class="bd-search__input" placeholder="Search a bug, syndrome, or drug — e.g. MRSA, pyelonephritis, meropenem" autocomplete="off" autofocus>
+        <input type="search" id="bd-search-input" class="bd-search__input" placeholder="Search anything — bug, syndrome, or drug" autocomplete="off" autofocus>
         <ul id="bd-search-results" class="bd-search__results" role="listbox" aria-label="Search results"></ul>
       </div>
     </div>
@@ -18,73 +18,56 @@
 
   <main class="container bd-main">
     <section class="bd-block">
-      <button class="bd-section-toggle" aria-expanded="true" aria-controls="bd-panel-syndromes">
-        <span>Browse by syndrome</span>
-        <svg class="bd-toggle-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 8 10 13 15 8"/></svg>
-      </button>
-      <div class="bd-collapse-panel" id="bd-panel-syndromes">
-        <div class="bd-collapse-inner">
-          <div class="bd-tag-grid">
-            <% syndromes.forEach(s => { %>
-              <a class="bd-tag" href="/bugs-and-drugs/syndrome/<%= s.slug %>"><%= s.name %></a>
-            <% }) %>
-          </div>
-        </div>
+      <h2 class="bd-block__title">Browse by syndrome</h2>
+      <div class="bd-combo" data-kind="syndrome">
+        <input type="search" class="bd-combo__input" placeholder="e.g. pneumonia, UTI, sepsis" autocomplete="off" aria-label="Search syndromes">
+        <svg class="bd-combo__chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 8 10 13 15 8"/></svg>
+        <ul class="bd-combo__results" role="listbox" aria-label="Syndrome results"></ul>
       </div>
     </section>
 
     <section class="bd-block">
-      <button class="bd-section-toggle" aria-expanded="true" aria-controls="bd-panel-organisms">
-        <span>Browse by organism</span>
-        <svg class="bd-toggle-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 8 10 13 15 8"/></svg>
-      </button>
-      <div class="bd-collapse-panel" id="bd-panel-organisms">
-        <div class="bd-collapse-inner">
-          <div class="bd-org-groups">
-            <% const groups = { 'Gram-positive': [], 'Gram-negative': [], 'Anaerobic': [], 'Atypical / intracellular': [], 'Mycobacteria': [], 'Fungi': [], 'Viruses': [], 'Other': [] };
-               organisms.forEach(o => {
-                 if (o.gram === 'positive') groups['Gram-positive'].push(o);
-                 else if (o.gram === 'negative') groups['Gram-negative'].push(o);
-                 else if (o.gram === 'anaerobe') groups['Anaerobic'].push(o);
-                 else if (o.gram === 'atypical' || o.gram === 'spirochete') groups['Atypical / intracellular'].push(o);
-                 else if (o.gram === 'afb') groups['Mycobacteria'].push(o);
-                 else if (o.gram === 'fungus') groups['Fungi'].push(o);
-                 else if (o.gram === 'virus') groups['Viruses'].push(o);
-                 else groups['Other'].push(o);
-               });
-            %>
-            <% Object.entries(groups).forEach(([label, list]) => { if (list.length === 0) return; %>
-              <div class="bd-org-group">
-                <h3><%= label %> <span class="bd-count"><%= list.length %></span></h3>
-                <ul class="bd-org-list">
-                  <% list.forEach(o => { %>
-                    <li><a href="/bugs-and-drugs/organism/<%= o.slug %>"><%= o.name %></a><% if (o.full_name && o.full_name !== o.name) { %><span class="bd-org-list__sub"><%= o.full_name %></span><% } %></li>
-                  <% }) %>
-                </ul>
-              </div>
-            <% }) %>
-          </div>
-        </div>
+      <h2 class="bd-block__title">Browse by organism</h2>
+      <div class="bd-combo" data-kind="organism">
+        <input type="search" class="bd-combo__input" placeholder="e.g. MRSA, E. coli, Pseudomonas" autocomplete="off" aria-label="Search organisms">
+        <svg class="bd-combo__chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 8 10 13 15 8"/></svg>
+        <ul class="bd-combo__results" role="listbox" aria-label="Organism results"></ul>
       </div>
     </section>
 
     <section class="bd-block">
-      <button class="bd-section-toggle" aria-expanded="true" aria-controls="bd-panel-calculator">
-        <span>Dose calculator</span>
-        <svg class="bd-toggle-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 8 10 13 15 8"/></svg>
-      </button>
-      <div class="bd-collapse-panel" id="bd-panel-calculator">
-        <div class="bd-collapse-inner">
-          <p class="bd-block__sub">Enter patient parameters and a drug to get an empiric dose recommendation with renal adjustment.</p>
-          <div class="bd-drug-grid">
-            <% Object.values(drugs).slice().sort((a,b) => a.generic.localeCompare(b.generic)).forEach(d => { %>
-              <a class="bd-drug-chip" href="/bugs-and-drugs/drug/<%= d.slug %>"><%= d.generic %><span class="bd-drug-chip__class"><%= d.class %></span></a>
-            <% }) %>
-          </div>
-        </div>
+      <h2 class="bd-block__title">Dose calculator — pick a drug</h2>
+      <p class="bd-block__sub">Pick a drug to open its renal-adjusted dose calculator.</p>
+      <div class="bd-combo" data-kind="drug">
+        <input type="search" class="bd-combo__input" placeholder="e.g. vancomycin, meropenem, cefepime" autocomplete="off" aria-label="Search drugs">
+        <svg class="bd-combo__chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 8 10 13 15 8"/></svg>
+        <ul class="bd-combo__results" role="listbox" aria-label="Drug results"></ul>
       </div>
     </section>
   </main>
+
+  <% function gramLabel(gram) {
+       if (gram === 'positive') return 'Gram-positive';
+       if (gram === 'negative') return 'Gram-negative';
+       if (gram === 'anaerobe') return 'Anaerobic';
+       if (gram === 'atypical' || gram === 'spirochete') return 'Atypical / intracellular';
+       if (gram === 'afb') return 'Mycobacteria';
+       if (gram === 'fungus') return 'Fungi';
+       if (gram === 'virus') return 'Viruses';
+       return 'Other';
+     } %>
+  <script id="bd-combo-data" type="application/json">
+    <%- JSON.stringify({
+      syndrome: syndromes.map(s => ({ slug: s.slug, label: s.name, sub: '' })),
+      organism: organisms.map(o => ({
+        slug: o.slug,
+        label: o.name,
+        sub: (o.full_name && o.full_name !== o.name) ? o.full_name : '',
+        group: gramLabel(o.gram)
+      })),
+      drug: Object.values(drugs).map(d => ({ slug: d.slug, label: d.generic, sub: d.class || '' }))
+    }) %>
+  </script>
 
   <%- include('../partials/footer') %>
   <script src="/js/bugs-drugs.js"></script>

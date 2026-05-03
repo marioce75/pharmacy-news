@@ -145,7 +145,98 @@
 
 /* Blocks / browse */
 .bd-block { margin: 2.5rem 0; }
+.bd-block__title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: var(--signal-green);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
 .bd-block__sub { color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem; }
+
+/* Combobox (Google-style searchable dropdown per section) */
+.bd-combo { position: relative; }
+.bd-combo__input {
+  width: 100%;
+  padding: 0.85rem 2.5rem 0.85rem 1rem;
+  font-size: 1rem;
+  font-family: inherit;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.bd-combo__input:focus {
+  outline: none;
+  border-color: var(--signal-green);
+  box-shadow: 0 0 0 3px rgba(0, 200, 120, 0.12);
+}
+.bd-combo__chevron {
+  position: absolute;
+  right: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: transform 0.2s ease, color 0.15s;
+}
+.bd-combo.is-open .bd-combo__chevron {
+  transform: translateY(-50%) rotate(180deg);
+  color: var(--signal-green);
+}
+.bd-combo__results {
+  list-style: none; margin: 0; padding: 0.25rem 0;
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  max-height: 360px; overflow-y: auto;
+  z-index: 40;
+  display: none;
+}
+.bd-combo.is-open .bd-combo__results { display: block; }
+.bd-combo__results li {
+  padding: 0.55rem 1rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  border-left: 2px solid transparent;
+}
+.bd-combo__results li:hover,
+.bd-combo__results li.is-active {
+  background: var(--bg-card-hover);
+  border-left-color: var(--signal-green);
+}
+.bd-combo__results .bd-combo__label { color: var(--text); font-size: 0.95rem; }
+.bd-combo__results .bd-combo__sub {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-style: italic;
+}
+.bd-combo__group {
+  padding: 0.4rem 1rem 0.2rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border);
+  pointer-events: none;
+}
+.bd-combo__empty {
+  padding: 0.7rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-style: italic;
+}
 
 /* Collapsible section toggle */
 .bd-section-toggle {

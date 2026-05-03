@@ -186,17 +186,130 @@
     `;
   }
 
-  // === Section collapse toggles ===
-  document.querySelectorAll('.bd-section-toggle').forEach(btn => {
-    const panelId = btn.getAttribute('aria-controls');
-    const panel = document.getElementById(panelId);
-    if (!panel) return;
-    btn.addEventListener('click', () => {
-      const expanded = btn.getAttribute('aria-expanded') === 'true';
-      btn.setAttribute('aria-expanded', String(!expanded));
-      panel.classList.toggle('is-collapsed', expanded);
+  // === Combobox (per-section searchable dropdown) ===
+  const comboDataEl = document.getElementById('bd-combo-data');
+  let comboData = null;
+  if (comboDataEl) {
+    try { comboData = JSON.parse(comboDataEl.textContent); } catch { comboData = null; }
+  }
+
+  function comboHref(kind, slug) {
+    return kind === 'drug'
+      ? `/bugs-and-drugs/drug/${slug}`
+      : kind === 'syndrome'
+        ? `/bugs-and-drugs/syndrome/${slug}`
+        : `/bugs-and-drugs/organism/${slug}`;
+  }
+
+  function comboFilter(items, q) {
+    const term = (q || '').toLowerCase().trim();
+    if (!term) return items;
+    return items
+      .map(it => {
+        const hay = (it.label + ' ' + (it.sub || '')).toLowerCase();
+        if (hay === term) return { it, score: 1000 };
+        if (hay.startsWith(term)) return { it, score: 500 - hay.length };
+        if (hay.includes(term)) return { it, score: 250 - hay.length };
+        return null;
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.score - a.score)
+      .map(x => x.it);
+  }
+
+  function comboRender(combo, items) {
+    const ul = combo.querySelector('.bd-combo__results');
+    const kind = combo.dataset.kind;
+    if (!items.length) {
+      ul.innerHTML = '<li class="bd-combo__empty" role="status">No matches</li>';
+      return;
+    }
+    const hasGroups = items.some(it => it.group);
+    let html = '';
+    let lastGroup = null;
+    items.forEach((it, i) => {
+      if (hasGroups && it.group && it.group !== lastGroup) {
+        html += `<li class="bd-combo__group" role="presentation">${escapeHtml(it.group)}</li>`;
+        lastGroup = it.group;
+      }
+      const subHtml = it.sub ? `<span class="bd-combo__sub">${escapeHtml(it.sub)}</span>` : '';
+      html += `<li role="option" data-href="${comboHref(kind, it.slug)}" data-idx="${i}">
+        <span class="bd-combo__label">${escapeHtml(it.label)}</span>
+        ${subHtml}
+      </li>`;
     });
-  });
+    ul.innerHTML = html;
+    ul.querySelectorAll('li[role="option"]').forEach(li => {
+      li.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        window.location = li.dataset.href;
+      });
+    });
+  }
+
+  function initCombo(combo) {
+    const kind = combo.dataset.kind;
+    const items = (comboData && comboData[kind]) || [];
+    const input = combo.querySelector('.bd-combo__input');
+    const ul = combo.querySelector('.bd-combo__results');
+    let filtered = items.slice();
+    let active = -1;
+
+    function open() {
+      combo.classList.add('is-open');
+      filtered = comboFilter(items, input.value);
+      active = -1;
+      comboRender(combo, filtered);
+    }
+    function close() {
+      combo.classList.remove('is-open');
+      active = -1;
+    }
+    function highlight(idx) {
+      const opts = ul.querySelectorAll('li[role="option"]');
+      opts.forEach(li => li.classList.remove('is-active'));
+      if (idx >= 0 && opts[idx]) {
+        opts[idx].classList.add('is-active');
+        opts[idx].scrollIntoView({ block: 'nearest' });
+      }
+    }
+
+    input.addEventListener('focus', open);
+    input.addEventListener('input', () => {
+      filtered = comboFilter(items, input.value);
+      active = -1;
+      combo.classList.add('is-open');
+      comboRender(combo, filtered);
+    });
+    input.addEventListener('keydown', (e) => {
+      if (!combo.classList.contains('is-open') && (e.key === 'ArrowDown' || e.key === 'Enter')) {
+        open();
+        return;
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        active = Math.min(filtered.length - 1, active + 1);
+        highlight(active);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        active = Math.max(0, active - 1);
+        highlight(active);
+      } else if (e.key === 'Enter') {
+        if (active >= 0 && filtered[active]) {
+          e.preventDefault();
+          window.location = comboHref(kind, filtered[active].slug);
+        }
+      } else if (e.key === 'Escape') {
+        close();
+        input.blur();
+      }
+    });
+    document.addEventListener('click', (e) => {
+      if (!combo.contains(e.target)) close();
+    });
+  }
+
+  document.querySelectorAll('.bd-combo').forEach(initCombo);
 
   // === PubMed Recent Evidence widget ===
   const pubmedDiv = document.getElementById('bd-pubmed');
