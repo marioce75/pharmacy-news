@@ -68,6 +68,7 @@ const apiRoutes = require('./routes/api');
 const bugsDrugsRoutes = require('./routes/bugs-drugs');
 
 app.use('/', publicRoutes);
+app.use('/admin', require('./routes/monitoring'));
 app.use('/admin', adminRoutes);
 app.use('/api', apiRoutes);
 // Clinical reference excluded from the local redevelopment candidate.

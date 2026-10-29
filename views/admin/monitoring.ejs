@@ -1,0 +1,23 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Feed health and coverage</title><link rel="stylesheet" href="/atlas/style.css"><style>main{max-width:1200px;margin:auto;padding:24px}a{color:#f4b36b}table{width:100%;border-collapse:collapse;margin:12px 0}td,th{border-bottom:1px solid #555;padding:8px;text-align:left;vertical-align:top}.wrap{overflow-x:auto}.error{color:#ff9b8f}.warning{color:#f4d06b}*:focus-visible{outline:3px solid #c69ce9}p{line-height:1.6}code{word-break:break-all}</style></head><body><main>
+<a href="/admin">Admin</a> · <a href="/admin/events">Event candidates</a> · <a href="/admin/collection">Sources &amp; daily edition</a>
+<h1>Feed health and coverage</h1>
+<p><strong><%= r.statement %></strong></p>
+<p role="status">Checked <%= r.generated_at %> · Scheduled collection <%= r.schedule_enabled?'enabled':'disabled' %> · Alert delivery: <%= r.notification_delivery.replaceAll('_',' ') %> (issues appear only on this page).</p>
+<p>Sources: <% Object.entries(r.totals).forEach(([k,v])=>{ %><%= k.replaceAll('_',' ') %> <%= v %> · <% }) %></p>
+<h2>Run health</h2>
+<p>Last run: <%= r.runs.last_run?(r.runs.last_run.status+' at '+(r.runs.last_run.completed_at||r.runs.last_run.started_at)):'none recorded' %> · Last successful completion: <%= r.runs.last_completed_success_at||'none' %> · Consecutive failures: <%= r.runs.consecutive_failures %></p>
+<p>Run lock: <%= r.runs.lock?('held since '+r.runs.lock.started_at+' ('+r.runs.lock.age_minutes+' min)'+(r.runs.lock.stale?' — STALE, see recovery procedure':'')):'free' %></p>
+<h2>Issues (<%= r.issues.length %>)</h2>
+<ul><% r.issues.filter(i=>i.severity!=='info').forEach(i=>{ %><li class="<%= i.severity %>"><%= i.severity %>: <%= i.kind.replaceAll('_',' ') %> <%= i.source_id||i.slot||i.run_id||'' %> <%= i.code||'' %></li><% }) %></ul>
+<details><summary>Informational flags (<%= r.issues.filter(i=>i.severity==='info').length %>)</summary><ul><% r.issues.filter(i=>i.severity==='info').forEach(i=>{ %><li><%= i.kind.replaceAll('_',' ') %> <%= i.source_id||'' %><%= i.who_region?(' '+i.who_region+' / '+i.stream+': '+i.gap.replaceAll('_',' ')):'' %></li><% }) %></ul></details>
+<h2>Coverage by WHO region</h2>
+<div class="wrap"><table><thead><tr><th scope="col">Region</th><th scope="col">Outbreak sources working</th><th scope="col">Substance-alert sources working</th><th scope="col">Blocked or failing</th></tr></thead><tbody>
+<% r.regions.forEach(g=>{ %><tr><th scope="row"><%= g.name %></th><td><%= g.outbreak.working.join(', ')||'None' %><%= g.outbreak.gap?' — gap: '+g.outbreak.gap.replaceAll('_',' '):'' %><%= g.outbreak.checked_once.length?' (checked once: '+g.outbreak.checked_once.join(', ')+')':'' %></td><td><%= g.substance.working.join(', ')||'None' %><%= g.substance.gap?' — gap: '+g.substance.gap.replaceAll('_',' '):'' %><%= g.substance.checked_once.length?' (checked once: '+g.substance.checked_once.join(', ')+')':'' %></td><td><%= [...g.outbreak.blocked,...g.outbreak.failing,...g.substance.blocked,...g.substance.failing].join(', ')||'—' %></td></tr><% }) %>
+</tbody></table></div>
+<h2>Sources</h2>
+<div class="wrap"><table><thead><tr><th scope="col">Source</th><th scope="col">Region / stream</th><th scope="col">State</th><th scope="col">Last success</th><th scope="col">Latest report</th><th scope="col">Reuse</th></tr></thead><tbody>
+<% r.sources.filter(s=>s.streams.some(x=>['outbreak','substance','animal_context'].includes(x))).forEach(s=>{ %><tr><td><a href="<%= /^https:\/\//.test(s.endpoint||'')?s.endpoint:'#' %>" rel="noopener noreferrer"><%= s.name %></a><br><small><%= s.source_type %> · <%= (s.languages||[]).join(', ') %></small></td><td><%= s.who_region %> / <%= s.streams.join(', ') %></td><td><%= s.state.replaceAll('_',' ') %><%= s.error_code?' ('+s.error_code+')':'' %><%= s.flags.length?' · '+s.flags.join(', ').replaceAll('_',' '):'' %><% if(s.reason){ %><br><small><%= s.reason %></small><% } %></td><td><%= s.last_success_at||'never' %></td><td><%= s.latest_report_at||'unknown' %></td><td><%= s.rights.permitted_use.replaceAll('_',' ') %><br><small>commercial: <%= s.rights.commercial_reuse.replaceAll('_',' ') %></small></td></tr><% }) %>
+</tbody></table></div>
+<h2>Recovery</h2>
+<p>Interrupted runs keep their per-source queues and checkpoints; the next run resumes them. A stale run lock blocks collection until an operator inspects it with <code>node scripts/collection-recover.js status</code>. Release it only after confirming no collector is running: <code>node scripts/collection-recover.js release-stale-lock --confirm</code>. The lock is moved aside for audit, not deleted.</p>
+</main></body></html>

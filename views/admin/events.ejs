@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Outbreak and substance event candidates</title><link rel="stylesheet" href="/atlas/style.css"><style>main{max-width:1150px;margin:auto;padding:24px}article{border:1px solid #777;margin:16px 0;padding:16px}a{color:#f4b36b}input,select,button{padding:8px;font:inherit;max-width:100%}label{display:inline-block;margin:8px 12px 8px 0}*:focus-visible{outline:3px solid #c69ce9}p{line-height:1.6}dt{font-weight:bold}dd{margin:0 0 10px}.flag{display:inline-block;border:1px solid #888;padding:0 6px;margin:2px;border-radius:4px}</style></head><body><main>
+<a href="/admin">Admin</a> · <a href="/admin/monitoring">Feed health and coverage</a> · <a href="/admin/discovery">Discovery</a>
+<h1>Outbreak and substance event candidates</h1>
+<p>Machine suggestions read from collected titles and source dates (method: rule-based title matching). They are <strong>not verified events</strong>, are never shown publicly, and contain no coordinates. Confirm each field against the linked source, then record it in the draft editor, where editorial, evidence, rights and any clinical approvals are still required. A detection or warning does not establish prevalence.</p>
+<% if(detail){ const c=detail; %>
+<article aria-labelledby="detail-title"><h2 id="detail-title"><%= c.title %></h2>
+<dl>
+<dt>Type</dt><dd><%= c.kind %> · <%= c.review_status.replaceAll('_',' ') %> · record <%= c.record_status %></dd>
+<dt>Source</dt><dd><a href="<%= /^https:\/\//.test(c.source_url||'')?c.source_url:'#' %>" target="_blank" rel="noopener noreferrer"><%= c.source %></a> (<%= c.source_class.replaceAll('_',' ') %><%= c.source_type?', '+c.source_type.replaceAll('_',' '):'' %>) · language <%= c.language||'unknown' %></dd>
+<dt>Dates</dt><dd>Report date: <%= c.report_date||'unknown' %> · Source updated: <%= c.source_updated_at||'not stated' %> · Retrieved: <%= c.retrieved_at||'unknown' %> · Event date: <%= c.event_date.value||'not in metadata; read the source' %></dd>
+<% if(c.kind==='outbreak'){ %>
+<dt>Disease</dt><dd><%= c.disease?c.disease.label:'Not identified from the title' %></dd>
+<dt>Pathogen</dt><dd><%= c.pathogen.name?c.pathogen.name+' (named by the source; '+c.pathogen.confirmation.replaceAll('_',' ')+')':'Not named; unconfirmed' %></dd>
+<dt>Reported cases and deaths</dt><dd><% if(c.counts.length){ %><ul><% c.counts.forEach(n=>{ %><li><%= n.measure %>: <%= n.value.toLocaleString('en') %> (<%= n.qualifier %>; as-of date not stated in metadata)</li><% }) %></ul><% } %><%= c.counts_note %></dd>
+<% } else { %>
+<dt>Substances named</dt><dd><%= c.substances.length?c.substances.map(s=>s.matched+' ('+s.group+')').join('; '):'None identified from the title' %></dd>
+<dt>Category</dt><dd><%= c.categories.map(x=>x.replaceAll('_',' ')).join(', ') %></dd>
+<dt>What this is</dt><dd><%= c.statement.kind.replaceAll('_',' ') %>. <%= c.statement.note %></dd>
+<% } %>
+<dt>Geography</dt><dd>Precision: <%= c.location.precision.replaceAll('_',' ') %>. <%= c.location.reported_areas.map(a=>a.name+' ('+a.who_region+')').join(', ')||'No area named in metadata' %>. <%= c.location.note %> Issuer jurisdiction: <%= c.location.issuer_jurisdiction.join(', ')||'unknown' %>.</dd>
+<dt>Flags</dt><dd><%= c.flags.length?'':'None' %><% c.flags.forEach(f=>{ %><span class="flag"><%= f.replaceAll('_',' ') %></span><% }) %><% (c.conflicts||[]).forEach(x=>{ %><br>Differs from <a href="/admin/events/<%= encodeURIComponent(x.with) %>"><%= x.with %></a> on <%= x.measure %>: <%= x.values.join(' vs ') %><% }) %></dd>
+</dl>
+<p><a href="/admin/edit/<%= encodeURIComponent(c.id) %>">Open the draft to confirm and record fields</a> · <a href="/admin/events">Back to all candidates</a></p></article>
+<% } else { %>
+<form method="get"><label>Type<select name="kind"><% ['all','outbreak','substance'].forEach(k=>{ %><option value="<%= k %>" <%= f.kind===k?'selected':'' %>><%= k %></option><% }) %></select></label>
+<label>Search<input name="q" value="<%= f.q %>"></label>
+<label>WHO region<select name="region"><option value="">Any</option><% Object.entries(regions).forEach(([k,v])=>{ %><option value="<%= k %>" <%= f.region===k?'selected':'' %>><%= v %></option><% }) %></select></label>
+<label>Country<select name="country"><option value="">Any</option><% countries.forEach(c=>{ %><option value="<%= c.iso2 %>" <%= f.country===c.iso2?'selected':'' %>><%= c.name %></option><% }) %></select></label>
+<label>Source class<select name="source_class"><option value="">Any</option><% ['official_report','research','media'].forEach(k=>{ %><option value="<%= k %>" <%= f.sourceClass===k?'selected':'' %>><%= k.replaceAll('_',' ') %></option><% }) %></select></label>
+<label>Substance category<select name="category"><option value="">Any</option><% categories.forEach(k=>{ %><option value="<%= k %>" <%= f.category===k?'selected':'' %>><%= k.replaceAll('_',' ') %></option><% }) %></select></label>
+<label>Flag<select name="flag"><option value="">Any</option><% flags.forEach(k=>{ %><option value="<%= k %>" <%= f.flag===k?'selected':'' %>><%= k.replaceAll('_',' ') %></option><% }) %></select></label>
+<label><input type="checkbox" name="include_approved" value="yes" <%= f.statuses.includes('approved')?'checked':'' %>> Include approved records</label>
+<button type="submit">Filter</button></form>
+<p role="status"><%= rows.length %> candidates match. Absence of candidates does not mean absence of outbreaks or drug hazards.</p>
+<% rows.forEach(c=>{ %><article><h2><a href="/admin/events/<%= encodeURIComponent(c.id) %>"><%= c.title %></a></h2>
+<p><%= c.kind %> · <%= c.kind==='outbreak'?(c.disease?c.disease.label:'disease not identified'):(c.substances.map(s=>s.matched).join(', ')||'substance not identified')+' · '+c.category.replaceAll('_',' ') %> · <%= c.location.reported_areas.map(a=>a.name).join(', ')||'area not stated' %> (<%= c.location.precision.replaceAll('_',' ') %>)</p>
+<p>Report date <%= c.report_date||'unknown' %> · retrieved <%= c.retrieved_at||'unknown' %> · <a href="<%= /^https:\/\//.test(c.source_url||'')?c.source_url:'#' %>" target="_blank" rel="noopener noreferrer"><%= c.source %></a> (<%= c.source_class.replaceAll('_',' ') %>)</p>
+<p><% c.flags.forEach(x=>{ %><span class="flag"><%= x.replaceAll('_',' ') %></span><% }) %></p></article><% }) %>
+<% } %>
+</main></body></html>

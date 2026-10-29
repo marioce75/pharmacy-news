@@ -80,3 +80,10 @@ module.exports.push(
 
 for(const id of ['ecdc-threats','ecdc-guidance']){const s=module.exports.find(s=>s.id===id);s.status='adapter_checked';s.validation={checked_at:'2026-10-29',http_status:200,parser:'production',rights_cleared:false};}
 Object.assign(module.exports.find(s=>s.id==='euda-rss'),{status:'unavailable',access:'validation_blocked',reason:'Official advertised RSS route returned HTTP 301 on 2026-10-29; redirect not followed by restricted-host collector. Existing EUDA public page adapter remains working.'});
+
+// Worldwide outbreak and substance-alert sources verified 2026-10-29 (see config/sources-worldwide.js).
+module.exports.push(...require('./sources-worldwide'));
+Object.assign(module.exports.find(s=>s.id==='who-don'),{reason:'HTML hub has no server-rendered report links; superseded by the official who-don-api JSON endpoint'});
+// 2026-10-29 verification: the EUDA news page now returns HTTP 403; it is not retried or bypassed.
+Object.assign(module.exports.find(s=>s.id==='euda'),{access:'validation_blocked',reason:'EUDA news page returned HTTP 403 on 2026-10-29 (bot protection); no bypass. Earlier manual metadata collection on 2026-10-28 is retained.'});
+Object.assign(module.exports.find(s=>s.id==='paho'),{reason:'Generic PAHO entry superseded by paho-epi-alerts and paho-news-filtered (HTTP 200 on 2026-10-29); earlier 403 recorded'});
