@@ -9,3 +9,13 @@ input,textarea,select{accent-color:#f29a48;background-color:#292a2e;color:#edede
 button,a,input,select,textarea,summary{-webkit-tap-highlight-color:rgba(242,154,72,0.2)}
 option:checked{background:#5b3e70;color:#ffffff}
 input:disabled,textarea:disabled,select:disabled,button:disabled{color:#b3b3bb;opacity:.75}
+
+.official{border-top:1px solid var(--line)}.official-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:12px 14px 0}.official-head h3{font-size:14px;margin:0}.official-head span{font-size:11px;color:var(--muted)}
+.official-label{font-size:11px;color:#d9b48d;margin:6px 14px}.official-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:end;padding:6px 14px 10px}.official-tools [role=group]{display:flex;gap:4px}.official-tools button{padding:5px 9px;font-size:12px}.official-tools label{font-size:11px;color:#c4c4ca;display:flex;flex-direction:column;gap:4px;min-width:150px}
+#official-stream{max-height:640px;overflow:auto}.official-row h3{font-size:14px}.official-row h3 a{text-decoration:underline;text-decoration-color:#6a6a70}.stream-more{font-size:11px;color:var(--muted);padding:8px 14px}
+.report-chart{padding:10px 14px 0}.report-svg{width:100%;height:auto;display:block}.report-svg .axis{stroke:#59595e}.report-svg .tick{fill:#a9a9b1;font-size:10px}.report-svg .bar-outbreak{fill:var(--orange)}.report-svg .bar-substance{fill:var(--purple)}.report-svg rect:focus{outline:none;stroke:#fff;stroke-width:1.5}
+.chart-note,.chart-legend{font-size:11px;color:var(--muted);margin:6px 14px}.key{display:inline-block;width:10px;height:10px;margin:0 5px 0 10px;vertical-align:-1px}.key-outbreak{background:var(--orange)}.key-substance{background:var(--purple)}
+.region-bubble{position:absolute;transform:translate(-50%,-50%);border-radius:50%;padding:0;background:#f29a4866;border:2px solid var(--orange)}.region-bubble.zero{background:transparent;border-style:dashed;border-color:#77777d}.region-bubble.selected{background:#f9be76;box-shadow:0 0 0 6px #f9be7630}
+.region-bubble span{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:4px;font-size:10px;white-space:nowrap;color:#eee;background:#18191ccc;padding:1px 4px}
+.trend-panel,.directory,.map-panel{align-self:start}
+#official-stream{max-height:560px}

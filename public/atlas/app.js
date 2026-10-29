@@ -22,7 +22,7 @@ function render(){
  const categories={safety:['fda-approvals'],health:['global-health','pharmacy-practice'],research:['disease-research'],ai:['industry'],toxicology:['global-health','pharmacy-practice']};
  let shown=0;document.querySelectorAll('[data-news]').forEach(row=>{row.hidden=(q&&!row.textContent.toLowerCase().includes(q))||(topic!=='all'&&!categories[topic].includes(row.dataset.category));if(!row.hidden)shown++});
  if(layer==='events'||layer==='pandemic')renderEvents();else if($('event-filters'))$('event-filters').hidden=true;
- $('news-count').textContent=document.querySelectorAll('[data-news]').length?`${shown} archive records match topic / keyword · source geography filters the registry only`:'Live collection is not connected';
+ $('news-count').textContent=document.querySelectorAll('[data-news]').length?`${shown} reviewed archive records match topic / keyword`:'No reviewed stories yet';window.PNMonitor?.render();
 }
 $('topic').onchange=render;$('country').onchange=render;$('query').oninput=render;
 $('reset-filters').onclick=()=>{$('topic').value='all';$('country').value='all';$('query').value='';render()};
@@ -41,7 +41,10 @@ function renderTrusts(){
  function update(){const q=$('trust-search').value.toLowerCase();const rows=trustData.filter(r=>(r.name+' '+r.code).toLowerCase().includes(q));$('trust-count').textContent=rows.length+' trusts match';$('trust-rows').replaceChildren();rows.forEach(r=>{const tr=document.createElement('tr');[r.name+' ('+r.code+')',r.value===null?'Not published':r.value.toLocaleString('en-GB',{maximumFractionDigits:1}),r.numerator===null?'Not available':r.numerator.toLocaleString('en-GB',{maximumFractionDigits:1}),r.denominator===null?'Not available':r.denominator.toLocaleString('en-GB'),r.note||'No row-specific caveat supplied'].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td)});$('trust-rows').append(tr)})} $('trust-search').oninput=update;update();
 }
 
+window.PNMonitorLayer=()=>layer;
 function renderEvents(){
+ // Until reviewed events exist, the emerging-disease layer shows WHO-region totals of the unreviewed official listing.
+ if(layer==='events'&&!eventRecords.length&&window.PNMonitor){window.PNMonitor.map();return;}
  $('event-filters').hidden=false;const kind=layer==='pandemic'?'official_assessment':'outbreak',q=$('query').value.toLowerCase(),area=$('event-area').value.toLowerCase(),status=$('event-confirmation').value,since=$('event-since').value;
  const rows=eventRecords.filter(e=>e.kind===kind&&(!q||(e.disease+' '+e.title+' '+e.source).toLowerCase().includes(q))&&(!area||e.location.name.toLowerCase().includes(area))&&(status==='all'||e.confirmation===status)&&(!since||e.report_date.slice(0,10)>=since));
  $('markers').replaceChildren();$('map-empty').hidden=rows.length>0;$('map-empty').textContent=eventLoadState==='failed'?'Reviewed report layer unavailable; coverage unknown.':eventLoadState==='loading'?'Loading reviewed reports…':'No reviewed reports match. No data is not zero disease.';

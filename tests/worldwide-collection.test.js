@@ -191,3 +191,41 @@ test('adapter options: archive window, joined identities, dates from file names,
  const k=await worldwide.parse(hash,'<ul><li><a href="#one"><h3>Drug Alert - Cranbrook <small>October 27, 2026 • Posted by IH</small></h3></a></li><li><a href="#two"><h3>Drug Alert - Kelowna <small>October 20, 2026 • Posted by IH</small></h3></a></li></ul>');
  assert.deepEqual(k.items.map(x=>[x.title,x.url.split('#')[1],x.published_at]),[['Drug Alert - Cranbrook','one','2026-10-27T07:00:00.000Z'],['Drug Alert - Kelowna','two','2026-10-20T07:00:00.000Z']]);
 });
+test('public listing: official collector titles only, labelled unreviewed, no summaries, counts, drafts, research or future dates',async()=>{
+ const listing=require('../lib/events/public-listing'),pub=Date.now();
+ const lead=(id,source_id,title,extra={})=>({id,title,source:'S',source_url:extra.url||'https://www.who.int/emergencies/disease-outbreak-news/item/'+id,summary:'',body:'',status:'pending',language:'en',ingestion:{source_id,source_hash:'h'},provenance:{source_id,published_at:new Date(pub-2*86400000).toISOString(),retrieved_at:new Date(pub).toISOString()},outbreak:null,...extra});
+ const rows=[lead('pl1','who-don-api','Cholera – Haiti: 1 250 suspected cases'),lead('pl2','who-don-api','Draft with summary',{summary:'Editor draft text'}),lead('pl3','cfsre-nps-alerts','Research alert: carfentanil',{url:'https://www.cfsre.org/nps-discovery/public-alerts/x'}),
+  lead('pl4','who-don-api','Future dated notice',{provenance:{source_id:'who-don-api',published_at:new Date(pub+5*86400000).toISOString(),retrieved_at:new Date(pub).toISOString()}}),lead('pl5','who-don-api','Off-site link',{url:'https://evil.example/x'}),lead('pl6','mhlw-rss','Prohibited',{url:'https://www.mhlw.go.jp/x'})];
+ for(const r of rows)await store.writeArticle('pending',r.id,r);
+ const out=await listing.listing({now:pub});const ids=out.reports.map(r=>r.id);
+ assert.ok(ids.includes('pl1'));for(const id of ['pl2','pl3','pl5','pl6'])assert.ok(!ids.includes(id),id);
+ const future=out.reports.find(r=>r.id==='pl4');assert.equal(future.report_date,null);assert.match(future.report_date_note,/later than retrieval/);
+ const r=out.reports.find(x=>x.id==='pl1');assert.equal(r.status,'unreviewed_official_listing');assert.deepEqual(r.countries.map(c=>c.iso2),['HT']);assert.match(out.label,/Not verified/);assert.equal(out.live_surveillance,false);
+ const text=JSON.stringify(out);assert.ok(!/Editor draft text|"summary"|"body"|"counts"|"lat"|"lon"/.test(text));
+ assert.ok(out.regions.find(g=>g.code==='AMR').outbreak>=1);assert.ok(out.weeks.length>=1);
+ assert.equal((await listing.listing({now:pub,country:'HT'})).reports.length,1);assert.equal((await listing.listing({now:pub,stream:'substance',q:'cholera'})).reports.length,0);
+ for(const r of rows)await fs.rm(path.join(store.DIRS.pending,r.id+'.json'),{force:true});
+});
+test('public monitor endpoint validates filters and the substance page shows the unreviewed listing separately',async()=>{
+ const express=require('express'),app=express();app.set('view engine','ejs');app.set('views',path.join(__dirname,'../views'));app.use('/',require('../routes/public'));
+ const server=await new Promise(r=>{const s=app.listen(0,'127.0.0.1',()=>r(s));}),url='http://127.0.0.1:'+server.address().port;
+ try{const r=await fetch(url+'/api/monitor/reports?stream=bogus&country=<x>&since=yesterday');assert.equal(r.status,200);const d=await r.json();assert.ok(Array.isArray(d.reports));assert.match(d.statement,/not comprehensive or real-time surveillance/);
+  const page=await (await fetch(url+'/substance-alerts?substance=%3Cscript%3E')).text();assert.match(page,/Official alert titles \(unreviewed\)/);assert.match(page,/Reviewed alerts/);assert.ok(!page.includes('<script>'));
+ }finally{await new Promise(r=>server.close(r));}
+});
+test('rotation schedule visits every verified source in bounded batches and resumes its offset',async()=>{
+ const policy=require('../lib/collection/schedule-policy');const pool=policy.select(policy.ROTATION);assert.ok(pool.length>20);assert.ok(pool.every(s=>s.access==='public_metadata'&&s.adapter!=='unavailable'));
+ assert.ok(!pool.some(s=>['bfarm-press-filtered','mhlw-rss','euda'].includes(s.id)));
+ const seen=new Set();for(let i=0;i<Math.ceil(pool.length/policy.PER_RUN);i++){const b=await policy.batch(pool,state);assert.equal(b.length,policy.PER_RUN);b.forEach(s=>seen.add(s.id));}
+ assert.equal(seen.size,pool.length);assert.throws(()=>policy.select('a,b,c,d,e,f,g'),/one to six/);
+});
+test('startup recovery moves aside a lock from a previous process and runs one bounded catch-up',async()=>{
+ const scheduler=require('../lib/scheduler'),policy=require('../lib/collection/schedule-policy'),original=policy.run;let calls=0;policy.run=async({trigger})=>{calls++;assert.equal(trigger,'catch-up');return{status:'success',sourceRuns:[]};};
+ process.env.NEWS_SOURCE_IDS=policy.ROTATION;process.env.ALLOW_COLLECTION='true';
+ try{await fs.mkdir(path.join(state.root(),'run.lock'),{recursive:true});await fs.writeFile(path.join(state.root(),'run.lock','owner.json'),JSON.stringify({pid:process.pid,host:os.hostname(),started_at:new Date(Date.now()-3600000-process.uptime()*1000).toISOString()}));
+  const j=await journal.read();j.runs=[];await state.write('run-journal',j);
+  await scheduler.startupRecovery();assert.equal(await state.lockOwner(),null);assert.equal(calls,1);
+  const k=await journal.read();k.runs.unshift({run_id:'recent',trigger:'cron',status:'success',started_at:new Date().toISOString(),completed_at:new Date().toISOString()});await state.write('run-journal',k);
+  assert.equal((await scheduler.startupRecovery()).reason,'recent_successful_run');assert.equal(calls,1);
+ }finally{policy.run=original;delete process.env.NEWS_SOURCE_IDS;}
+});
