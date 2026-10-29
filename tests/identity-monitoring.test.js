@@ -1,0 +1,15 @@
+const {test,after}=require('node:test'),assert=require('node:assert/strict'),fs=require('fs/promises'),path=require('path'),os=require('os');
+const root=require('fs').mkdtempSync(path.join(os.tmpdir(),'pn-identity-'));process.env.CONTENT_DIR=root;
+const adapters=require('../lib/collection/adapters'),registry=require('../config/source-registry'),state=require('../lib/collection/state');
+after(()=>fs.rm(root,{recursive:true,force:true}));
+test('FDA package variants have distinct identities; status/date changes remain revisions of same variant',async()=>{
+ const src=registry.find(x=>x.id==='fda-shortages'),a={package_ndc:'0000-1111-01',company_name:'Fixture',presentation:'Vial 10 mL',dosage_form:'Injection',status:'Current',update_date:'10/28/2026'};
+ const parse=async x=>(await adapters.parse(src,JSON.stringify({results:[x]}))).items[0];const first=await parse(a),variant=await parse({...a,presentation:'Vial 20 mL'}),updated=await parse({...a,status:'Resolved',update_date:'10/29/2026'});
+ assert.notEqual(first.external_id,variant.external_id);assert.equal(first.external_id,updated.external_id);assert.equal(first.source_family_id,variant.source_family_id);
+});
+test('identity migration preserves exact backlog archive, retains date window and is repeatable',async()=>{
+ const old={queue:[{external_id:'old-ndc',title:'retained backlog'}],scan:{adapter:'fda-shortages',from:'2026-10-22',to:'2026-10-29',pages:2}};await state.write('source-fda-shortages',old);const migration=require('../lib/collection/identity-migration');const dry=await migration.prepare();assert.equal(dry.applied,false);assert.deepEqual(await state.read('source-fda-shortages'),old);
+ const result=await migration.prepare({apply:true});assert.deepEqual(await state.read(result.archive),old);const next=await state.read('source-fda-shortages');assert.equal(next.scan.identity_version,2);assert.equal(next.scan.from,old.scan.from);assert.equal(next.identity_archive_count,1);assert.equal((await migration.prepare({apply:true})).needed,false);
+});
+test('scheduled collection requires explicit restricted source selection',()=>{const {select}=require('../lib/collection/schedule-policy');assert.throws(()=>select(''),/explicit/);assert.throws(()=>select('paho'),/unavailable/);assert.throws(()=>select('mhlw-rss'),/unavailable/);assert.throws(()=>select('health-canada,health-canada'),/unique/);assert.deepEqual(select('health-canada,ecdc-risk').map(x=>x.id),['health-canada','ecdc-risk']);});
+test('monitor renders visible escaped findings and no alert-delivery claim',()=>{const ejs=require('ejs'),file=path.resolve('views/admin/collection.ejs');const data={operations:{status:'degraded',checked_at:'2026-10-29',issues:[{source_id:'<script>',kind:'source_failure',code:'HTTP_403'}]},coverage:{coverage_gaps:[],sources:[],health:{}},pending:[],approved:[],day:'2026-10-29',edition:null,revision:()=>'',editionRevision:null};const html=ejs.render(require('fs').readFileSync(file,'utf8'),data,{filename:file});assert.ok(html.includes('&lt;script&gt;'));assert.ok(html.includes('no email or push delivery'));assert.ok(html.includes('operations-refresh'));});
