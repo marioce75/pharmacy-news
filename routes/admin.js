@@ -3,8 +3,11 @@ const router = express.Router();
 const store = require('../lib/store');
 const scrapeLog = require('../lib/scrape-log');
 const { CATEGORIES } = require('../config/categories');
-const { requireAdmin, verifyCredentials } = require('../middleware/auth');
+const { requireAdmin, authenticate, establish } = require('../middleware/auth');
 
+router.use((req,res,next)=>{
+ if(!['GET','HEAD','OPTIONS'].includes(req.method)&&req.get('origin')!==`${req.protocol}://${req.get('host')}`)return res.status(403).send('Same-origin request required');next();
+});
 // Login page
 router.get('/login', (req, res) => {
   res.render('admin/login', {
@@ -15,12 +18,15 @@ router.get('/login', (req, res) => {
 });
 
 // Login handler
-router.post('/login', async (req, res) => {
+router.post('/login', require('../middleware/security').loginThrottle(), async (req, res) => {
   const { username, password } = req.body;
-  const ok = await verifyCredentials(username, password);
-  if (ok) {
-    req.session.authenticated = true;
-    req.session.username = username;
+  const login = await authenticate(username, password);
+  if (login) {
+    await new Promise((resolve,reject)=>req.session.regenerate(err=>err?reject(err):resolve()));
+    establish(req.session, login);
+    // Persist before redirecting: express-session otherwise sends the redirect headers
+    // while the file store is still writing, so the next request can miss the session.
+    await new Promise((resolve,reject)=>req.session.save(err=>err?reject(err):resolve()));
     return res.redirect('/admin');
   }
   res.status(401).render('admin/login', {
@@ -30,16 +36,29 @@ router.post('/login', async (req, res) => {
   });
 });
 
-// Logout (POST per spec; keep GET for sidebar link compatibility)
+// Logout changes session state and requires a same-origin POST.
 router.post('/logout', (req, res) => {
   req.session.destroy(() => res.redirect('/admin/login'));
 });
-router.get('/logout', (req, res) => {
-  req.session.destroy(() => res.redirect('/admin/login'));
-});
+router.get('/logout', (req,res)=>res.status(405).send('Use POST to log out'));
 
 // All routes below require auth
 router.use(requireAdmin);
+router.use((req,res,next)=>{if(!['GET','HEAD','OPTIONS'].includes(req.method)&&!require('../lib/review-policy').human(require('../middleware/auth').identity(req.session),'editor'))return res.status(403).send('Editor role required');next();});
+
+// Collection/editorial workspace: no collection button or model invocation here.
+router.get('/discovery',async(req,res,next)=>{try{const kind=String(req.query.kind||'all'),query=String(req.query.q||'');res.render('admin/discovery',{kind,query,rows:await require('../lib/discovery').list({kind,query})});}catch(e){next(e);}});
+router.get('/collection',async(req,res,next)=>{try{const day=req.query.day||new Date().toISOString().slice(0,10),editions=require('../lib/editions');const pending=await store.listArticles('pending'),approved=await store.listArticles('approved'),edition=await editions.read(day);res.render('admin/collection',{coverage:await require('../lib/collection/runner').status(),pending,approved,day,edition,editionRevision:edition?editions.revision(edition):null,revision:require('../lib/publication').revision});}catch(e){next(e);}});
+router.post('/intake/:id',async(req,res,next)=>{try{
+ const pub=require('../lib/publication'),a=(await pub.preview(req.params.id)).article,b=req.body;
+ const changes={summary:b.summary,body:b.body,content_kind:b.content_kind,correction_reason:b.correction_reason,
+ editorial:{...a.editorial,original_summary:b.original_summary==='yes',translation_reviewed:b.translation_reviewed==='yes'},
+ rights:{...a.rights,status:b.rights_status,license_url:b.license_url,attribution:b.attribution},
+ translation:{required:b.translation_required==='yes',original_language:b.original_language,target_language:b.target_language},outbreak:a.outbreak||null};
+ if(b.event_kind)changes.outbreak={kind:b.event_kind,disease:b.disease,confirmation:b.confirmation,report_url:b.report_url,report_date:b.report_date,update_date:b.update_date||null,onset_date:b.onset_date||null,uncertainty:b.uncertainty,location:{name:b.location_name,precision:b.precision,basis:'reported_area_centroid',lat:b.lat?.trim()?Number(b.lat):null,lon:b.lon?.trim()?Number(b.lon):null,evidence_url:b.location_evidence},assessment_text:b.assessment_text,assessment_version:b.assessment_version,assessment_date:b.assessment_date||null,cross_border_evidence:b.cross_border_evidence};
+ await pub.edit(req.params.id,changes,b.revision,require('../middleware/auth').identity(req.session).id);res.redirect('/admin/edit/'+req.params.id);
+ }catch(e){next(e);}});
+router.post('/edition/:day',async(req,res,next)=>{try{const ed=require('../lib/editions'),principal=require('../middleware/auth').identity(req.session);if(req.body.action==='release')await ed.release(req.params.day,req.body.revision,principal,req.body.confirmed==='yes');else await ed.draft(req.params.day,[req.body.ids||[]].flat(),req.body.note,principal);res.redirect('/admin/collection?day='+req.params.day);}catch(e){next(e);}});
 
 // Dashboard home
 router.get('/', async (req, res, next) => {
@@ -71,12 +90,10 @@ router.get('/', async (req, res, next) => {
 });
 
 function nextCronUTC() {
-  // Cron is "0 10 * * *" — daily at 10:00 UTC (4 AM CST / 5 AM CDT)
+  if(process.env.RUN_SCHEDULED_JOBS!=='true'||process.env.RUN_NEWS_SCHEDULE!=='true'||process.env.ALLOW_COLLECTION!=='true')return null;
   const now = new Date();
-  const next = new Date(Date.UTC(
-    now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 10, 0, 0
-  ));
-  if (next <= now) next.setUTCDate(next.getUTCDate() + 1);
+  const next = new Date(now);
+  next.setUTCHours(Math.floor(now.getUTCHours()/6)*6+6,0,0,0);
   return next.toISOString();
 }
 
@@ -155,6 +172,8 @@ router.get('/edit/:id', async (req, res, next) => {
   }
 });
 
+router.get('/source-health',async(req,res,next)=>{try{res.json(await scrapeLog.listRecent(20));}catch(e){next(e);}});
+
 // Analytics
 router.get('/analytics', async (req, res, next) => {
   try {
@@ -198,6 +217,7 @@ router.get('/logs', async (req, res, next) => {
 
 // Manual scrape trigger (server-rendered form post)
 router.post('/scrape/run', async (req, res, next) => {
+ if(process.env.ALLOW_COLLECTION!=='true')return res.status(403).send('Collection disabled');
   try {
     const scheduler = require('../lib/scheduler');
     scheduler.triggerManualScrape().catch((err) => {
@@ -228,6 +248,7 @@ router.get('/bugs-drugs-watch', async (req, res, next) => {
 });
 
 router.post('/bugs-drugs-watch/run', async (req, res, next) => {
+ if(process.env.ALLOW_COLLECTION!=='true')return res.status(403).send('Collection disabled');
   try {
     const scheduler = require('../lib/scheduler');
     scheduler.triggerManualBugsDrugsWatch().catch((err) => {

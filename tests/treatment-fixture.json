@@ -1,0 +1,95 @@
+{
+  "id": "synthetic-treatment-fixture",
+  "slug": "synthetic-treatment-fixture",
+  "title": "Synthetic treatment test \u2014 not clinical guidance",
+  "summary": "Synthetic validation fixture only.",
+  "body": "<p>Synthetic fixture, not medical guidance. Synthetic fixture, not medical guidance. Synthetic fixture, not medical guidance. Synthetic fixture, not medical guidance. Synthetic fixture, not medical guidance. Synthetic fixture, not medical guidance. Synthetic fixture, not medical guidance. Synthetic fixture, not medical guidance. Synthetic fixture, not medical guidance. Synthetic fixture, not medical guidance. Synthetic fixture, not medical guidance. Synthetic fixture, not medical guidance. Synthetic fixture, not medical guidance. Synthetic fixture, not medical guidance. Synthetic fixture, not medical guidance. </p>",
+  "category": "global-health",
+  "status": "pending",
+  "source": "CDC clinical guidance / WHO trial notice",
+  "source_url": "https://www.cdc.gov/ebola/hcp/clinical-guidance/index.html",
+  "content_kind": "guidance",
+  "requires_clinical_review": true,
+  "review": null,
+  "clinical_review": null,
+  "evidence_review": null,
+  "rights_review": null,
+  "rights": {
+    "status": "unreviewed",
+    "license_url": "https://www.who.int/about/policies/publishing/copyright",
+    "attribution": "Original PharmacyNews summary; CDC clinical guidance dated 27 May 2026 and WHO trial announcement dated 2 July 2026. WHO reuse rights require separate review."
+  },
+  "evidence": {
+    "level": "guideline",
+    "jurisdiction": "US guidance; DRC trial context",
+    "primary_guidelines": [
+      {
+        "url": "https://www.cdc.gov/ebola/hcp/clinical-guidance/index.html",
+        "issuer": "CDC",
+        "version": "Clinical Guidance for Ebola Disease, 27 May 2026",
+        "published_at": "2026-05-27"
+      }
+    ]
+  },
+  "editorial": {
+    "original_summary": true,
+    "specialist_review_requirements": "Independent infectious-disease clinician: verify species-specific therapeutic status, newer guidance/trial results, population and regional applicability; no extrapolation from Zaire Ebola."
+  },
+  "treatment": {
+    "disease_key": "bundibugyo-virus-disease",
+    "disease": "Synthetic disease fixture",
+    "pathogen": "Synthetic pathogen fixture",
+    "region": "US CDC clinical guidance; WHO trial context in DRC. Local protocols and access differ.",
+    "population": "Clinical teams assessing suspected or confirmed infection; specialist hospital care. No age-, pregnancy- or comorbidity-specific regimen supplied.",
+    "checked_at": "2026-10-29",
+    "review_due": "2026-11-05",
+    "sources": [
+      {
+        "id": "cdc",
+        "issuer": "CDC",
+        "url": "https://www.cdc.gov/ebola/hcp/clinical-guidance/index.html",
+        "version": "Clinical guidance, 27 May 2026",
+        "published_at": "2026-05-27"
+      },
+      {
+        "id": "who",
+        "issuer": "WHO",
+        "url": "https://www.who.int/news/item/02-07-2026-patient-enrolment-begins-in-a-scientific-trial-to-identify-the-first-effective-treatments-for-bundibugyo-virus-disease",
+        "version": "PARTNERS trial announcement, 2 July 2026",
+        "published_at": "2026-07-02"
+      }
+    ],
+    "sections": {
+      "first_line": {
+        "status": "none_approved",
+        "text": "Synthetic test evidence only; no treatment recommendation.",
+        "source_ids": [
+          "cdc"
+        ]
+      },
+      "alternatives": {
+        "status": "insufficient_evidence",
+        "text": "Synthetic test evidence only; no treatment recommendation.",
+        "source_ids": [
+          "who"
+        ]
+      },
+      "supportive": {
+        "status": "supported",
+        "text": "Synthetic test evidence only; no treatment recommendation.",
+        "source_ids": [
+          "cdc",
+          "who"
+        ]
+      },
+      "uncertainty": {
+        "status": "insufficient_evidence",
+        "text": "Synthetic test evidence only; no treatment recommendation.",
+        "source_ids": [
+          "cdc",
+          "who"
+        ]
+      }
+    }
+  }
+}

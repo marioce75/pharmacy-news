@@ -1,139 +1,47 @@
 const sources = require('../config/sources');
-const baseScraper = require('./base-scraper');
-const dedup = require('../lib/dedup');
+const base = require('./base-scraper');
 const store = require('../lib/store');
-const { tagArticle } = require('../lib/peptide-tagger');
-
-async function runCategory(category, categoryConfig) {
-  const articles = [];
-  for (const source of categoryConfig) {
-    try {
-      let items = [];
-      if (source.type === 'rss') {
-        items = await baseScraper.fetchRSS(source.url, source.keywords);
-      } else if (source.type === 'web') {
-        items = await baseScraper.fetchWeb(source.url, source.selector);
-      }
-
-      for (const item of items) {
-        const article = baseScraper.buildArticleObject(item, category, source.name);
-        tagArticle(article);
-        articles.push(article);
-      }
-
-      // Rate limit between sources
-      await baseScraper.sleep(2000);
-    } catch (err) {
-      console.error(`  [ERROR] ${source.name}: ${err.message}`);
-    }
-  }
-  return articles;
+const dedup = require('../lib/dedup');
+const {tagArticle}=require('../lib/peptide-tagger');
+function sourceURL(url){try{const u=new URL(url);return u.origin+u.pathname;}catch{return null;}}
+async function collectSource(source, fetcher) {
+ const run={source:source.name,url:sourceURL(source.url),started_at:new Date().toISOString(),count:0};
+ try {const articles=await fetcher();run.count=articles.length;run.failed_queries=articles.sourceFailures||0;run.status=run.failed_queries?(articles.length?'partial':'failed'):(articles.length?'success':'empty');return {articles,run};}
+ catch(e){run.status='failed';run.error_class=/^[A-Za-z]+Error$/.test(e.name)?e.name:'Error';run.error_message='Source retrieval or normalization failed';return {articles:[],run};}
+ finally{run.completed_at=new Date().toISOString();}
 }
-
-async function runPeptideSpecialty() {
-  // Custom JSON-API scrapers that produce already-built article objects.
-  // Tagger still runs to ensure is_peptide = true on every record.
-  const out = [];
-  try {
-    console.log('  Scraping: peptide-pubmed...');
-    const pubmed = require('./peptide-pubmed');
-    const items = await pubmed.fetchAll();
-    for (const a of items) { tagArticle(a); out.push(a); }
-    console.log(`  peptide-pubmed: ${items.length} found`);
-  } catch (err) {
-    console.error(`  [ERROR] peptide-pubmed: ${err.message}`);
-  }
-  try {
-    console.log('  Scraping: peptide-trials...');
-    const trials = require('./peptide-trials');
-    const items = await trials.fetchAll();
-    for (const a of items) { tagArticle(a); out.push(a); }
-    console.log(`  peptide-trials: ${items.length} found`);
-  } catch (err) {
-    console.error(`  [ERROR] peptide-trials: ${err.message}`);
-  }
-  return out;
+async function runCategory(category, config, deps=base) {
+ const articles=[],sourceRuns=[];
+ for(const source of config){const result=await collectSource(source,async()=>{
+ const items=source.type==='rss'?await deps.fetchRSS(source.url,source.keywords):await deps.fetchWeb(source.url,source.selector);
+ return items.map(item=>{const a=deps.buildArticleObject(item,category,source.name);tagArticle(a);return a;});});articles.push(...result.articles);sourceRuns.push(result.run);}
+ return {articles,sourceRuns};
 }
-
-async function runAll() {
-  console.log('[SCRAPE] Starting full scrape...');
-  let newArticles = 0;
-  let duplicates = 0;
-  let errors = 0;
-  let peptideArticles = 0;
-  const newIds = [];
-
-  for (const [category, categoryConfig] of Object.entries(sources)) {
-    try {
-      console.log(`  Scraping: ${category}...`);
-      const articles = await runCategory(category, categoryConfig);
-
-      let catNew = 0, catDup = 0;
-      for (const article of articles) {
-        if (!article.source_url) {
-          console.warn(`  [SKIP] "${article.title}" — no source URL, cannot verify`);
-          errors++;
-          continue;
-        }
-        const isDup = await dedup.isDuplicate(article);
-        if (isDup) {
-          duplicates++;
-          catDup++;
-          continue;
-        }
-        await store.writeArticle('pending', article.id, article);
-        newIds.push(article.id);
-        newArticles++;
-        catNew++;
-        if (article.is_peptide) peptideArticles++;
-      }
-
-      console.log(`  ${category}: ${articles.length} found, new: ${catNew}, dup: ${catDup}`);
-    } catch (err) {
-      console.error(`  [ERROR] Category ${category}: ${err.message}`);
-      errors++;
-    }
-  }
-
-  // Peptide specialty scrapers (PubMed, ClinicalTrials.gov)
-  try {
-    const peptideItems = await runPeptideSpecialty();
-    for (const article of peptideItems) {
-      if (!article.source_url) {
-        console.warn(`  [SKIP] "${article.title}" — no source URL, cannot verify`);
-        errors++;
-        continue;
-      }
-      const isDup = await dedup.isDuplicate(article);
-      if (isDup) {
-        duplicates++;
-        continue;
-      }
-      await store.writeArticle('pending', article.id, article);
-      newIds.push(article.id);
-      newArticles++;
-      if (article.is_peptide) peptideArticles++;
-    }
-  } catch (err) {
-    console.error(`  [ERROR] peptide-specialty: ${err.message}`);
-    errors++;
-  }
-
-  console.log(`[SCRAPE] Complete: ${newArticles} new (${peptideArticles} peptide), ${duplicates} dupes, ${errors} errors`);
-
-  // Run PharmEditor analysis on new articles
-  if (newIds.length > 0) {
-    try {
-      const pharmeditor = require('../lib/pharmeditor');
-      const result = await pharmeditor.analyze(newIds);
-      console.log(`[PHARMEDITOR] Scored: ${result.scored}, Errors: ${result.errors}, Slate: ${result.slateGenerated}`);
-    } catch (err) {
-      console.error('[PHARMEDITOR] Analysis failed:', err.message);
-      // Graceful degradation — articles remain in pending without scores
-    }
-  }
-
-  return { newArticles, duplicates, errors, newIds, peptideArticles };
+function runStatus(runs, otherErrors=0){const failed=runs.filter(r=>r.status==='failed').length;const partial=runs.some(r=>r.status==='partial');return runs.length&&failed===runs.length?'failed':failed||partial||otherErrors?'completed_with_errors':'success';}
+async function runAll(deps={}) {
+ if(!Object.keys(deps).length)return require('../lib/collection/runner').run();
+ if(process.env.ALLOW_COLLECTION!=='true')throw Object.assign(new Error('Collection disabled'),{status:403});
+ const sourceRuns=[],articles=[],newIds=[],seen=new Set();let duplicates=0,validationErrors=0,processingErrors=0;
+ const catalog=deps.sources||sources;
+ for(const [category,config] of Object.entries(catalog)){const r=await runCategory(category,config,deps.base||base);articles.push(...r.articles);sourceRuns.push(...r.sourceRuns);}
+ const specialty=deps.specialty||[
+ {name:'PubMed peptide search',url:'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/',fetch:()=>require('./peptide-pubmed').fetchAll()},
+ {name:'ClinicalTrials.gov peptide search',url:'https://clinicaltrials.gov/api/v2/studies',fetch:()=>require('./peptide-trials').fetchAll()}];
+ for(const s of specialty){const r=await collectSource(s,s.fetch);sourceRuns.push(r.run);articles.push(...r.articles);}
+ for(const a of articles){
+ if(!/^https?:\/\//.test(a.source_url||'')){validationErrors++;continue;}
+ if(a.provenance?.publication_date_status==='invalid')validationErrors++;
+ try{
+ const u=new URL(a.source_url);u.hash='';for(const key of [...u.searchParams.keys()])if(key.startsWith('utm_')||key==='fbclid')u.searchParams.delete(key);const canonical=u.toString();
+ if(seen.has(canonical)||await (deps.dedup||dedup).isDuplicate(a)){duplicates++;continue;}seen.add(canonical);
+ if(!a.provenance){const normalized=base.buildArticleObject({title:a.title,link:a.source_url,date:a.date_published},a.category,a.source);for(const k of ['schema_version','provenance','geography','rights','evidence','content_kind'])a[k]=normalized[k];}
+ a.provenance.canonical_url=canonical;
+ await (deps.store||store).writeArticle('pending',a.id,a);newIds.push(a.id);dedup.clearCache();
+ }catch{processingErrors++;}
+ }
+ let model={scored:0,errors:0,slateGenerated:false};
+ if(newIds.length&&process.env.ALLOW_MODEL_CALLS==='true'){try{model=await (deps.editor||require('../lib/pharmeditor')).analyze(newIds);}catch{model.errors=1;}}
+ const sourceErrors=sourceRuns.filter(r=>['failed','partial'].includes(r.status)).length;const errors=sourceErrors+validationErrors+processingErrors+model.errors;
+ return {newArticles:newIds.length,duplicates,newIds,sourceRuns,sourceErrors,validationErrors,processingErrors,errors,pharmeditor_scored:model.scored,pharmeditor_errors:model.errors,slate_generated:model.slateGenerated,status:runStatus(sourceRuns,validationErrors+processingErrors+model.errors)};
 }
-
-module.exports = { runAll, runCategory, runPeptideSpecialty };
+module.exports={runAll,runCategory,collectSource,runStatus};

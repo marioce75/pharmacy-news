@@ -1,0 +1,4 @@
+const test=require('node:test'),assert=require('node:assert/strict'),{evaluate}=require('../lib/operations');
+test('operational health distinguishes disabled, missed schedule, stale and incomplete source coverage',()=>{
+ assert.equal(evaluate().status,'disabled');const now=Date.now();const r=evaluate({now,newsEnabled:true,last_run:{completed_at:new Date(now-9*3600000).toISOString()},health:{official:{status:'failed',error_code:'HTTP_403',stale:true,report_date_unknown:true,backlog:8}}});assert.equal(r.status,'attention_required');assert.deepEqual(r.issues.map(x=>x.kind),['collection_overdue','source_failure','stale_reports','unknown_report_dates','incomplete_coverage']);assert.equal(r.notification_delivery,'not_configured');assert.equal(evaluate({now,newsEnabled:true,last_run:{completed_at:new Date(now).toISOString()}}).status,'ok');
+});

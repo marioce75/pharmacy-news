@@ -1,6 +1,6 @@
 <%
   const catInfo = categories[article.category] || { label: article.category, color: '#888' };
-  const dateStr = new Date(article.date_published + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const dateStr = article.date_published ? new Date(article.date_published + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Publication date unknown';
   const heroImage = article.image ? article.image.replace('w=600&h=340', 'w=1200&h=500') : '';
 %>
 <!DOCTYPE html>
@@ -39,7 +39,7 @@
       <% if (heroImage) { %>
         <img class="article__hero" src="<%= heroImage %>" alt="" loading="lazy">
       <% } %>
-      <div class="article__body"><%- article.body %></div>
+      <details><summary>Source provenance and review</summary><p>Publication: <%= article.provenance?.published_at || article.date_published || 'Unknown' %> · Retrieved: <%= article.provenance?.retrieved_at || article.date_scraped || 'Unknown' %></p><p>Evidence: <%= article.evidence?.type || 'Unclassified' %> · Reuse rights: <%= article.rights?.status || 'Not recorded' %></p><p>Source jurisdiction: <%= article.geography?.jurisdiction || 'Unknown' %> · Event locations: <%= JSON.stringify(article.geography?.event_locations || []) %></p><p>Editorial review: <%= article.review?.reviewed_at || 'Legacy review not recorded' %></p></details><div class="article__body"><%- sanitizeBody(article.body) %></div>
       <% if (article.tags && article.tags.length > 0) { %>
         <div class="article__tags">
           <% article.tags.forEach(tag => { %>
@@ -49,7 +49,7 @@
       <% } %>
     </article>
     <div class="article__footer">
-      <% if (article.source_url) { %>
+      <% if (/^https?:\/\//.test(article.source_url || '')) { %>
         <a href="<%= article.source_url %>" target="_blank" rel="noopener" class="back-link">View original source →</a>
       <% } %>
       <a href="/" class="back-link">← Back to all articles</a>

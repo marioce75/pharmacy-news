@@ -1,28 +1,47 @@
 const express = require('express');
 const router = express.Router();
 const store = require('../lib/store');
-const { requireAdminApi } = require('../middleware/auth');
+const { requireAdminApi, identity, reauthenticate } = require('../middleware/auth');
+const policy = require('../lib/review-policy');
 
 router.use('/admin', requireAdminApi);
 
-const MIN_BODY_LENGTH = 100;
-
-function hasPublishableBody(article) {
-  return typeof article.body === 'string' && article.body.trim().length >= MIN_BODY_LENGTH;
+const publication = require('../lib/publication');
+router.use('/admin', (req,res,next)=>{
+ if (!['GET','HEAD','OPTIONS'].includes(req.method) && req.get('origin') !== `${req.protocol}://${req.get('host')}`) return res.status(403).json({error:'Same-origin request required'});
+ next();
+});
+router.get('/admin/operations',async(req,res,next)=>{try{res.json(await require('../lib/operations').report());}catch(e){next(e);}});
+router.get('/admin/collection',async(req,res,next)=>{try{res.json(await require('../lib/collection/runner').status());}catch(e){next(e);}});
+router.get('/admin/review/:id', async(req,res,next)=>{try{res.json(await publication.preview(req.params.id));}catch(e){next(e);}});
+// Each approval is signed by the signed-in reviewer: role and clinical credential come
+// from server configuration only, and the reviewer re-enters their own password.
+async function signApproval(req,res,kind,attestation){
+ const principal=identity(req.session),role=policy.APPROVALS[kind]?.role;
+ if(!role)return res.status(404).json({error:'Unknown approval type'});
+ if(!policy.human(principal,role))return res.status(403).json({error:kind==='clinical'?'No independently verified clinician identity is available':`Your account does not hold the ${role} role`});
+ if(kind==='clinical'&&principal.clinicalCredentialVerified!==true)return res.status(403).json({error:'No independently verified clinician identity is available: '+(principal.credentialIssue||'credential not verified')});
+ const signed=await reauthenticate(req.session,req.body?.password);
+ if(!signed)return res.status(401).json({error:'Re-enter your own password to sign this approval'});
+ res.json(await publication.approve(req.params.id,kind,req.body.revision,signed,attestation));
 }
+router.get('/admin/approvals/:id',async(req,res,next)=>{try{const p=identity(req.session);res.json({...await publication.status(req.params.id),you:{id:p.id,display_name:p.displayName,identity_source:p.source,roles:p.roles,clinical_credential_verified:p.clinicalCredentialVerified,clinical_credential_issue:p.credentialIssue}});}catch(e){next(e);}});
+router.post('/admin/approvals/:id/:kind',async(req,res,next)=>{try{await signApproval(req,res,req.params.kind,req.body?.attestation);}catch(e){next(e);}});
+router.post('/admin/review/:id', async(req,res,next)=>{try{await signApproval(req,res,'editorial',req.body?.confirmations);}catch(e){next(e);}});
+router.get('/admin/history/:id',async(req,res,next)=>{try{res.json(await require('../lib/history').read(req.params.id));}catch(e){next(e);}});
+router.get('/admin/history/:id/revisions/:revision',async(req,res,next)=>{try{res.json(await require('../lib/history').revisionRecord(req.params.id,req.params.revision));}catch(e){next(e);}});
+router.post('/admin/clinical-review/:id',async(req,res,next)=>{try{await signApproval(req,res,'clinical',{confirmed:req.body?.confirmed===true,specialistRequirementsMet:req.body?.specialistRequirementsMet===true});}catch(e){next(e);}});
+// Publishing actions need an editor; the publication service itself checks every approval.
+const requireEditor=(req,res,next)=>policy.human(identity(req.session),'editor')?next():res.status(403).json({error:'Editor role required'});
+// Non-approval mutations are editorial operations; reviewer roles cannot edit drafts.
+router.use('/admin',(req,res,next)=>{if(!['GET','HEAD','OPTIONS'].includes(req.method)&&!/^\/(?:approvals|review|clinical-review)\//.test(req.path))return requireEditor(req,res,next);next();});
+router.post(['/admin/approve/:id','/admin/bulk-approve','/admin/approve-slate','/admin/unpublish/:id'],requireEditor);
+router.post('/admin/generate/:id', async(req,res,next)=>{try{const editor=require('../lib/pharmeditor');res.json(await publication.generate(req.params.id,req.body.revision,editor.generateDraft));}catch(e){next(e);}});
 
-async function ensureBody(id) {
-  const pharmeditor = require('../lib/pharmeditor');
-  const pending = await store.readArticle('pending', id);
-  if (hasPublishableBody(pending)) return pending;
-  return await pharmeditor.writeBody(id);
-}
-
-// Approve article — generates 5-min read body, then moves to approved
+// Publish only an exact, independently reviewed revision
 router.post('/admin/approve/:id', async (req, res, next) => {
   try {
-    await ensureBody(req.params.id);
-    const article = await store.moveArticle('pending', 'approved', req.params.id);
+    const article = await publication.publish(req.params.id,identity(req.session)?.id);
     const pharmeditor = require('../lib/pharmeditor');
     pharmeditor.recordFeedback(req.params.id, article.editorial_score || null, 'approved');
     res.json({ success: true, article });
@@ -49,7 +68,7 @@ router.post('/admin/decline/:id', async (req, res, next) => {
 // Unpublish article (move from approved back to pending)
 router.post('/admin/unpublish/:id', async (req, res, next) => {
   try {
-    const article = await store.moveArticle('approved', 'pending', req.params.id);
+    const article = await publication.unpublish(req.params.id,identity(req.session)?.id,req.body.reason);
     res.json({ success: true, article });
   } catch (err) {
     next(err);
@@ -71,19 +90,9 @@ router.put('/admin/articles/:id', async (req, res, next) => {
     }
     if (!article) return res.status(404).json({ error: 'Article not found' });
 
-    // Update fields
-    const allowedFields = [
-      'title', 'summary', 'body', 'category', 'source', 'source_url',
-      'tags', 'drug_names', 'companies', 'therapeutic_area', 'region',
-      'instagram_caption', 'image', 'image_prompt', 'priority', 'slug'
-    ];
-    for (const field of allowedFields) {
-      if (req.body[field] !== undefined) {
-        article[field] = req.body[field];
-      }
-    }
-
-    await store.writeArticle(status, article.id, article);
+    const allowedFields = ['title','summary','body','category','source','source_url','tags','drug_names','companies','therapeutic_area','region','instagram_caption','image','image_prompt','priority','slug','content_kind','provenance','geography','rights','evidence','correction_reason','editorial','translation','language','outbreak','treatment','drug_event','requires_clinical_review'];
+    const changes = Object.fromEntries(allowedFields.filter(k=>req.body[k]!==undefined).map(k=>[k,req.body[k]]));
+    article = await publication.edit(req.params.id, changes, req.body.revision, identity(req.session)?.id);
     res.json({ success: true, article });
   } catch (err) {
     next(err);
@@ -102,8 +111,9 @@ router.get('/admin/stats', async (req, res, next) => {
 
 // Trigger scrape
 router.post('/admin/scrape', async (req, res, next) => {
+  if(process.env.ALLOW_COLLECTION!=='true')return res.status(403).json({error:'Collection disabled'});
   try {
-    const scraper = require('../scrapers');
+    const scraper = { runAll: () => require('../lib/scheduler').triggerManualScrape() };
     // Run in background, respond immediately
     scraper.runAll()
       .then(result => console.log(`[SCRAPE] Manual: ${result.newArticles} new, ${result.duplicates} dupes`))
@@ -123,8 +133,7 @@ router.post('/admin/bulk-approve', async (req, res, next) => {
     const results = [];
     for (const id of ids) {
       try {
-        await ensureBody(id);
-        const article = await store.moveArticle('pending', 'approved', id);
+        const article = await publication.publish(id,identity(req.session)?.id);
         pharmeditor.recordFeedback(id, article.editorial_score || null, 'approved');
         results.push({ id, success: true });
       } catch (err) {
@@ -184,8 +193,7 @@ router.post('/admin/approve-slate', async (req, res, next) => {
     const results = [];
     for (const item of slate.recommended_slate) {
       try {
-        await ensureBody(item.id);
-        const article = await store.moveArticle('pending', 'approved', item.id);
+        const article = await publication.publish(item.id,identity(req.session)?.id);
         pharmeditor.recordFeedback(item.id, item.score || null, 'approved');
         results.push({ id: item.id, success: true });
       } catch (err) {
@@ -200,6 +208,7 @@ router.post('/admin/approve-slate', async (req, res, next) => {
 
 // Manual PharmEditor trigger
 router.post('/admin/run-pharmeditor', async (req, res, next) => {
+  if(process.env.ALLOW_MODEL_CALLS!=='true')return res.status(403).json({error:'Model calls disabled'});
   try {
     const pharmeditor = require('../lib/pharmeditor');
     // Get all pending article IDs
@@ -221,4 +230,5 @@ router.post('/admin/run-pharmeditor', async (req, res, next) => {
   }
 });
 
+router.use((err,req,res,next)=>res.status(err.status || 500).json({error:err.status ? err.message : 'Operation failed'}));
 module.exports = router;

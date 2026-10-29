@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/admin.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script>if(window.Chart){Chart.defaults.color='#b3b3bb';Chart.defaults.backgroundColor='#c296ed';Chart.defaults.borderColor='#59595e';if(Chart.defaults.plugins.colors)Chart.defaults.plugins.colors.enabled=false;}</script>
 </head>
 <body class="admin-body">
   <div class="admin-layout">
@@ -19,7 +20,7 @@
         <h1>Editor's Picks <span style="color:var(--text-dim);font-weight:400;font-family:'DM Sans',sans-serif;font-size:0.9rem">— <%= today %></span></h1>
         <div class="admin-actions">
           <% if (slateArticles.length > 0) { %>
-            <button class="btn btn-sm btn-primary" id="approve-slate-btn">Approve Entire Slate (<%= slateArticles.length %>)</button>
+            <button class="btn btn-sm btn-primary" id="approve-slate-btn">Publish reviewed slate (<%= slateArticles.length %>)</button>
           <% } %>
           <button class="btn btn-sm btn-outline" id="run-pharmeditor-btn">Re-run PharmEditor</button>
         </div>
@@ -28,7 +29,7 @@
       <!-- Stats Cards -->
       <div class="stats-cards">
         <div class="stat-card">
-          <div class="stat-value" style="color:var(--signal-green)"><%= scored.length %></div>
+          <div class="stat-value" style="color:var(--accent-orange)"><%= scored.length %></div>
           <div class="stat-label">Scored</div>
         </div>
         <div class="stat-card">
@@ -40,7 +41,7 @@
           <div class="stat-label">Top Score</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value" style="color:#3B82F6"><%= Object.keys(slateCategories).length %></div>
+          <div class="stat-value" style="color:#c296ed"><%= Object.keys(slateCategories).length %></div>
           <div class="stat-label">Categories in Slate</div>
         </div>
       </div>
@@ -106,12 +107,12 @@
                           </div>
                           <div class="score-bar-row">
                             <span class="score-bar-label">Engagement</span>
-                            <div class="score-bar"><div class="score-bar-fill" style="width:<%= article.score_breakdown.engagement_prediction || 0 %>%;background:#00d4aa"></div></div>
+                            <div class="score-bar"><div class="score-bar-fill" style="width:<%= article.score_breakdown.engagement_prediction || 0 %>%;background:#f29a48"></div></div>
                             <span class="score-bar-value"><%= article.score_breakdown.engagement_prediction || 0 %></span>
                           </div>
                           <div class="score-bar-row">
                             <span class="score-bar-label">Source</span>
-                            <div class="score-bar"><div class="score-bar-fill" style="width:<%= article.score_breakdown.source_authority || 0 %>%;background:#3B82F6"></div></div>
+                            <div class="score-bar"><div class="score-bar-fill" style="width:<%= article.score_breakdown.source_authority || 0 %>%;background:#c296ed"></div></div>
                             <span class="score-bar-value"><%= article.score_breakdown.source_authority || 0 %></span>
                           </div>
                         </div>
@@ -169,7 +170,7 @@
                       </div>
 
                       <div class="admin-card__actions">
-                        <button class="btn btn-sm btn-approve" onclick="approveArticle('<%= article.id %>')">Approve</button>
+                        <button class="btn btn-sm btn-approve" onclick="approveArticle('<%= article.id %>')">Review draft</button>
                         <a href="/admin/edit/<%= article.id %>" class="btn btn-sm btn-outline">Edit</a>
                         <button class="btn btn-sm btn-decline" onclick="declineArticle('<%= article.id %>')">Decline</button>
                         <button class="btn btn-sm btn-ghost toggle-expand">More ▾</button>
@@ -200,7 +201,7 @@
                         <p class="admin-card__reasoning" style="font-style:italic"><%= article.slate_reason %></p>
                       <% } %>
                       <div class="admin-card__actions">
-                        <button class="btn btn-sm btn-approve" onclick="approveArticle('<%= article.id %>')">Approve</button>
+                        <button class="btn btn-sm btn-approve" onclick="approveArticle('<%= article.id %>')">Review draft</button>
                         <a href="/admin/edit/<%= article.id %>" class="btn btn-sm btn-outline">Edit</a>
                         <button class="btn btn-sm btn-decline" onclick="declineArticle('<%= article.id %>')">Decline</button>
                       </div>
@@ -245,7 +246,7 @@
               <div class="sidebar-card">
                 <h3>PharmEditor Alignment</h3>
                 <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.5rem">
-                  Last 30 days: <strong style="color:var(--signal-green)"><%= (feedbackStats.overall_approval_rate * 100).toFixed(0) %>%</strong> overall approval rate
+                  Last 30 days: <strong style="color:var(--accent-orange)"><%= (feedbackStats.overall_approval_rate * 100).toFixed(0) %>%</strong> overall approval rate
                   (<%= feedbackStats.total_reviewed %> reviewed)
                 </p>
               </div>
@@ -265,7 +266,7 @@
         labels: ['0-20', '20-40', '40-60', '60-80', '80-100'],
         datasets: [{
           data: histogram,
-          backgroundColor: ['#EF4444', '#F59E0B', '#F59E0B', '#00d4aa88', '#00d4aa'],
+          backgroundColor: ['#ff8585', '#F59E0B', '#F59E0B', '#f29a4888', '#f29a48'],
           borderRadius: 4
         }]
       },
@@ -273,8 +274,8 @@
         responsive: true,
         plugins: { legend: { display: false } },
         scales: {
-          x: { ticks: { color: '#8a96a3' }, grid: { color: '#1e2830' } },
-          y: { ticks: { color: '#8a96a3' }, grid: { color: '#1e2830' } }
+          x: { ticks: { color: '#b3b3bb' }, grid: { color: '#3b3c40' } },
+          y: { ticks: { color: '#b3b3bb' }, grid: { color: '#3b3c40' } }
         }
       }
     });
@@ -296,7 +297,7 @@
         },
         options: {
           responsive: true,
-          plugins: { legend: { labels: { color: '#8a96a3', font: { size: 10 } } } }
+          plugins: { legend: { labels: { color: '#b3b3bb', font: { size: 10 } } } }
         }
       });
     }

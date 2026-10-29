@@ -1,39 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pharmacy News — Dosys Health</title>
-  <meta name="description" content="Drug development, pharma, and disease news curated by Dosys Health.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/styles.css">
-</head>
-<body>
-  <%- include('partials/header', { activeCategory: activeCategory || 'all' }) %>
-
-  <section class="hero">
-    <div class="container">
-      <h1>Pharmacy &amp; Drug Development News</h1>
-      <p class="hero-subtitle">Curated coverage of FDA approvals, clinical trials, drug safety, and the pharmaceutical industry.</p>
-    </div>
-  </section>
-
-  <main class="container">
-    <section class="news-grid" id="news-grid">
-      <% if (articles.length === 0) { %>
-        <p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 3rem 0;">No articles in this category yet.</p>
-      <% } else { %>
-        <% articles.forEach(article => { %>
-          <%- include('partials/card', { article }) %>
-        <% }); %>
-      <% } %>
-    </section>
-  </main>
-
-  <%- include('partials/footer') %>
-
-  <script src="/js/news.js"></script>
-</body>
-</html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PharmacyNews.ai | Global monitor</title><link rel="stylesheet" href="/atlas/style.css"></head><body>
+<header class="masthead"><a class="brand" href="/">PharmacyNews<span>.ai</span></a><span class="strap">Global pharmacy intelligence</span><nav aria-label="Main"><a class="active" href="#atlas">Monitor</a><a href="#research">Antibiotic use & AMR</a><a href="#directory">Sources</a><a href="/substance-alerts">Illicit-substance alerts</a><a href="/treatments">Treatment evidence</a><a href="#standards">Methodology</a></nav></header>
+<div class="statusline"><span class="statusdot"></span><strong>Public review release</strong><span>Collection paused</span><span>Registry · manual checks 28 Oct 2026</span><span class="right">No live alerts or media series connected</span></div>
+<main><div class="workspace-title"><h1>Global pharmacy monitor</h1><span>Explore sources, coverage and measured evidence</span></div>
+<form class="filters" onsubmit="return false"><label>Search sources & news<input id="query" type="search" placeholder="Medicine, institution or keyword"></label><label>Topic<select id="topic"><option value="all">All pharmacy developments</option><option value="safety">Safety & regulation</option><option value="health">Public health & clinical evidence</option><option value="research">Discovery & repurposing</option><option value="ai">AI & drug markets</option><option value="toxicology">Emerging substance alerts</option></select></label><label>Source geography<select id="country"><option value="all">Worldwide</option><option>United States</option><option>Canada</option><option>United Kingdom</option><option>Switzerland</option><option>Sweden</option><option>Australia</option></select></label><button id="reset-filters" type="button">Reset filters</button></form>
+<div class="monitor-grid"><section id="atlas" class="map-panel"><div class="panel-title"><h2>World map</h2><span id="count"></span></div><div class="maptools" role="group" aria-label="Map layer"><button id="sources" aria-pressed="true">Source locations</button><button id="mentions" aria-pressed="false">Media mentions</button><button id="events" aria-pressed="false">Emerging diseases</button><button id="pandemic" aria-pressed="false">Pandemic watch</button></div><div class="mapviewport"><div class="map" id="map"><img src="/atlas/land.svg" alt="World land map, equirectangular projection"><div id="markers"></div></div><div id="map-empty" hidden><strong>No verified alerts loaded</strong><p>Source locations never stand in for event locations.</p></div><div class="zoom"><button id="zoom-in" aria-label="Zoom map in">+</button><button id="zoom-out" aria-label="Zoom map out">−</button><button id="zoom-reset" aria-label="Reset map zoom">1:1</button></div><span class="map-stamp">Source registry / approximate country placement</span></div><div class="mapcaption"><span id="legend">● Source locations</span><span>Natural Earth · public domain</span></div><div class="map-note">Markers identify publishers. They do not measure outbreaks, drug use or incidence.</div><div class="event-filters" id="event-filters" hidden><label>Confirmation<select id="event-confirmation"><option value="all">All reported statuses</option><option value="confirmed">Confirmed</option><option value="suspected">Suspected</option><option value="under_investigation">Under investigation</option></select></label><label>Reports since<input type="date" id="event-since"></label><label>Reported event area<input id="event-area" placeholder="Country or region"></label><p>Source-country filters apply only to publisher markers. Area markers are centroids, not case locations. No data is not zero disease.</p></div><aside id="inspector" class="inspector" aria-live="polite"></aside></section>
+<aside class="news-panel panel"><div class="panel-title"><h2>News stream</h2><span>Reviewed archive</span></div><div class="stream-note">Original summaries + primary source links</div><div id="news-stream"><% if(!articles.length){ %><div class="stream-empty"><strong>No reviewed stories loaded</strong><p>This review release has no live news feed. Select a source in the directory to inspect its collection route and readiness.</p><a href="#directory">Explore official sources</a></div><% } else { articles.forEach(article=>{ %><article class="news-row" data-news data-category="<%= article.category %>"><div><span><%= article.source || 'Source unspecified' %></span><time><%= article.date_published || 'Publication date unknown' %></time></div><h3><a href="/article/<%= article.slug %>"><%= article.title %></a></h3><p><%= article.summary %></p><small><%= categories[article.category]?.label || article.category %> · Source-linked archive</small></article><% }); } %></div><div class="stream-footer" id="news-count"></div><div class="coverage-note"><strong>Coverage is not prevalence</strong><p>News volume reflects the monitored source corpus. Missing reporting is not zero disease or zero medicine use.</p></div></aside>
+<section class="trend-panel panel"><div class="panel-title"><h2>Coverage over time</h2><div class="range" role="group" aria-label="Coverage time range"><button data-range="24 hours" aria-pressed="true">24h</button><button data-range="7 days" aria-pressed="false">7d</button><button data-range="30 days" aria-pressed="false">30d</button></div></div><div class="emptychart"><strong>No media series connected</strong><span id="trend-range">Selected window: 24 hours</span><span>Story clusters / monitored corpus · values unavailable</span></div><p>Media attention is separate from verified alerts and annual surveillance. No illustrative counts are plotted.</p></section>
+<section id="directory" class="directory panel"><div class="panel-title"><h2>Source directory</h2><span>All registry entries · readiness shown</span></div><div id="source-list"></div></section></div>
+<section id="research" class="research panel"><div class="panel-title"><h2>Antibiotic use & resistance</h2><span>Measured surveillance · independent of news volume</span></div><div class="research-tabs" role="group" aria-label="Surveillance layer"><button data-layer="use" aria-pressed="true">Consumption</button><button data-layer="amr" aria-pressed="false">Resistance</button><button data-layer="facility" aria-pressed="false">England acute trusts</button></div><div id="research-detail" aria-live="polite"></div></section>
+<section id="standards" class="standards"><h2>Read the evidence in context</h2><div><p><strong>Source location ≠ event location.</strong> Publisher countries, mentioned locations and verified events remain separate.</p><p><strong>News ≠ treatment guidance.</strong> Clinical content requires versioned primary evidence and an independent verified clinician.</p><p><strong>Volume ≠ prevalence.</strong> Surveillance retains period, denominator, sampling setting and source coverage.</p></div></section><footer>PharmacyNews.ai · Local redevelopment candidate · No live ingestion or automatic publishing<br>Source metadata and official links are shown for exploration. Item-level rights and clinical evidence require review.</footer></main><script src="/atlas/trust-data.js"></script><script src="/atlas/app.js"></script></body></html>

@@ -1,0 +1,8 @@
+// Explicit bounded collection into NEW isolated storage only. No scheduler or model calls.
+const fs=require('fs'),path=require('path');
+if(process.argv[2]!=='--isolated-review')throw Error('Require --isolated-review and new absolute directory');
+const target=process.argv[3];if(!target||!path.isAbsolute(target)||fs.existsSync(target))throw Error('Existing storage refused');
+const registry=require('../config/source-registry');const ids=process.argv.slice(4);if(!ids.length)throw Error('Select explicit source IDs');const sources=ids.map(id=>{const s=registry.find(x=>x.id===id);if(!s||s.access!=='public_metadata'||s.adapter==='unavailable')throw Error('Source unavailable: '+id);return s;});
+fs.mkdirSync(target,{recursive:true});process.env.CONTENT_DIR=target;process.env.ALLOW_COLLECTION='true';for(const k of ['ALLOW_MODEL_CALLS','RUN_SCHEDULED_JOBS','RUN_NEWS_SCHEDULE','RUN_ANTIBIOTIC_SCHEDULE'])process.env[k]='false';
+const runner=require('../lib/collection/runner'),{createClient}=require('../lib/collection/http');const budget={requests:0,hosts:{}};const client=createClient({budget,saveBudget:async b=>fs.writeFileSync(path.join(target,'request-accounting.json'),JSON.stringify(b,null,2)),limit:8,perHost:3,maxMs:90000});
+runner.run({sources,client,maxItems:12,maxItemsPerSource:3}).then(r=>{fs.writeFileSync(path.join(target,'staging-result.json'),JSON.stringify(r,null,2));console.log(JSON.stringify({status:r.status,new:r.newArticles,sources:r.sourceRuns.map(s=>({id:s.source_id,state:s.status,count:s.count,error:s.error_code,latest:s.latest_report_at,backlog:s.backlog})),requests:budget.requests},null,2));}).catch(e=>{console.error(e.message);process.exitCode=1;}).finally(()=>{process.env.ALLOW_COLLECTION='false';});

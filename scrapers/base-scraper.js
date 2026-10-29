@@ -43,7 +43,8 @@ async function fetchRSS(url, keywords) {
     title: (item.title || '').trim(),
     link: item.link || '',
     summary: (item.contentSnippet || item.content || '').trim().slice(0, 500),
-    date: item.pubDate || item.isoDate || new Date().toISOString()
+    date: item.pubDate || item.isoDate || null,
+    source_item_id: item.guid || item.id || item.link || null
   }));
 
   // Filter by keywords if provided
@@ -80,7 +81,7 @@ async function fetchWeb(url, selector) {
         title,
         link: href,
         summary: $el.find('p, .summary, .description').first().text().trim().slice(0, 500),
-        date: new Date().toISOString()
+        date: null
       });
     }
   });
@@ -89,47 +90,8 @@ async function fetchWeb(url, selector) {
 }
 
 async function extractArticleBody(url) {
-  try {
-    await rateLimitDomain(url);
-    const { data } = await httpClient.get(url);
-    const $ = cheerio.load(data);
-
-    // Remove unwanted elements
-    $('script, style, nav, footer, header, .ad, .advertisement, .sidebar, .related').remove();
-
-    // Try common article selectors
-    const selectors = ['article', '[role="main"]', '.article-body', '.entry-content', '.post-content', 'main'];
-    let body = '';
-    for (const sel of selectors) {
-      const el = $(sel).first();
-      if (el.length) {
-        body = el.html();
-        break;
-      }
-    }
-
-    if (!body) {
-      // Fallback: try the largest text block
-      body = $('body').html();
-    }
-
-    // Clean up the HTML
-    const $body = cheerio.load(body || '');
-    $body('script, style, img, iframe, video, .ad').remove();
-
-    // Extract paragraphs
-    const paragraphs = [];
-    $body('p').each((i, el) => {
-      const text = $body(el).text().trim();
-      if (text.length > 30) {
-        paragraphs.push(`<p>${text}</p>`);
-      }
-    });
-
-    return paragraphs.slice(0, 15).join('\n');
-  } catch {
-    return '';
-  }
+  // No source currently has approved full-text extraction rights. Fail closed, including direct calls.
+  throw new Error('Source-body extraction disabled pending source-specific rights and access review');
 }
 
 function generateInstagramCaption(article) {
@@ -151,7 +113,9 @@ function generateInstagramCaption(article) {
 function buildArticleObject(item, category, sourceName) {
   const id = uuidv4();
   const slug = slugify(item.title, { lower: true, strict: true }).slice(0, 80);
-  const datePublished = item.date ? new Date(item.date).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
+  const parsedDate = item.date ? new Date(item.date) : null;
+  const publicationDate = parsedDate && !Number.isNaN(parsedDate.getTime()) ? parsedDate.toISOString() : null;
+  const datePublished = publicationDate ? publicationDate.slice(0,10) : null;
 
   const catInfo = getCategoryInfo(category);
 
@@ -164,7 +128,13 @@ function buildArticleObject(item, category, sourceName) {
     source: sourceName,
     source_url: item.link || '',
     category,
-    region: catInfo.region || 'Global',
+    region: 'Unknown',
+    schema_version: 2,
+    content_kind: 'unclassified',
+    provenance: { source_id: sourceName, source_item_id: item.source_item_id || null, canonical_url: item.link || null, published_at: publicationDate, publication_date_status: !item.date ? 'missing' : publicationDate ? 'provided' : 'invalid', retrieved_at: new Date().toISOString(), event_at: null },
+    geography: { publisher_country: null, jurisdiction: null, mentioned_places: [], study_locations: [], event_locations: [], confidence: 'unassessed' },
+    rights: { status: 'unreviewed', license_url: null, attribution: sourceName, permitted_use: 'metadata_and_link_pending_review' },
+    evidence: { type: 'unclassified', primary_source_url: null, guideline_version: null, review_status: 'unreviewed' },
     date_published: datePublished,
     date_scraped: new Date().toISOString(),
     status: 'pending',

@@ -1,0 +1,9 @@
+# Durable public review release — 29 October 2026
+
+Replaces maintenance with tested application UI, initially empty. No source drafts, old approved seeds, credentials, sessions or runtime data are shipped. Previous maintenance rollback target:d3e6e725143b58019bab33a610a1bf234b0e8114; rollback leaves disk intact and serves only maintenance. Never roll back to7bccbf4.
+
+npm start uses scripts/start-review.js: requires Node24.22.1, disables collection/model/watcher/scheduler flags for this release, fixes UTC, verifies content is a separate filesystem, initializes content/store-v1 with explicit ownership marker, checks history integrity then binds existing service0.0.0.0. Unknown root files fail closed. Repeated starts preserve data. No automatic migrations/imports. Existing dashboard build migration is dry-run only. Full application retains existing admin credentials and approval gates; no reviewer accounts or clinical identity created. No real approvals or treatment content published.
+
+Validation:103/103 MacNode24.22.1 tests;14-file actual exported-content snapshot/restore verified locally, sessions excluded, archive unchanged. Source baseline128files matches LinuxARM64-tested stagingv2 manifest. New startup mount check requires actual Render verification. Existing Render runtime is x64; build/native dependency startup will be observed. Fullx64 regression suite not yet run. Page status is public review release; incomplete/unavailable sources and empty outbreak/treatment layers remain honest.
+
+Current production backup remains off-host at pharmacynews-production-export-20261029. Disk will be an empty review store. Importing approved legacy data would expose unsupported claims and is forbidden; later source-linked drafts require explicit non-publishing import and review. No off-host recurring backup or failure-notification destination configured yet. No added service/cost beyond approved disk and already active Startercompute.

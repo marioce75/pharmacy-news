@@ -58,7 +58,7 @@ async function fetchSummaries(pmids) {
       title: (r.title || '').trim(),
       summary: buildSummary(r),
       link: `https://pubmed.ncbi.nlm.nih.gov/${r.uid}/`,
-      date: r.pubdate || r.epubdate || new Date().toISOString(),
+      date: r.pubdate || r.epubdate || null,
       journal: (r.fulljournalname || r.source || '').trim(),
       authors: (r.authors || []).slice(0, 3).map((a) => a.name).filter(Boolean)
     }));
@@ -92,8 +92,9 @@ function buildArticle(item) {
     source: `PubMed — ${item.journal || 'NCBI'}`,
     source_url: item.link,
     category,
-    region: catInfo.region || 'Global',
+    region: 'Unknown',
     date_published: datePublished,
+    source_dates: { publication_raw: item.date || null },
     date_scraped: new Date().toISOString(),
     status: 'pending',
     tags: ['pubmed', 'research'],
@@ -110,14 +111,16 @@ function buildArticle(item) {
 }
 
 function parseDate(s) {
-  if (!s) return new Date().toISOString().slice(0, 10);
+  if (!s) return null;
   // PubMed dates can be "2026 Apr 15" or "2026 Apr" or "2026"
+  if (!/\d{4}[-/]\d{2}[-/]\d{2}|\d{4} [A-Za-z]{3} \d{1,2}/.test(s)) return null;
   const d = new Date(s);
   if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
-  return new Date().toISOString().slice(0, 10);
+  return null;
 }
 
 async function fetchAll() {
+  let sourceFailures=0;
   const allPmids = new Set();
   for (const q of QUERIES) {
     try {
@@ -125,11 +128,12 @@ async function fetchAll() {
       ids.forEach((id) => allPmids.add(id));
       await sleep(400); // NCBI courtesy: <=3 req/sec without API key
     } catch (err) {
+      sourceFailures++;
       console.error(`  [pubmed] esearch failed for "${q.slice(0, 50)}…": ${err.message}`);
     }
   }
   const pmids = Array.from(allPmids);
-  if (pmids.length === 0) return [];
+  if (pmids.length === 0) return Object.assign([],{sourceFailures});
 
   // esummary in batches of 50 PMIDs (well under the 200 cap)
   const batches = [];
@@ -145,9 +149,11 @@ async function fetchAll() {
       }
       await sleep(400);
     } catch (err) {
+      sourceFailures++;
       console.error(`  [pubmed] esummary failed: ${err.message}`);
     }
   }
+  articles.sourceFailures=sourceFailures;
   return articles;
 }
 

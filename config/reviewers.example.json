@@ -1,0 +1,26 @@
+{
+  "_comment": "Example shape only. Copy outside the repository and CONTENT_DIR, replace every placeholder, and point REVIEWER_REGISTRY_FILE at it. Placeholders are rejected by the validator on purpose.",
+  "reviewers": [
+    {
+      "id": "clinician-id",
+      "display_name": "Full name as on the licence",
+      "password_hash": "REPLACE_WITH_OUTPUT_OF_node_scripts/create-admin.js",
+      "roles": ["clinical_reviewer"],
+      "clinical_credential": {
+        "profession": "Pharmacist",
+        "jurisdiction": "US-TX",
+        "license_reference": "Licence number as shown by the official board lookup",
+        "verification_url": "https://official-board-licence-lookup.example/record",
+        "verified_by": "Name of a different person who checked the official lookup",
+        "verified_at": "YYYY-MM-DD",
+        "expires_at": "YYYY-MM-DD"
+      }
+    },
+    {
+      "id": "editor-id",
+      "display_name": "Second person's name",
+      "password_hash": "REPLACE_WITH_OUTPUT_OF_node_scripts/create-admin.js",
+      "roles": ["editor", "evidence_reviewer", "rights_reviewer"]
+    }
+  ]
+}

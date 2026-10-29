@@ -6,16 +6,16 @@
 }
 
 :root {
-  --signal-green: #00d4aa;
-  --signal-green-dark: #00b894;
-  --signal-green-glow: rgba(0, 212, 170, 0.15);
-  --bg: #0a0f14;
-  --bg-card: #111820;
-  --bg-card-hover: #161f2a;
-  --text: #e8edf2;
-  --text-muted: #8a96a3;
-  --text-dim: #5a6672;
-  --border: #1e2830;
+  --accent-orange: #f29a48;
+  --accent-orange-dark: #c8752b;
+  --accent-orange-glow: rgba(242, 154, 72, 0.15);
+  --bg: #18191c;
+  --bg-card: #222326;
+  --bg-card-hover: #303136;
+  --text: #ededee;
+  --text-muted: #b3b3bb;
+  --text-dim: #a6a6af;
+  --border: #3b3c40;
   --radius: 10px;
 }
 
@@ -57,7 +57,7 @@ img {
   padding: 1rem 0;
   position: sticky;
   top: 0;
-  background: rgba(10, 15, 20, 0.92);
+  background: rgba(24, 25, 28, 0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   z-index: 100;
@@ -80,7 +80,7 @@ img {
 .logo-dosys {
   font-family: 'DM Serif Display', serif;
   font-size: 1.4rem;
-  color: var(--signal-green);
+  color: var(--accent-orange);
 }
 
 .logo-divider {
@@ -114,12 +114,12 @@ img {
 
 .nav-link:hover {
   color: var(--text);
-  background: var(--signal-green-glow);
+  background: var(--accent-orange-glow);
 }
 
 .nav-link.active {
-  color: var(--signal-green);
-  background: var(--signal-green-glow);
+  color: var(--accent-orange);
+  background: var(--accent-orange-glow);
 }
 
 /* === Hero === */
@@ -165,8 +165,8 @@ img {
 
 .news-card:hover {
   transform: translateY(-3px);
-  border-color: var(--signal-green);
-  box-shadow: 0 8px 30px rgba(0, 212, 170, 0.08);
+  border-color: var(--accent-orange);
+  box-shadow: 0 8px 30px rgba(242, 154, 72, 0.08);
 }
 
 .news-card__image {
@@ -200,9 +200,9 @@ img {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--tag-color, var(--signal-green));
-  background: color-mix(in srgb, var(--tag-color, var(--signal-green)) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--tag-color, var(--signal-green)) 25%, transparent);
+  color: var(--tag-color, var(--accent-orange));
+  background: color-mix(in srgb, var(--tag-color, var(--accent-orange)) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tag-color, var(--accent-orange)) 25%, transparent);
 }
 
 .news-card__source {
@@ -237,7 +237,7 @@ img {
 /* === Article Detail === */
 .back-link {
   display: inline-block;
-  color: var(--signal-green);
+  color: var(--accent-orange);
   font-size: 0.88rem;
   font-weight: 500;
   padding: 0.5rem 0;
@@ -284,7 +284,7 @@ img {
   font-size: 1.1rem;
   color: var(--text-muted);
   line-height: 1.6;
-  border-left: 3px solid var(--signal-green);
+  border-left: 3px solid var(--accent-orange);
   padding-left: 1rem;
 }
 
@@ -313,11 +313,11 @@ img {
   font-weight: 400;
   margin-top: 2rem;
   margin-bottom: 0.75rem;
-  color: var(--signal-green);
+  color: var(--accent-orange);
 }
 
 .article__body blockquote {
-  border-left: 3px solid var(--signal-green);
+  border-left: 3px solid var(--accent-orange);
   padding-left: 1rem;
   margin: 1.5rem 0;
   color: var(--text-muted);
@@ -378,7 +378,7 @@ img {
 .footer-logo {
   font-family: 'DM Serif Display', serif;
   font-size: 1.1rem;
-  color: var(--signal-green);
+  color: var(--accent-orange);
 }
 
 .footer-links {
@@ -392,7 +392,7 @@ img {
 }
 
 .footer-links a:hover {
-  color: var(--signal-green);
+  color: var(--accent-orange);
 }
 
 /* === Responsive === */
@@ -438,3 +438,12 @@ img {
     font-size: 1.5rem;
   }
 }
+
+/* Neutral native controls; explicit focus/selection avoids browser blue/cyan defaults. */
+:root{color-scheme:dark;accent-color:#f29a48}
+input,textarea,select{accent-color:#f29a48;background-color:#292a2e;color:#ededee;border-color:#59595e}
+:root body :focus-visible{outline:3px solid #f3ba72;outline-offset:3px}
+::selection{background:#c296ed;color:#18191c}
+button,a,input,select,textarea,summary{-webkit-tap-highlight-color:rgba(242,154,72,0.2)}
+option:checked{background:#5b3e70;color:#ffffff}
+input:disabled,textarea:disabled,select:disabled,button:disabled{color:#b3b3bb;opacity:.75}

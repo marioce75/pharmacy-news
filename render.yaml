@@ -2,9 +2,12 @@ services:
   - type: web
     name: pharmacy-news
     runtime: node
-    buildCommand: npm install
+    buildCommand: node scripts/check-runtime.js && npm ci
     startCommand: node server.js
+    healthCheckPath: /health
     envVars:
+      - key: HOST
+        value: 0.0.0.0
       - key: ADMIN_USERNAME
         sync: false
       - key: ADMIN_PASSWORD_HASH
@@ -16,7 +19,21 @@ services:
       - key: NODE_ENV
         value: production
       - key: TZ
-        value: America/Chicago
+        value: UTC
+      - key: CONTENT_DIR
+        value: /opt/render/project/src/content
+      - key: RUN_SCHEDULED_JOBS
+        value: "false"
+      - key: ALLOW_COLLECTION
+        value: "false"
+      - key: ALLOW_MODEL_CALLS
+        value: "false"
+      - key: RUN_NEWS_SCHEDULE
+        value: "false"
+      - key: RUN_ANTIBIOTIC_SCHEDULE
+        value: "false"
+      - key: ALLOW_ANTIBIOTIC_WATCH
+        value: "false"
     disk:
       name: content-data
       mountPath: /opt/render/project/src/content

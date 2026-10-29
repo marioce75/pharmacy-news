@@ -40,7 +40,7 @@
             </header>
 
             <% if (e.new_or_unmatched_fda && e.new_or_unmatched_fda.length) { %>
-              <h3 style="font-size:0.95rem;color:var(--signal-green);margin-bottom:0.5rem">FDA — unmatched approvals</h3>
+              <h3 style="font-size:0.95rem;color:var(--accent-orange);margin-bottom:0.5rem">FDA — unmatched approvals</h3>
               <ul style="font-size:0.88rem;line-height:1.55;margin-bottom:0.75rem">
                 <% e.new_or_unmatched_fda.forEach(h => { %>
                   <li>
@@ -52,7 +52,7 @@
             <% } %>
 
             <% if (e.pubmed_signals && e.pubmed_signals.length) { %>
-              <h3 style="font-size:0.95rem;color:var(--signal-green);margin-bottom:0.5rem">PubMed signal</h3>
+              <h3 style="font-size:0.95rem;color:var(--accent-orange);margin-bottom:0.5rem">PubMed signal</h3>
               <% e.pubmed_signals.forEach(s => { %>
                 <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.3rem">Query: <code><%= s.query %></code></p>
                 <ul style="font-size:0.85rem;margin-bottom:0.75rem">

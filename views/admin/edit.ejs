@@ -59,7 +59,7 @@
           </div>
           <div class="form-group">
             <label for="region">Region</label>
-            <select id="region" name="region">
+            <select id="region" name="region"><option value="Unknown" <%= !article.region || article.region === 'Unknown' ? 'selected' : '' %>>Unknown</option>
               <option value="US" <%= article.region === 'US' ? 'selected' : '' %>>US</option>
               <option value="EU" <%= article.region === 'EU' ? 'selected' : '' %>>EU</option>
               <option value="Asia" <%= article.region === 'Asia' ? 'selected' : '' %>>Asia</option>
@@ -127,11 +127,26 @@
           </div>
         </div>
 
-        <div class="form-actions">
+        <div class="form-group"><label for="content_kind">Content type</label><select name="content_kind" id="content_kind"><% ['unclassified','news','clinical','treatment','dosing','guidance'].forEach(kind=>{ %><option value="<%= kind %>" <%= article.content_kind===kind?'selected':'' %>><%= kind %></option><% }) %></select></div>
+<div class="form-group"><label for="correction_reason">Correction reason (required for changes to published articles)</label><textarea id="correction_reason" name="correction_reason"><%= article.correction_reason || '' %></textarea></div>
+<div class="form-actions">
           <button type="submit" class="btn btn-primary">Save Changes</button>
           <a href="/admin/<%= articleStatus === 'approved' ? 'published' : 'queue' %>" class="btn btn-outline">Cancel</a>
         </div>
-      </form>
+      <fieldset><legend>Structured disease / substance evidence</legend><p>JSON objects use the recorded schema; leave null when not applicable. Saving changes invalidates every review. Invalid evidence cannot be approved. Do not infer event locations from publisher addresses.</p>
+<% ['treatment','drug_event','outbreak','evidence','rights','geography','editorial'].forEach(key=>{ %><label for="structured-<%=key%>"><%=key%></label><textarea id="structured-<%=key%>" name="structured_<%=key%>" rows="8" spellcheck="false"><%=JSON.stringify(article[key]||null,null,2)%></textarea><% }); %></fieldset>
+</form>
+<section id="review-panel"><h2>Approvals for the saved revision</h2><p>Save changes before approving. Four approvals are recorded separately, each by a signed-in reviewer for one exact revision: editorial, evidence, source rights and, where required, clinical. Any later edit invalidates every approval of the old revision and records that in the history. Publication never generates text.</p>
+<button class="btn btn-sm btn-outline" type="button" id="load-review">Load saved draft</button><button class="btn btn-sm btn-outline" type="button" id="generate-draft">Generate draft (disabled unless explicitly enabled)</button>
+<iframe id="review-body" title="Sanitized saved article body" sandbox style="width:100%;height:320px;background:white"></iframe><pre id="review-metadata" style="white-space:pre-wrap"></pre>
+<h3>Status</h3><p>Revision: <code id="approval-revision">not loaded</code></p><p id="approval-you"></p><table class="approval-table"><thead><tr><th>Approval</th><th>Required</th><th>Status</th><th>Reviewer</th><th>Recorded</th></tr></thead><tbody id="approval-rows"></tbody></table><ul id="approval-blockers"></ul><div id="conversation-evidence"></div>
+<h3>Sign an approval</h3><p>Each approval asks for your own password again. It is checked on the server and never stored.</p>
+<label for="approval-password">Your password</label> <input type="password" id="approval-password" autocomplete="current-password">
+<fieldset><legend>Editorial</legend><label><input type="checkbox" id="editorial-confirm"> I reviewed this exact saved revision for accuracy, balance, headline and classification. Its classification correctly identifies any clinical guidance.</label><button class="btn btn-sm btn-outline" type="button" data-approve="editorial">Record editorial approval</button></fieldset>
+<fieldset><legend>Evidence</legend><label><input type="checkbox" id="evidence-confirm"> Claims, dates, figures and places in this exact revision match the cited source(s), and provenance is recorded.</label><button class="btn btn-sm btn-outline" type="button" data-approve="evidence">Record evidence approval</button></fieldset>
+<fieldset><legend>Source rights</legend><label for="rights-basis">Rights basis</label> <select id="rights-basis"><option value="">Choose…</option><option value="reviewed_for_original_summary">Original summary and link permitted by the source's terms</option><option value="permission_obtained">Written permission obtained</option></select> <label for="rights-permission">Where the written permission is kept (if any)</label> <input type="text" id="rights-permission" maxlength="500"><label><input type="checkbox" id="rights-confirm"> The licence reference and attribution recorded on this revision permit publishing it.</label><button class="btn btn-sm btn-outline" type="button" data-approve="rights">Record rights approval</button></fieldset>
+<fieldset><legend>Clinical</legend><% if (article.editorial && article.editorial.specialist_review_requirements) { %><p><strong>Specialist review requirement:</strong> <%= article.editorial.specialist_review_requirements %></p><label><input type="checkbox" id="specialist-confirm"> The specialist review above was completed for this exact saved revision.</label><% } %><label><input type="checkbox" id="clinical-confirm"> I am the clinician named on my account. I clinically reviewed this exact revision and it contains no unsupported clinical claim or advice.</label><button class="btn btn-sm btn-outline" type="button" data-approve="clinical">Record clinical approval</button></fieldset>
+<button class="btn btn-sm btn-outline" type="button" id="load-history">Show revision history</button><pre id="history-result" style="max-height:300px;overflow:auto;white-space:pre-wrap"></pre><button class="btn btn-sm btn-outline" type="button" id="publish-reviewed">Publish approved revision</button><p id="review-result" role="status"></p></section>
     </main>
   </div>
   <script src="/js/admin.js"></script>

@@ -44,7 +44,7 @@ function buildArticle(study) {
   const conditions = (ps.conditionsModule && ps.conditionsModule.conditions) || [];
   const interventions = (ps.armsInterventionsModule && ps.armsInterventionsModule.interventions) || [];
   const sponsor = ps.sponsorCollaboratorsModule && ps.sponsorCollaboratorsModule.leadSponsor && ps.sponsorCollaboratorsModule.leadSponsor.name;
-  const lastUpdate = (ps.statusModule && ps.statusModule.lastUpdatePostDateStruct && ps.statusModule.lastUpdatePostDateStruct.date) || new Date().toISOString().slice(0, 10);
+  const lastUpdate = (ps.statusModule && ps.statusModule.lastUpdatePostDateStruct && ps.statusModule.lastUpdatePostDateStruct.date) || null;
   const startDate = (ps.statusModule && ps.statusModule.startDateStruct && ps.statusModule.startDateStruct.date) || lastUpdate;
 
   const drugNames = interventions
@@ -69,8 +69,9 @@ function buildArticle(study) {
     source: `ClinicalTrials.gov — ${sponsor || 'NIH'}`,
     source_url: `https://clinicaltrials.gov/study/${id}`,
     category,
-    region: catInfo.region || 'Global',
-    date_published: parseDate(startDate),
+    region: 'Unknown',
+    date_published: parseDate(ps.statusModule?.studyFirstPostDateStruct?.date),
+    source_dates: { first_posted: ps.statusModule?.studyFirstPostDateStruct?.date || null, last_updated: lastUpdate, study_start: startDate },
     date_scraped: new Date().toISOString(),
     status: 'pending',
     tags: ['clinicaltrials', 'trial', status.toLowerCase()],
@@ -89,13 +90,15 @@ function buildArticle(study) {
 }
 
 function parseDate(s) {
-  if (!s) return new Date().toISOString().slice(0, 10);
+  if (!s) return null;
+  if (!/\d{4}[-/]\d{2}[-/]\d{2}|\d{4} [A-Za-z]{3} \d{1,2}/.test(s)) return null;
   const d = new Date(s);
   if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
-  return new Date().toISOString().slice(0, 10);
+  return null;
 }
 
 async function fetchAll() {
+  let sourceFailures=0;
   const articles = [];
   const seen = new Set();
   for (const { name, query } of QUERIES) {
@@ -110,9 +113,11 @@ async function fetchAll() {
       }
       await sleep(500);
     } catch (err) {
+      sourceFailures++;
       console.error(`  [ct.gov] ${name} failed: ${err.message}`);
     }
   }
+  articles.sourceFailures=sourceFailures;
   return articles;
 }
 

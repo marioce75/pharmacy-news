@@ -5,7 +5,7 @@
       <span class="logo-divider"></span>
       <span class="logo-section">Pharmacy News</span>
     </a>
-    <nav class="site-nav">
+    <a href="/atlas/" class="nav-link">World atlas &amp; antibiotic data</a><nav class="site-nav">
       <a href="/" class="nav-link<%= activeCategory === 'all' || !activeCategory ? ' active' : '' %>" data-category="all">Latest</a>
       <% Object.entries(categories).forEach(([slug, cat]) => { %>
         <a href="/?category=<%= slug %>" class="nav-link<%= activeCategory === slug ? ' active' : '' %>" data-category="<%= slug %>"><%= cat.label %></a>

@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/admin.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script>if(window.Chart){Chart.defaults.color='#b3b3bb';Chart.defaults.backgroundColor='#c296ed';Chart.defaults.borderColor='#59595e';if(Chart.defaults.plugins.colors)Chart.defaults.plugins.colors.enabled=false;}</script>
 </head>
 <body class="admin-body">
   <div class="admin-layout">
@@ -21,7 +22,7 @@
 
       <div class="stats-cards">
         <div class="stat-card">
-          <div class="stat-value" style="color:var(--signal-green)"><%= stats.counts.approved %></div>
+          <div class="stat-value" style="color:var(--accent-orange)"><%= stats.counts.approved %></div>
           <div class="stat-label">Published</div>
         </div>
         <div class="stat-card">
@@ -29,11 +30,11 @@
           <div class="stat-label">Pending</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value" style="color:#EF4444"><%= stats.counts.declined %></div>
+          <div class="stat-value" style="color:#ff8585"><%= stats.counts.declined %></div>
           <div class="stat-label">Declined</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value" style="color:#3B82F6"><%= (stats.approvalRate * 100).toFixed(0) %>%</div>
+          <div class="stat-value" style="color:#c296ed"><%= (stats.approvalRate * 100).toFixed(0) %>%</div>
           <div class="stat-label">Approval Rate</div>
         </div>
       </div>
@@ -104,10 +105,10 @@
       options: {
         responsive: true,
         scales: {
-          x: { ticks: { color: '#8a96a3', font: { size: 10 } }, grid: { color: '#1e2830' } },
-          y: { ticks: { color: '#8a96a3' }, grid: { color: '#1e2830' } }
+          x: { ticks: { color: '#b3b3bb', font: { size: 10 } }, grid: { color: '#3b3c40' } },
+          y: { ticks: { color: '#b3b3bb' }, grid: { color: '#3b3c40' } }
         },
-        plugins: { legend: { labels: { color: '#8a96a3' } } }
+        plugins: { legend: { labels: { color: '#b3b3bb' } } }
       }
     });
 
@@ -118,12 +119,12 @@
         labels: ['Approved', 'Declined', 'Pending'],
         datasets: [{
           data: [stats.counts.approved, stats.counts.declined, stats.counts.pending],
-          backgroundColor: ['#00d4aa', '#EF4444', '#F59E0B']
+          backgroundColor: ['#f29a48', '#ff8585', '#F59E0B']
         }]
       },
       options: {
         responsive: true,
-        plugins: { legend: { labels: { color: '#8a96a3' } } }
+        plugins: { legend: { labels: { color: '#b3b3bb' } } }
       }
     });
   </script>

@@ -8,39 +8,7 @@ function showToast(message, type = 'success') {
 }
 
 // === Article actions ===
-async function approveArticle(id) {
-  const card = document.querySelector(`[data-id="${id}"]`);
-  const approveBtn = card && card.querySelector('.btn-approve');
-  const originalLabel = approveBtn && approveBtn.textContent;
-  if (approveBtn) {
-    approveBtn.disabled = true;
-    approveBtn.textContent = 'Writing article…';
-  }
-  showToast('Writing 5-min read… (~30s)', 'info');
-  try {
-    const res = await fetch(`/api/admin/approve/${id}`, { method: 'POST' });
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      if (data.code === 'BODY_GEN_FAILED') {
-        showToast(`Article body generation failed: ${data.error}`, 'error');
-        if (approveBtn) { approveBtn.disabled = false; approveBtn.textContent = originalLabel; }
-        return;
-      }
-      throw new Error('Failed to approve');
-    }
-    if (card) {
-      card.style.transition = 'opacity 0.3s, transform 0.3s';
-      card.style.opacity = '0';
-      card.style.transform = 'translateX(50px)';
-      setTimeout(() => card.remove(), 300);
-    }
-    showToast('Article approved & published');
-    updatePendingCount(-1);
-  } catch (err) {
-    showToast('Failed to approve article', 'error');
-    if (approveBtn) { approveBtn.disabled = false; approveBtn.textContent = originalLabel; }
-  }
-}
+async function approveArticle(id) { window.location.href='/admin/edit/'+encodeURIComponent(id); }
 
 async function declineArticle(id) {
   if (!confirm('Decline this article?')) return;
@@ -64,7 +32,9 @@ async function declineArticle(id) {
 async function unpublishArticle(id) {
   if (!confirm('Unpublish this article?')) return;
   try {
-    const res = await fetch(`/api/admin/unpublish/${id}`, { method: 'POST' });
+    const reason = prompt('Reason for withdrawing this published revision:');
+    if (!reason || !reason.trim()) return;
+    const res = await fetch(`/api/admin/unpublish/${id}`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({reason}) });
     if (!res.ok) throw new Error('Failed to unpublish');
     const card = document.querySelector(`[data-id="${id}"]`);
     if (card) {
@@ -113,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify({ ids })
         });
         if (!res.ok) throw new Error('Bulk approve failed');
-        showToast(`${ids.length} articles approved`);
+        const result=await res.json(); showToast(`${result.results.filter(x=>x.success).length} published; ${result.results.filter(x=>!x.success).length} blocked (review required)`);
         setTimeout(() => location.reload(), 500);
       } catch (err) {
         showToast('Bulk approve failed', 'error');
@@ -177,12 +147,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const res = await fetch('/api/admin/approve-slate', { method: 'POST' });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Failed');
-        showToast(`${data.approved} articles approved from slate`);
+        showToast(`${data.approved} published; ${data.results.filter(x=>!x.success).length} blocked (review required)`);
         setTimeout(() => location.reload(), 1000);
       } catch (err) {
         showToast('Failed to approve slate', 'error');
         approveSlateBtn.disabled = false;
-        approveSlateBtn.textContent = 'Approve Entire Slate';
+        approveSlateBtn.textContent = 'Publish reviewed slate';
       }
     });
   }
@@ -238,10 +208,11 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       const id = editForm.dataset.id;
       const formData = new FormData(editForm);
-      const data = {};
+      const data = { revision: editForm.dataset.revision };
 
       for (const [key, value] of formData.entries()) {
-        if (['tags', 'drug_names', 'companies'].includes(key)) {
+        if(key.startsWith('structured_')) { try { data[key.slice(11)]=JSON.parse(value); } catch { showToast('Invalid JSON in '+key.slice(11),'error'); return; }
+        } else if (['tags', 'drug_names', 'companies'].includes(key)) {
           data[key] = value.split(',').map(s => s.trim()).filter(Boolean);
         } else {
           data[key] = value;
@@ -255,7 +226,8 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify(data)
         });
         if (!res.ok) throw new Error('Save failed');
-        showToast('Article saved');
+        showToast('Draft saved; review required');
+        window.location.reload();
       } catch (err) {
         showToast('Failed to save article', 'error');
       }
@@ -274,4 +246,35 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+});
+
+document.addEventListener('DOMContentLoaded',async()=>{
+ const form=document.getElementById('edit-form'); if(!form)return;
+ const id=form.dataset.id, out=document.getElementById('review-result');let saved;
+ async function request(url,body){const r=await fetch(url,{method:body?'POST':'GET',headers:{'Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{})});const data=await r.json();if(!r.ok)throw new Error(data.error);return data;}
+ const el=x=>document.getElementById(x),cell=(tr,text)=>{const td=document.createElement('td');td.textContent=text;tr.appendChild(td);};
+ async function status(){
+  const st=await request('/api/admin/approvals/'+id);el('approval-revision').textContent=st.revision;
+  el('approval-you').textContent=`Signed in as ${st.you.display_name} (${st.you.id}, ${st.you.identity_source}); roles: ${st.you.roles.join(', ')}; clinical credential verified: ${st.you.clinical_credential_verified?'yes':'no — '+st.you.clinical_credential_issue}`;
+  const rows=el('approval-rows');rows.replaceChildren();
+  for(const [kind,a] of Object.entries(st.approvals)){const tr=document.createElement('tr');cell(tr,kind);cell(tr,a.required?'yes':'no');cell(tr,a.status);cell(tr,a.reviewer_display_name||a.reviewer||'');cell(tr,a.approved_at||'');rows.appendChild(tr);}
+  const blockers=el('approval-blockers');blockers.replaceChildren(...(st.blockers.length?st.blockers:['All required approvals recorded for this revision']).map(t=>{const li=document.createElement('li');li.textContent=t;return li;}));
+  const ev=el('conversation-evidence');ev.replaceChildren();
+  if(st.conversation_evidence.length){const h=document.createElement('h4');h.textContent='Conversation evidence (not an approval; identity not verified)';ev.appendChild(h);for(const c of st.conversation_evidence){const p=document.createElement('p');p.textContent=`${c.attestor_display_name}: ${c.scope} — revision ${c.revision}${c.matches_current_revision?' (this revision)':' (an earlier revision)'}`;ev.appendChild(p);}}
+ }
+ async function load(){saved=await request('/api/admin/review/'+id);form.dataset.revision=saved.revision;el('review-body').srcdoc=saved.safeBody;el('review-metadata').textContent=JSON.stringify({title:saved.article.title,summary:saved.article.summary,source:saved.article.source_url,article:saved.article,revision:saved.revision},null,2);for(const c of ['editorial-confirm','evidence-confirm','rights-confirm','clinical-confirm','specialist-confirm'])if(el(c))el(c).checked=false;el('rights-basis').value='';el('rights-permission').value='';await status();}
+ const safe=fn=>async()=>{try{await fn();}catch(e){out.textContent=e.message;}};
+ const checked=x=>el(x)?.checked===true;
+ const attestations={
+  editorial:()=>({confirmed:checked('editorial-confirm'),contentKind:saved.clinicalRequired?'clinical':'news'}),
+  evidence:()=>({confirmed:checked('evidence-confirm')}),
+  rights:()=>({confirmed:checked('rights-confirm'),basis:el('rights-basis').value,permissionReference:el('rights-permission').value}),
+  clinical:()=>({confirmed:checked('clinical-confirm'),specialistRequirementsMet:checked('specialist-confirm')})
+ };
+ el('load-review').onclick=safe(load);
+ el('generate-draft').onclick=safe(async()=>{await request('/api/admin/generate/'+id,{revision:saved.revision});await load();out.textContent='New draft generated; every approval must be recorded again';});
+ for(const button of document.querySelectorAll('[data-approve]'))button.onclick=safe(async()=>{const kind=button.dataset.approve,password=el('approval-password').value;el('approval-password').value='';await request('/api/admin/approvals/'+id+'/'+kind,{revision:saved.revision,password,attestation:attestations[kind]()});await load();out.textContent=kind+' approval recorded for revision '+saved.revision;});
+ el('load-history').onclick=safe(async()=>{el('history-result').textContent=JSON.stringify(await request('/api/admin/history/'+id),null,2);});
+ el('publish-reviewed').onclick=safe(async()=>{await request('/api/admin/approve/'+id,{});out.textContent='Approved revision published';});
+ await safe(load)();
 });
