@@ -187,7 +187,7 @@ test('log redaction: credential-like query and body values are masked, ordinary 
   }
   assert.equal(redactUrl('/news?desk=amr&q=vancomycin+dosing&page=3'), '/news?desk=amr&q=vancomycin+dosing&page=3');
   assert.equal(redactUrl('/tools/bsa-mosteller'), '/tools/bsa-mosteller');
-  assert.equal(redactUrl('/x?password=' + secret + '&password=' + secret + ';token=' + secret + '#frag'), '/x?password=' + MASK + '&password=' + MASK + '&token=' + MASK);
+  assert.equal(redactUrl('/x?password=' + secret + '&password=' + secret + ';token=' + secret + '#frag'), '/x?password=' + MASK + '&password=' + MASK);
   assert.equal(redactUrl('/x?password'), '/x?password=' + MASK);
   assert.equal(redactUrl('/x?%zz=1&password=' + secret), '/x?%zz=1&password=' + MASK);
   const body = { reason: 'Synthetic', password: secret, attestation: { formulaChecked: true }, nested: [{ api_key: secret, name: 'kept' }], version_digest: 'abc' };
@@ -231,4 +231,56 @@ test('the real server writes its access log through the redacting logger', async
   assert.ok(!output.includes(secret), 'no credential value in server output');
   assert.match(output, /GET \/health\?probe=1&password=\[REDACTED\] HTTP\/1\.1 200/);
   assert.match(output, /GET \/admin\/tools\?formulaChecked=on&password=\[REDACTED\] HTTP\/1\.1 302/);
+});
+
+test('log redaction: the whole value of a sensitive parameter is masked across delimiter and encoding variants', async () => {
+  const { redactUrl, requestLogger, MASK } = require('../lib/log-redaction');
+  const A = 'SYNTHETIC' + crypto.randomBytes(4).toString('hex'), B = 'PRIVATESUFFIX' + crypto.randomBytes(4).toString('hex');
+  const clean = (input, expected) => { const out = redactUrl(input); for (const part of [A, B]) assert.ok(!out.includes(part), input + ' -> ' + out); if (expected !== undefined) assert.equal(out, expected, input); return out; };
+  // The reported case and every separator a value can contain: the server reads one value, so one value is masked.
+  for (const sep of [';', ',', '|', ' ', '+', '%20', '%3B', '%3b', '%26', '%2C', '%7C', '%0A', '%0D%0A', '%09', '%00', ':', '=', '==', '/', '\\', '%5C', '%2F', '%3D', '%23', '%3F', '%253B', '%2526', ';;', ';x=', ';password='])
+    clean('/admin/tools?formulaChecked=on&password=' + A + sep + B + '&page=2', '/admin/tools?formulaChecked=on&password=' + MASK + '&page=2');
+  clean('/admin/tools?password=' + A + ';' + B, '/admin/tools?password=' + MASK);
+  clean('/admin/tools?password=' + A + '?' + B + '&page=2', '/admin/tools?password=' + MASK + '&page=2');
+  clean('/admin/tools?password=' + A + '#' + B, '/admin/tools?password=' + MASK);
+  // A sensitive assignment behind a semicolon or other separator inside another parameter.
+  clean('/x?page=2;password=' + A + ';' + B, '/x?page=' + MASK);
+  clean('/x?page=2%3Bpassword%3D' + A, '/x?page=' + MASK);
+  clean('/x?page=2%26token%3D' + A + '&q=kept', '/x?page=' + MASK + '&q=kept');
+  clean('/x?next=%2Flogin%3Ftoken%3D' + A + '&q=kept', '/x?next=' + MASK + '&q=kept');
+  clean('/x?next=%252Flogin%253Ftoken%253D' + A, '/x?next=' + MASK);
+  clean('/x?next=https://example.org/cb?code=' + A + ';' + B, '/x?next=' + MASK);
+  // Encoded, double-encoded, malformed and legacy-encoded parameter names.
+  clean('/x?pass%77ord=' + A, '/x?pass%77ord=' + MASK);
+  clean('/x?pass%2577ord=' + A, '/x?pass%2577ord=' + MASK);
+  clean('/x?p%61ssword%zz=' + A, '/x?' + MASK + '=' + MASK);
+  clean('/x?p%u0061ssword=' + A, '/x?p%u0061ssword=' + MASK);
+  clean('/x?%zz&password=' + A + ';' + B, '/x?%zz&password=' + MASK);
+  clean('/x?user[password]=' + A + ';' + B, '/x?user[password]=' + MASK);
+  clean('/x?user%5Bpassword%5D=' + A, '/x?user%5Bpassword%5D=' + MASK);
+  clean('/x?PASSWORD=' + A + '&Api-Key=' + B, '/x?PASSWORD=' + MASK + '&Api-Key=' + MASK);
+  // A value smuggled into the name position is not echoed back as a name.
+  clean('/x?password%3D' + A, '/x?' + MASK + '=' + MASK);
+  clean('/x?password%3D' + A + ';' + B + '=1', '/x?' + MASK + '=' + MASK);
+  clean('/x?a;password=' + A, '/x?' + MASK + '=' + MASK);
+  // Path parameters and fragments.
+  clean('/admin/tools;password=' + A + ';' + B, '/admin/' + MASK);
+  clean('/admin/tools;password=' + A + '/preview?page=2', '/admin/' + MASK + '/preview?page=2');
+  clean('/admin/tools%3Fpassword%3D' + A, '/admin/' + MASK);
+  clean('/admin/tools#password=' + A, '/admin/tools');
+  // Ordinary addresses are logged unchanged, including semicolons and encoded characters in harmless values.
+  for (const plain of ['/news?desk=amr&q=vancomycin;dosing&page=3', '/news?q=a%3Bb%26c%3Dd', '/affordability?drug=co-trimoxazole&strength=800%2F160', '/tools/bsa-mosteller', '/sources?region=EMRO;AFRO', '/news?q=keynote+meeting+notes', '/'])
+    assert.equal(redactUrl(plain), plain);
+
+  // End to end through the real logger middleware, with the reported query.
+  const lines = [], app = express();
+  app.use(requestLogger({ stream: { write: l => lines.push(l) } }));
+  app.use((req, res) => res.send('ok'));
+  const s = await new Promise(r => { const x = app.listen(0, '127.0.0.1', () => r(x)); }), base = 'http://127.0.0.1:' + s.address().port;
+  try {
+    for (const p of ['/admin/tools?password=' + A + ';' + B, '/admin/tools?formulaChecked=on;password=' + A + ';' + B, '/admin/tools;password=' + A + ';' + B + '?page=2', '/admin/tools?next=%2Fa%3Ftoken%3D' + A + '%3B' + B]) assert.equal((await fetch(base + p)).status, 200);
+  } finally { await new Promise(r => s.close(r)); }
+  const log = lines.join('');
+  assert.equal(lines.length, 4); assert.ok(!log.includes(A) && !log.includes(B), 'no part of a credential value in the access log');
+  assert.match(lines[0], /GET \/admin\/tools\?password=\[REDACTED\] HTTP\/1\.1 200/);
 });
