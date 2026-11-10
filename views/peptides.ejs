@@ -4,11 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Peptide Therapeutics — Pharmacy News</title>
-  <meta name="description" content="News on peptide therapeutics: FDA-approved drugs (GLP-1s, insulins, peptide hormones), compounding policy, and longevity research. Curated by Dosys Health.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <meta name="description" content="News on peptide therapeutics: FDA-approved drugs (GLP-1s, insulins, peptide hormones), compounding policy, and longevity research.">
   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/atlas/style.css">
+  <link rel="stylesheet" href="/css/site.css">
   <style>
     .lane-tabs { display:flex; gap:0.5rem; flex-wrap:wrap; margin:1.5rem 0 0; padding-bottom:0.5rem; }
     .lane-tab {
@@ -47,7 +46,7 @@
     </div>
   </section>
 
-  <main class="container">
+  <main id="main" class="container">
     <section class="news-grid" id="news-grid">
       <% if (!articles || articles.length === 0) { %>
         <p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 3rem 0;">

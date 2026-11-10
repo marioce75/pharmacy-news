@@ -1,47 +1,40 @@
+# Render blueprint for PharmacyNews.ai.
+#
+# The start command is the durable entry point (scripts/start-review.js). It, not this file,
+# decides the collection/model flags: models and the antibiotic watcher are always off, and
+# collection is off unless COLLECTION_PAUSED is exactly "false". CONTENT_DIR is set by the
+# start script to <disk>/store-v1 and must not be set here.
+#
+# NOTE: a blueprint only applies when the service is synced from it. If the service was
+# configured in the Render dashboard, compare the dashboard's Start Command and environment
+# with this file before activating (see docs/OPERATIONS.md).
 services:
   - type: web
     name: pharmacy-news
     runtime: node
     buildCommand: node scripts/check-runtime.js && npm ci
-    startCommand: node server.js
+    startCommand: node scripts/start-review.js
     healthCheckPath: /health
     envVars:
-      - key: HOST
-        value: 0.0.0.0
+      - key: NODE_VERSION
+        value: 24.22.1
+      - key: NODE_ENV
+        value: production
+      - key: TZ
+        value: UTC
+      # Collection stays paused until the owner changes this to "false".
+      - key: COLLECTION_PAUSED
+        value: "true"
       - key: ADMIN_USERNAME
         sync: false
       - key: ADMIN_PASSWORD_HASH
         sync: false
       - key: SESSION_SECRET
         sync: false
-      - key: ANTHROPIC_API_KEY
-        sync: false
-      - key: NODE_ENV
-        value: production
-      - key: TZ
-        value: UTC
-      - key: CONTENT_DIR
-        value: /opt/render/project/src/content
-      - key: RUN_SCHEDULED_JOBS
-        value: "false"
-      - key: ALLOW_COLLECTION
-        value: "false"
-      - key: ALLOW_MODEL_CALLS
-        value: "false"
-      - key: RUN_NEWS_SCHEDULE
-        value: "false"
-      - key: RUN_ANTIBIOTIC_SCHEDULE
-        value: "false"
-      - key: ALLOW_ANTIBIOTIC_WATCH
-        value: "false"
+      # Optional, owner-managed; leave unset unless deliberately configured:
+      #   REVIEWER_REGISTRY_FILE, PUBLIC_SITE_URL, ALERT_WEBHOOK_URL,
+      #   NEWSLETTER_* and SPONSOR_* feature flags (all default off).
     disk:
       name: content-data
       mountPath: /opt/render/project/src/content
       sizeGB: 1
-    headers:
-      - path: /*
-        name: X-Frame-Options
-        value: DENY
-      - path: /*
-        name: X-Content-Type-Options
-        value: nosniff

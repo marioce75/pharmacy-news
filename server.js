@@ -9,6 +9,10 @@ const morgan = require('morgan');
 const store = require('./lib/store');
 const scheduler = require('./lib/scheduler');
 
+// In production the server must be started through scripts/start-review.js (npm start), which
+// verifies the persistent disk, opens the versioned store and applies the collection policy.
+// Starting server.js directly would use a different content directory and raw environment flags.
+if(process.env.NODE_ENV==='production'&&process.env.PN_ENTRY!=='start-review')throw new Error('Production must be started with `npm start` (scripts/start-review.js); refusing direct server.js start');
 if(process.env.NODE_ENV==='production'&&String(process.env.SESSION_SECRET||'').length<32)throw new Error('Production SESSION_SECRET of at least 32 characters is required');
 const SESSIONS_DIR = path.join(process.env.CONTENT_DIR || path.join(__dirname,'content'), 'sessions');
 // Session files identify signed-in reviewers; a newly created directory is owner-only.
@@ -67,12 +71,21 @@ const adminRoutes = require('./routes/admin');
 const apiRoutes = require('./routes/api');
 const bugsDrugsRoutes = require('./routes/bugs-drugs');
 
+// Reader pages, clinical tools, newsletter, sponsorship and affordability directory.
+const siteRoutes = require('./routes/site'), sponsorRoutes = require('./routes/sponsors'), newsletterRoutes = require('./routes/newsletter');
+app.use('/', siteRoutes.publicRouter);
+app.use('/', sponsorRoutes.publicRouter);
+app.use('/', newsletterRoutes.publicRouter);
+app.use('/', require('./routes/affordability'));
+app.use('/admin', siteRoutes.adminRouter);
+app.use('/admin', sponsorRoutes.adminRouter);
+app.use('/admin', newsletterRoutes.adminRouter);
 app.use('/', publicRoutes);
 app.use('/admin', require('./routes/monitoring'));
 app.use('/admin', adminRoutes);
 app.use('/api', apiRoutes);
 // Clinical reference excluded from the local redevelopment candidate.
-app.use('/bugs-and-drugs', (req,res)=>res.status(503).send('Clinical reference is not enabled in this candidate.'));
+app.use('/bugs-and-drugs', (req,res)=>res.status(503).render('layout',{title:'Reference not available — PharmacyNews.ai',activeCategory:null,body:'<h1>This reference is not available</h1><p>The infectious-disease reference is switched off until every entry has citations and a verified clinical approval. See <a href="/tools">clinical tools</a> for status.</p>'}));
 
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
@@ -80,19 +93,22 @@ app.get('/health', (req, res) => res.json({ status: 'ok' }));
 // 404
 app.use((req, res) => {
   res.status(404).render('layout', {
-    title: 'Not Found — Pharmacy News',
+    title: 'Not found — PharmacyNews.ai',
     activeCategory: null,
-    body: '<div style="text-align:center;padding:4rem 0"><h1 style="font-family:DM Serif Display,serif;margin-bottom:1rem">404 — Page Not Found</h1><p style="color:var(--text-muted)">The page you\'re looking for doesn\'t exist.</p><a href="/" style="color:var(--accent-orange);margin-top:1rem;display:inline-block">← Back to homepage</a></div>'
+    body: '<h1>Page not found</h1><p>The page you are looking for does not exist. <a href="/">Back to the monitor</a> or browse the <a href="/news">news index</a>.</p>'
   });
 });
 
 // Error handler
 app.use((err, req, res, next) => {
+  if (res.headersSent) return next(err);
+  // Client errors (bad JSON, oversized bodies) are not server faults.
+  if (err.status >= 400 && err.status < 500) return res.status(err.status).type('text').send(err.status === 413 ? 'Request too large' : 'Bad request');
   console.error(err.stack);
   res.status(500).render('layout', {
-    title: 'Error — Pharmacy News',
+    title: 'Error — PharmacyNews.ai',
     activeCategory: null,
-    body: '<div style="text-align:center;padding:4rem 0"><h1 style="font-family:DM Serif Display,serif;margin-bottom:1rem">Something went wrong</h1><p style="color:var(--text-muted)">Please try again later.</p></div>'
+    body: '<h1>Something went wrong</h1><p>Please try again later.</p>'
   });
 });
 

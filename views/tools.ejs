@@ -1,0 +1,32 @@
+<% const cls = { clinically_reviewed: 'ok', awaiting_clinical_review: 'warn', review_expired: 'warn', withdrawn: 'off', not_available: 'off', disabled: 'off', review_gated: 'warn' }; const sections = [...new Set(references.map(r => r.section))]; %>
+<%- include('partials/site-top', { title: 'Clinical tools and quick references | PharmacyNews.ai', description: 'Calculators and quick references with citations, units and review status. Nothing is offered for clinical use before clinical review.', active: 'tools', canonicalPath: '/tools' }) %>
+<main id="main" class="page">
+  <h1>Clinical tools and quick references</h1>
+  <p class="lede">Each tool shows its formula, units, population, assumptions, citations and review status.</p>
+  <div class="notice"><strong>Review comes first.</strong> A tool can be used here only after a credential-verified clinical reviewer has approved its exact version. Tools awaiting review are listed so you can see what is planned, but they cannot be run. Reference sections without sourced, reviewed content are marked not available — no doses, antidotes or rates are published without sources and review.</div>
+  <form class="filters-row" method="get" action="/tools" role="search" aria-label="Search tools"><label>Search tools and references<input type="search" name="q" value="<%= q %>" maxlength="120"></label><button class="btn-primary" type="submit">Search</button><a href="/tools">Reset</a></form>
+
+  <h2>Calculators</h2>
+  <% if (!calculators.length) { %><p>No calculators match.</p><% } %>
+  <ul class="cards">
+    <% calculators.forEach(c => { %><li class="card">
+      <span class="badge-status <%= cls[c.state] %>"><%= labels[c.state] %></span>
+      <h3><a href="/tools/<%= c.tool.id %>"><%= c.tool.name %></a></h3>
+      <p><%= c.tool.purpose %></p>
+      <dl><dt>Version</dt><dd><%= c.tool.version %></dd><% if (c.available) { %><dt>Reviewed</dt><dd><%= c.reviewed_at %> (re-review due <%= c.review_due %>)</dd><% } %></dl>
+    </li><% }); %>
+  </ul>
+
+  <% sections.forEach(section => { %>
+  <h2><%= section %></h2>
+  <ul class="cards">
+    <% references.filter(r => r.section === section).forEach(r => { %><li class="card">
+      <span class="badge-status <%= cls[r.status] %>"><%= labels[r.status] %></span>
+      <h3><% if (r.href) { %><a href="<%= r.href %>"><%= r.name %></a><% } else { %><%= r.name %><% } %></h3>
+      <p><%= r.needs %></p>
+    </li><% }); %>
+  </ul>
+  <% }); %>
+  <% if (!references.length && q) { %><p>No reference sections match.</p><% } %>
+</main>
+<%- include('partials/site-bottom') %>

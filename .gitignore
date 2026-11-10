@@ -4,3 +4,5 @@ content/
 .env.*
 *.log
 review-drafts/
+
+.preview-store/

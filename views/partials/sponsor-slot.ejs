@@ -1,0 +1,15 @@
+<%
+  // Sponsor slot. Pass `placements`: the array returned by
+  // require('../lib/sponsors').activePlacements(slot), which is already limited to the
+  // five public fields. Renders nothing at all when there is nothing to show.
+  const _placements = (typeof placements !== 'undefined' && Array.isArray(placements) ? placements : [])
+    .filter(p => p && (p.label === 'Advertisement' || p.label === 'Sponsored') && /^https:\/\//.test(p.link || ''));
+-%>
+<% _placements.forEach(p => { -%>
+<aside class="sponsor-slot" aria-label="Advertisement">
+  <p class="sponsor-label"><%= p.label %> · <%= p.sponsor_name %></p>
+  <p><strong><%= p.headline %></strong></p>
+  <p><%= p.body %></p>
+  <p><a href="<%= p.link %>" rel="sponsored nofollow noopener noreferrer" target="_blank">Visit <%= p.sponsor_name %><span class="sr-only"> (<%= p.label.toLowerCase() %> link, opens in a new tab)</span></a></p>
+</aside>
+<% }); -%>

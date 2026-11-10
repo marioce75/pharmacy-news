@@ -13,7 +13,8 @@
     "test": "node --test tests/*.test.js",
     "check:runtime": "node scripts/check-runtime.js",
     "migrate:check": "node lib/migrate.js --dry-run",
-    "preinstall": "node scripts/check-runtime.js"
+    "preinstall": "node scripts/check-runtime.js",
+    "preview": "node scripts/start-preview.js"
   },
   "repository": {
     "type": "git",

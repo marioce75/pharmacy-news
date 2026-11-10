@@ -1,0 +1,39 @@
+<%- include('partials/site-top', { title: 'Methods and review standards | PharmacyNews.ai', description: 'How PharmacyNews.ai collects, labels and reviews pharmacy and medicines news, and what its maps and counts do and do not mean.', active: 'about', canonicalPath: '/about' }) %>
+<main id="main" class="page">
+  <h1>Methods and review standards</h1>
+  <p class="lede">PharmacyNews.ai gathers pharmacy and medicines news from public-health agencies, regulators and research indexes, and labels clearly what has and has not been reviewed.</p>
+
+  <h2>Three kinds of item</h2>
+  <ul>
+    <li><span class="badge-status ok">Reviewed summary</span> An original summary written for this site. It is published only after separate editorial, evidence and source-rights approvals of one exact revision, plus a clinical approval where the content could influence treatment. A later edit withdraws the approvals.</li>
+    <li><span class="badge-status warn">Official title (unreviewed)</span> The title, issuer, date and link of a report from an official source, collected automatically. No summary, no figures, no interpretation.</li>
+    <li><span class="badge-status off">Research index title (unreviewed)</span> A bibliographic record from a literature index or trial registry. A listing is not an appraisal, a finding or a recommendation.</li>
+  </ul>
+  <p>Automatic collection is not human review, and nothing on this site presents it as such.</p>
+
+  <h2>Dates</h2>
+  <p>The publisher's own publication date is kept separately from the date we collected an item. If a source gives no date, or a date in the future, the publication date is shown as unknown rather than guessed.</p>
+
+  <h2>What the map and counts mean</h2>
+  <ul>
+    <li><strong>News volume is not disease.</strong> Counts of titles describe what monitored sources published. They are not cases, incidence, prevalence or risk.</li>
+    <li><strong>Publisher location is not event location.</strong> A report is placed by the places its title names, or by its issuer's region when it names none. Region markers are totals of titles, not event coordinates.</li>
+    <li><strong>Missing is not zero.</strong> Where no source is working for a region or topic, the site says so.</li>
+    <li><strong>Pandemic watch</strong> shows attributed official assessments only. It is not a forecast or a probability.</li>
+    <li><strong>Measured data</strong> (resistance, antimicrobial use) is kept apart from news, and each dataset is shown with its source, period, unit, denominator and limits. Trust-level figures for England describe NHS trusts, which may include several hospitals; they are unadjusted and are not a ranking.</li>
+  </ul>
+
+  <h2>Sources and reuse</h2>
+  <p>We collect only from public feeds, APIs and index pages that permit automated access, and we stop when a site blocks or restricts it. We show headlines and links and write our own summaries; we do not republish articles. The <a href="/sources">source coverage</a> page lists every source with its real status, including those that are blocked, failing or not yet built.</p>
+
+  <h2>Clinical tools and treatment content</h2>
+  <p>Hazard and outbreak news is kept separate from treatment guidance. A calculator or reference is offered for clinical use only after a credential-verified clinical reviewer approves its exact version; until then it is listed as awaiting review and cannot be used. Where no approved treatment or reviewed guidance exists, the site says so. See <a href="/tools">clinical tools</a>.</p>
+
+  <h2>Independence, advertising and privacy</h2>
+  <p>Advertising and sponsored material, when present, is labelled and separated from news and clinical content, and never appears on clinical or medication-cost pages. Sponsors have no say in coverage. See <a href="/advertise">advertising and sponsorship</a>.</p>
+  <p>The site does not ask for health information. Calculator inputs are processed for the response only and are not stored. The newsletter stores an email address and consent record only.</p>
+
+  <h2>Not medical advice</h2>
+  <p>This site is an information service for health professionals and the public. It does not replace the linked official sources, product labelling, local policy or a clinician's judgement.</p>
+</main>
+<%- include('partials/site-bottom') %>

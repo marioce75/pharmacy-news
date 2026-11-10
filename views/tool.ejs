@@ -1,0 +1,37 @@
+<% const t = s.tool; const usable = preview || s.available; const cls = { clinically_reviewed: 'ok', awaiting_clinical_review: 'warn', review_expired: 'warn', withdrawn: 'off' }; %>
+<%- include('partials/site-top', { title: t.name + ' | PharmacyNews.ai', description: t.purpose, active: 'tools', canonicalPath: '/tools/' + t.id, noindex: preview || !s.available }) %>
+<main id="main" class="page">
+  <p><a href="<%= preview ? '/admin/tools' : '/tools' %>">← All tools</a></p>
+  <h1><%= t.name %></h1>
+  <p><span class="badge-status <%= cls[s.state] %>"><%= labels[s.state] %></span> <span class="muted">Version <%= t.version %><% if (s.available) { %> · Reviewed <%= s.reviewed_at %> · Re-review due <%= s.review_due %><% } %></span></p>
+  <% if (preview) { %><div class="notice"><strong>Reviewer preview.</strong> Visible to signed-in reviewers only, for checking the formula and test cases. Not for clinical use.</div><% } %>
+  <% if (!s.available && !preview) { %><div class="notice"><strong>Not available for clinical use.</strong> <%= s.state === 'withdrawn' ? 'This tool was withdrawn.' : s.state === 'review_expired' ? 'Its clinical review has expired and it is waiting for re-review.' : 'This tool has not yet been approved by a credential-verified clinical reviewer.' %> Its details are shown for transparency; the calculator cannot be run.</div><% } %>
+  <p class="lede"><%= t.purpose %></p>
+
+  <% if (error) { %><div class="notice" role="alert" id="tool-error"><strong>Check your input.</strong> <%= error %></div><% } %>
+  <% if (result) { %><div class="notice purple" role="status"><strong>Result</strong>
+    <% result.results.forEach(r => { %><p style="font-size:22px;margin:6px 0"><%= r.label %>: <strong><%= r.value %> <%= r.unit %></strong></p><% }); %>
+    <p class="muted">From: <%= t.inputs.map(f => f.label + ' ' + result.inputs[f.name] + (f.unit ? ' ' + f.unit : '')).join('; ') %>. An estimate from the formula below — verify independently before any clinical use.</p></div><% } %>
+
+  <% if (usable) { %>
+  <form class="form-grid" method="post" action="<%= action %>" autocomplete="off" novalidate>
+    <% t.inputs.forEach(f => { const bad = typeof errorField !== 'undefined' && errorField === f.name; %>
+      <% if (f.type === 'choice') { %>
+        <label><%= f.label %><select name="<%= f.name %>" required<%- bad ? ' aria-invalid="true" aria-describedby="tool-error"' : '' %>><option value="">Choose…</option><% f.options.forEach(o => { %><option value="<%= o.value %>"<%- values[f.name] === o.value ? ' selected' : '' %>><%= o.label %></option><% }); %></select></label>
+      <% } else { %>
+        <label><%= f.label %> (<%= f.unit %>) <span class="muted">— <%= f.min %> to <%= f.max %></span><input type="text" inputmode="decimal" name="<%= f.name %>" value="<%= typeof values[f.name] === 'string' ? values[f.name] : '' %>" required<%- bad ? ' aria-invalid="true" aria-describedby="tool-error"' : '' %>></label>
+      <% } %>
+    <% }); %>
+    <div><button class="btn-primary" type="submit">Calculate</button></div>
+    <p class="muted">Inputs are used for this calculation only. They are not stored and are not placed in the page address.</p>
+  </form>
+  <% } %>
+
+  <h2>Formula</h2><p><%= t.formula %></p>
+  <h2>Population</h2><p><%= t.population %></p>
+  <h2>Inputs and units</h2><ul><% t.inputs.forEach(f => { %><li><%= f.label %><%= f.unit ? ' — ' + f.unit + ' (accepted range ' + f.min + ' to ' + f.max + ')' : '' %></li><% }); %></ul>
+  <h2>Assumptions</h2><ul><% t.assumptions.forEach(a => { %><li><%= a %></li><% }); %></ul>
+  <h2>Warnings</h2><ul><% t.warnings.forEach(a => { %><li><%= a %></li><% }); %></ul>
+  <h2>Sources</h2><ul><% t.citations.forEach(c => { %><li><%= c.text %><% if (c.url) { %> <a href="<%= c.url %>" rel="noopener noreferrer" target="_blank">PubMed record ↗</a><% } %></li><% }); %></ul>
+</main>
+<%- include('partials/site-bottom') %>

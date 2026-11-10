@@ -1,0 +1,100 @@
+<%- include('partials/site-top', {title, description, active:'affordability', canonicalPath:'/affordability'}) %>
+<main id="main" class="page">
+  <h1>Medication costs: where to look for help</h1>
+  <p class="lede">A directory of links to programmes and tools that may lower what you pay for medicines. Each link was opened and read on the date shown on its card.</p>
+
+  <div class="notice">
+    <p><strong>What this page is, and is not.</strong> This is a list of links, checked on the stated dates. It is not financial, insurance or medical advice, and it cannot tell you whether you qualify for anything.</p>
+    <p>Programmes change, close and reopen. Always confirm the current rules on the organisation's own page before relying on them.</p>
+    <p>PharmacyNews.ai has no affiliate relationship with any organisation listed here and receives nothing from them. There are no sponsor placements on this page, and the links carry no tracking or referral codes.</p>
+    <p>No prices, income limits or savings figures are shown here because they change; the linked pages have the current figures.</p>
+  </div>
+
+  <h2 id="how-to-use">How to use this page</h2>
+  <ol>
+    <li>Ask your pharmacist or prescriber whether a generic or another lower-cost option would suit you. This is often the quickest saving.</li>
+    <li>Check government help first: coverage you may qualify for usually helps with every medicine, not just one.</li>
+    <li>Then look at manufacturer programmes and charities for the specific medicine or condition. Funds open and close, so check back.</li>
+    <li>If you use a discount tool, compare its price with your insurance price at the same pharmacy on the same day. Discount tools are commercial services and are generally used instead of insurance, not with it.</li>
+    <li>Use only licensed pharmacies.<% if (safetyResource) { %> The <a href="<%= safetyResource.url %>" rel="noopener noreferrer"><%= safetyResource.name %></a> pages explain how to check an online pharmacy.<% } %></li>
+  </ol>
+
+  <h2 id="find">Find resources</h2>
+  <form method="get" action="/affordability" class="filters-row" aria-describedby="search-privacy-note">
+    <label for="aff-type">Type
+      <select id="aff-type" name="type">
+        <option value="">All types</option>
+        <% typeOptions.forEach(t => { %><option value="<%= t.value %>"<% if (filters.type === t.value) { %> selected<% } %>><%= t.label %></option>
+        <% }); %>
+      </select>
+    </label>
+    <label for="aff-geography">Country or region
+      <select id="aff-geography" name="geography">
+        <option value="">All places</option>
+        <% geographyOptions.forEach(g => { %><option value="<%= g %>"<% if (filters.geography === g) { %> selected<% } %>><%= g %></option>
+        <% }); %>
+      </select>
+    </label>
+    <label for="aff-q">Resource name
+      <input id="aff-q" type="search" name="q" value="<%= filters.q %>" maxlength="80" autocomplete="off">
+    </label>
+    <button type="submit" class="btn-primary">Show resources</button>
+    <% if (filtered) { %><a href="/affordability">Clear filters</a><% } %>
+  </form>
+  <p id="search-privacy-note" class="muted">Search looks at resource and organisation names only. Please do not enter personal or health details, such as your name, a diagnosis or a medicine you take.</p>
+
+  <p role="status" class="muted">Showing <%= resultCount %> of <%= totalCount %> resources.<% if (anyStale) { %> Some links have not been re-checked in the last <%= staleAfterDays %> days and are marked.<% } %></p>
+
+  <% if (groups.length === 0) { %>
+    <div class="notice purple">
+      <p><strong>No resources match those filters.</strong> This directory is short on purpose: it lists only resources whose pages could be read and confirmed. That a resource is missing does not mean help does not exist.</p>
+      <p><a href="/affordability">Show the full directory</a>, or see <a href="#not-finding-help">Not finding help?</a> below.</p>
+    </div>
+  <% } %>
+
+  <% groups.forEach(group => { %>
+    <section aria-labelledby="group-<%= group.value %>">
+      <h2 id="group-<%= group.value %>"><%= group.label %> <span class="muted">(<%= group.entries.length %>)</span></h2>
+      <ul class="cards">
+        <% group.entries.forEach(entry => { %>
+          <li class="card" id="resource-<%= entry.id %>">
+            <p>
+              <span class="badge-status ok"><%= entry.type_label %></span>
+              <% if (entry.commercial) { %><span class="badge-status warn">Commercial service</span><% } %>
+              <span class="badge-status off"><%= entry.geography %></span>
+            </p>
+            <h3><%= entry.name %></h3>
+            <p class="muted">Run by <%= entry.operator %></p>
+            <p><%= entry.summary %></p>
+            <p><strong>Who it may help:</strong> <%= entry.who_it_may_help %></p>
+            <p><strong>Limits to know about:</strong></p>
+            <ul>
+              <% entry.limitations.forEach(item => { %><li><%= item %></li>
+              <% }); %>
+            </ul>
+            <p>
+              <% if (entry.stale) { %>
+                <span class="badge-status warn">Check may be out of date</span>
+                <span class="muted">Link last checked <%= entry.verified_label %></span>
+              <% } else { %>
+                <span class="muted">Link checked <%= entry.verified_label %></span>
+              <% } %>
+            </p>
+            <p><a href="<%= entry.url %>" rel="noopener noreferrer">Go to <%= entry.name %><span class="sr-only"> (leaves PharmacyNews.ai)</span></a></p>
+          </li>
+        <% }); %>
+      </ul>
+    </section>
+  <% }); %>
+
+  <h2 id="not-finding-help">Not finding help?</h2>
+  <p>Talk with your pharmacist or prescriber. Tell them cost is a problem: they can often suggest a different medicine, strength or supply length, and many pharmacies and clinics know about local programmes that are not listed anywhere online.</p>
+  <% if (referralResource) { %>
+    <p>In the United States, <a href="<%= referralResource.url %>" rel="noopener noreferrer"><%= referralResource.name %></a> (run by <%= referralResource.operator %>) is a confidential referral line for local help, including healthcare expenses. It is a general service, not a medication programme. <% if (referralResource.stale) { %><span class="badge-status warn">Check may be out of date</span> <% } %><span class="muted">Link <%= referralResource.stale ? 'last checked' : 'checked' %> <%= referralResource.verified_label %>.</span></p>
+  <% } %>
+  <p class="muted">Do not stop, skip or split a prescribed medicine to save money without speaking to a pharmacist or prescriber first.</p>
+
+  <h2 id="how-checked">How these links are checked</h2>
+  <p>Each organisation's own page is opened and read before it is listed, and the date is recorded. Links not re-checked within <%= staleAfterDays %> days are marked as possibly out of date. Organisations whose pages could not be read are left out rather than described from memory. Listing is not an endorsement.</p>
+</main>
+<%- include('partials/site-bottom') %>

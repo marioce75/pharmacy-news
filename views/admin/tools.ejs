@@ -1,0 +1,26 @@
+<%- include('../partials/site-top', { title: 'Clinical tool review | PharmacyNews admin', active: '', noindex: true }) %>
+<main id="main" class="page">
+  <p><a href="/admin">← Admin</a></p>
+  <h1>Clinical tool review</h1>
+  <p>Signed in as <strong><%= you.id %></strong> (<%= you.roles.join(', ') %>). <%= you.clinical ? 'Your clinical credential is verified; you can sign approvals.' : 'You cannot approve tools: ' + (you.issue || 'no verified clinical credential') + '.' %></p>
+  <div class="notice"><strong>What approval means.</strong> You confirm you checked the formula against the cited source, the citations, and the documented test cases (tests/clinical-tools.test.js) for this exact version. Any later change to the tool withdraws the approval automatically. Approvals expire after one year.</div>
+  <div class="table-wrap"><table><thead><tr><th scope="col">Tool</th><th scope="col">Status</th><th scope="col">Version digest</th><th scope="col">Actions</th></tr></thead><tbody>
+  <% cat.calculators.forEach(c => { %><tr>
+    <td><a href="/admin/tools/<%= c.tool.id %>/preview"><%= c.tool.name %></a><br><span class="muted">v<%= c.tool.version %></span></td>
+    <td><%= labels[c.state] %><% if (c.review_due) { %><br><span class="muted">Re-review due <%= c.review_due %></span><% } %><% if (c.note) { %><br><span class="muted"><%= c.note %></span><% } %></td>
+    <td><code style="word-break:break-all;font-size:11px"><%= c.version_digest %></code></td>
+    <td>
+      <form class="form-grid" data-tool-approve="<%= c.tool.id %>" data-digest="<%= c.version_digest %>">
+        <label class="check"><input type="checkbox" name="formulaChecked"> <span>Formula checked against the cited source</span></label>
+        <label class="check"><input type="checkbox" name="citationsChecked"> <span>Citations checked</span></label>
+        <label class="check"><input type="checkbox" name="testCasesChecked"> <span>Test cases checked</span></label>
+        <label>Your password<input type="password" name="password" autocomplete="current-password" style="display:block;width:100%;margin-top:5px;background:#17181a;color:#ededee;border:1px solid #6b6b72;padding:10px;font-size:16px"></label>
+        <button class="btn-primary" type="submit"<%- you.clinical ? '' : ' disabled' %>>Sign clinical approval</button>
+      </form>
+      <form class="form-grid" data-tool-withdraw="<%= c.tool.id %>" style="margin-top:12px"><label>Withdrawal reason<input type="text" name="reason" maxlength="500"></label><button type="submit">Withdraw</button></form>
+      <p role="status" data-tool-status="<%= c.tool.id %>"></p>
+    </td></tr><% }); %>
+  </tbody></table></div>
+</main>
+<script src="/js/admin-tools.js"></script>
+<%- include('../partials/site-bottom') %>

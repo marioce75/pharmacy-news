@@ -1,0 +1,38 @@
+<% const day = iso => iso ? String(iso).slice(0, 10) : '—'; const cls = { working: 'ok', failing: 'warn', not_recently_retrieved: 'warn' }; %>
+<%- include('partials/site-top', { title: 'Source coverage | PharmacyNews.ai', description: 'Every source in the PharmacyNews registry with its real status: working, failing, blocked, restricted or not yet built.', active: 'sources', canonicalPath: '/sources' }) %>
+<main id="main" class="page" style="max-width:1400px">
+  <h1>Source coverage</h1>
+  <p class="lede">Every source in the registry (<%= total %>), including the ones that do not work. A source being listed does not mean it is being collected.</p>
+  <div class="notice"><strong>Coverage limits.</strong> <%= statement %></div>
+  <ul class="cards" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr))">
+    <% Object.entries(states).forEach(([k, label]) => { %><li class="card" style="padding:10px 12px"><strong style="font-size:22px"><%= totals[k] || 0 %></strong><br><a href="/sources?state=<%= k %>"><%= label %></a></li><% }); %>
+  </ul>
+  <p class="muted"><% if (schedule_enabled) { %>Automatic collection is on: each working source is checked at its own interval (shown below), on an hourly tick. Last completed run: <%= last_completed_at ? last_completed_at.replace('T', ' ').slice(0, 16) + ' UTC' : 'not yet recorded' %>.<% } else { %>Automatic collection is currently <strong>paused</strong>. “Working” below reflects the last retrieval recorded in this store<%= last_completed_at ? ' (last completed run ' + day(last_completed_at) + ')' : '; no run is recorded yet, so no source can show as working' %>.<% } %> “Checked” dates are one-off manual endpoint checks, not ongoing monitoring.</p>
+  <form class="filters-row" method="get" action="/sources" role="search" aria-label="Filter sources">
+    <label>Search<input type="search" name="q" value="<%= f.q %>" maxlength="120"></label>
+    <label>Status<select name="state"><option value="">All statuses</option><% Object.entries(states).forEach(([k, label]) => { %><option value="<%= k %>"<%- f.state === k ? ' selected' : '' %>><%= label %></option><% }); %></select></label>
+    <label>Topic desk<select name="desk"><option value="">All desks</option><% Object.entries(desks).forEach(([k, d]) => { %><option value="<%= k %>"<%- f.desk === k ? ' selected' : '' %>><%= d.label %></option><% }); %></select></label>
+    <button class="btn-primary" type="submit">Apply</button><a href="/sources">Reset</a>
+  </form>
+  <p role="status" class="muted"><%= rows.length %> of <%= total %> sources shown.</p>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="Source table (scrolls horizontally)"><table>
+    <thead><tr><th scope="col">Source</th><th scope="col">Topic desk</th><th scope="col">Region</th><th scope="col">Status</th><th scope="col">Check interval</th><th scope="col">Last retrieved</th><th scope="col">Newest item date</th><th scope="col">Reuse</th><th scope="col">Notes</th></tr></thead>
+    <tbody>
+    <% rows.forEach(r => { %><tr>
+      <th scope="row" style="background:none;position:static"><% if (r.url) { %><a href="<%= r.url %>" rel="noopener noreferrer" target="_blank"><%= r.name %></a><% } else { %><%= r.name %><% } %><br><span class="muted"><%= r.issuer %></span></th>
+      <td><%= r.desk_label %></td><td><%= r.region %></td>
+      <td><span class="badge-status <%= cls[r.state] || 'off' %>"><%= r.state_label %></span><% if (r.stale) { %><br><span class="muted">Newest item is older than expected</span><% } %><% if (r.incomplete) { %><br><span class="muted">Scan incomplete (bounded)</span><% } %></td>
+      <td><%= r.poll_hours ? (r.poll_hours === 1 ? 'Hourly' : 'Every ' + r.poll_hours + ' h') : 'Not scheduled' %></td>
+      <td><%= day(r.last_success_at) %></td><td><%= day(r.latest_report_at) %></td>
+      <td><%= String(r.permitted_use || '').replace(/_/g, ' ') %><br><span class="muted"><%= String(r.rights || '').replace(/_/g, ' ') %></span></td>
+      <td><%= r.reason || '' %><% if (r.checked_at) { %> <span class="muted">Endpoint checked <%= r.checked_at %>.</span><% } %></td>
+    </tr><% }); %>
+    <% if (!rows.length) { %><tr><td colspan="9">No sources match these filters.</td></tr><% } %>
+    </tbody></table></div>
+  <h2>Regional gaps</h2>
+  <p>Regions with no working outbreak or substance-alert source in this store. A gap means we are not seeing reports from there — not that there are none.</p>
+  <ul>
+    <% regions.filter(g => g.code !== 'GLOBAL').forEach(g => { %><li><strong><%= g.name %></strong>: outbreak sources working <%= g.outbreak.working.length %><%= g.outbreak.gap ? ' (gap)' : '' %>; substance-alert sources working <%= g.substance.working.length %><%= g.substance.gap ? ' (gap)' : '' %></li><% }); %>
+  </ul>
+</main>
+<%- include('partials/site-bottom') %>

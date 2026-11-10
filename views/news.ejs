@@ -1,0 +1,64 @@
+<%
+  const deskInfo = desk ? desks[desk] : null;
+  const heading = deskInfo ? deskInfo.label : 'Pharmacy & medicines news';
+  const base = desk ? '/news/' + desk : '/news';
+  const fmt = iso => iso ? new Date(iso).toISOString().slice(0, 10) : null;
+  const qs = extra => { const p = new URLSearchParams(); const f = { kind: data.filters.kind, region: data.filters.region, q: data.filters.q, since: data.filters.since, ...extra }; for (const [k, v] of Object.entries(f)) if (v) p.set(k, v); const s = p.toString(); return base + (s ? '?' + s : ''); };
+  const badge = { reviewed_summary: 'ok', official_title: 'warn', research_index: 'off' };
+%>
+<%- include('partials/site-top', { title: heading + ' | PharmacyNews.ai', description: (deskInfo ? deskInfo.blurb + ' ' : '') + 'Headlines with source, date and link. Reviewed summaries are labelled separately from unreviewed official titles.', active: 'news', canonicalPath: base }) %>
+<main id="main" class="page">
+  <h1><%= heading %></h1>
+  <p class="lede"><%= deskInfo ? deskInfo.blurb : 'Headlines from official agencies, regulators and research indexes worldwide, each with its source, date and a link to the original.' %></p>
+  <div class="notice"><strong>How to read this list.</strong> <span class="badge-status ok">Reviewed summary</span> items have an original summary that passed editorial, evidence and rights review. <span class="badge-status warn">Official title (unreviewed)</span> and <span class="badge-status off">Research index title (unreviewed)</span> items are collected automatically: title, source, date and link only, not verified or summarised by PharmacyNews. <%= data.statement %></div>
+
+  <nav aria-label="Topic desks"><ul class="cards" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">
+    <li class="card" style="padding:8px 12px"><a href="/news"<%- !desk ? ' aria-current="page"' : '' %>>All topics</a> <span class="muted">(<%= data.totals.all %>)</span></li>
+    <% Object.entries(desks).forEach(([key, d]) => { %><li class="card" style="padding:8px 12px"><a href="/news/<%= key %>"<%- desk === key ? ' aria-current="page"' : '' %>><%= d.label %></a> <span class="muted">(<%= data.totals.all_by_desk[key] %>)</span></li><% }); %>
+  </ul></nav>
+
+  <form class="filters-row" method="get" action="<%= base %>" role="search" aria-label="Filter news">
+    <label>Search titles and sources<input type="search" name="q" value="<%= data.filters.q %>" maxlength="120"></label>
+    <label>Type<select name="kind"><option value="">All types</option><% Object.entries(data.kinds).forEach(([k, label]) => { %><option value="<%= k %>"<%- data.filters.kind === k ? ' selected' : '' %>><%= label %></option><% }); %></select></label>
+    <label>Publisher region<select name="region"><option value="">All regions</option><% Object.entries(regions).forEach(([k, label]) => { %><option value="<%= k %>"<%- data.filters.region === k ? ' selected' : '' %>><%= label %></option><% }); %><option value="GLOBAL"<%- data.filters.region === 'GLOBAL' ? ' selected' : '' %>>Global publishers</option></select></label>
+    <label>Since<input type="date" name="since" value="<%= data.filters.since %>"></label>
+    <button class="btn-primary" type="submit">Apply</button>
+    <a href="<%= base %>">Reset</a>
+  </form>
+
+  <p class="muted" role="status"><%= data.totals.matching %> item<%= data.totals.matching === 1 ? '' : 's' %> in the last <%= data.window_days %> days match<%= data.totals.matching === 1 ? 'es' : '' %>.
+    <% if (!data.collection.schedule_enabled) { %>Automatic collection is currently paused<%= data.collection.last_completed_at ? '; last completed run ' + fmt(data.collection.last_completed_at) : '; no collection run is recorded in this store' %>.<% } else { %>Sources are checked on an hourly schedule; last completed run <%= data.collection.last_completed_at ? data.collection.last_completed_at.replace('T', ' ').slice(0, 16) + ' UTC' : 'not yet recorded' %>.<% } %>
+    <a href="/sources">See source coverage</a>.</p>
+
+  <% if (!data.items.length) { %>
+    <div class="notice purple"><strong>Nothing to show for these filters.</strong> <%= data.totals.all ? 'Try removing a filter.' : 'No items have been collected or published in this store yet.' %> An empty list means nothing was collected here — it does not mean nothing happened.</div>
+  <% } else { %>
+  <ol class="news-list">
+    <% data.items.forEach(item => { %>
+    <li>
+      <div class="meta"><span class="badge-status <%= badge[item.kind] %>"><%= item.kind_label %></span><span><%= item.source %></span>
+        <span><% if (item.date_published) { %>Published <time datetime="<%= item.date_published %>"><%= fmt(item.date_published) %></time><% } else { %>Publication date unknown<% } %></span>
+        <% if (item.retrieved_at) { %><span>Collected <time datetime="<%= item.retrieved_at %>"><%= fmt(item.retrieved_at) %></time></span><% } %>
+        <span><a href="/news/<%= item.desk %>"><%= item.desk_label %></a></span>
+        <% if (item.language && item.language !== 'en') { %><span>Title in source language (<%= item.language %>)</span><% } %>
+        <% if (item.source_revised) { %><span>Source revised since first collected</span><% } %>
+      </div>
+      <% if (item.kind === 'reviewed_summary') { %>
+        <h3><a href="/article/<%= item.slug %>"><%= item.title %></a></h3>
+        <p><%= item.summary %></p>
+        <% if (item.source_url) { %><p><a href="<%= item.source_url %>" rel="noopener noreferrer" target="_blank">Original article at <%= item.source %> ↗</a></p><% } %>
+      <% } else { %>
+        <h3><a href="<%= item.source_url %>" rel="noopener noreferrer" target="_blank"><%= item.title %> ↗</a></h3>
+      <% } %>
+    </li>
+    <% }); %>
+  </ol>
+  <nav class="pager" aria-label="Pages">
+    <% if (data.page > 1) { %><a href="<%= qs({ page: data.page - 1 }) %>" rel="prev">← Newer</a><% } %>
+    <span>Page <%= data.page %> of <%= data.pages %></span>
+    <% if (data.page < data.pages) { %><a href="<%= qs({ page: data.page + 1 }) %>" rel="next">Older →</a><% } %>
+  </nav>
+  <% } %>
+  <%- include('partials/sponsor-slot', { placements: sponsorPlacements }) %>
+</main>
+<%- include('partials/site-bottom') %>

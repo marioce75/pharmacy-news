@@ -24,7 +24,7 @@ function render(){
  if(layer==='events'||layer==='pandemic')renderEvents();else if($('event-filters'))$('event-filters').hidden=true;
  $('news-count').textContent=document.querySelectorAll('[data-news]').length?`${shown} reviewed archive records match topic / keyword`:'No reviewed stories yet';window.PNMonitor?.render();
 }
-$('topic').onchange=render;$('country').onchange=render;$('query').oninput=render;
+$('monitor-filters')?.addEventListener('submit',e=>e.preventDefault());$('topic').onchange=render;$('country').onchange=render;$('query').oninput=render;
 $('reset-filters').onclick=()=>{$('topic').value='all';$('country').value='all';$('query').value='';render()};
 ['sources','mentions','events','pandemic'].forEach(id=>$(id).onclick=()=>{layer=id;['sources','mentions','events','pandemic'].forEach(k=>$(k).setAttribute('aria-pressed',String(k===id)));render()});
 let zoom=1;function setZoom(v){zoom=Math.min(3,Math.max(1,v));$('map').style.width=(zoom*100)+'%';$('zoom-reset').textContent=zoom.toFixed(1)+'×';}
