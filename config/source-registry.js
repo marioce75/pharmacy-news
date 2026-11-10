@@ -87,3 +87,6 @@ Object.assign(module.exports.find(s=>s.id==='who-don'),{reason:'HTML hub has no 
 // 2026-10-29 verification: the EUDA news page now returns HTTP 403; it is not retried or bypassed.
 Object.assign(module.exports.find(s=>s.id==='euda'),{access:'validation_blocked',reason:'EUDA news page returned HTTP 403 on 2026-10-29 (bot protection); no bypass. Earlier manual metadata collection on 2026-10-28 is retained.'});
 Object.assign(module.exports.find(s=>s.id==='paho'),{reason:'Generic PAHO entry superseded by paho-epi-alerts and paho-news-filtered (HTTP 200 on 2026-10-29); earlier 403 recorded'});
+
+// Mission-wide research index sources (AMR, AI in drug discovery, repurposing, autoimmune trials).
+module.exports.push(...require('./sources-mission'));

@@ -1,0 +1,11 @@
+<%
+  const _mActive = typeof active === 'string' ? active : '';
+  const _mNav = [['/', 'monitor', 'Monitor'], ['/news', 'news', 'News'], ['/sources', 'sources', 'Sources'], ['/tools', 'tools', 'Clinical tools'], ['/affordability', 'affordability', 'Medication costs'], ['/newsletter', 'newsletter', 'Newsletter'], ['/about', 'about', 'Methods']];
+%><a class="skip-link" href="#main">Skip to main content</a>
+<header class="masthead">
+  <a class="brand" href="/">PharmacyNews<span>.ai</span></a>
+  <span class="strap">Global pharmacy intelligence</span>
+  <nav aria-label="Main" class="site-nav-main">
+    <% _mNav.forEach(([href, key, label]) => { %><a href="<%= href %>"<%- _mActive === key ? ' class="active" aria-current="page"' : '' %>><%= label %></a><% }); %>
+  </nav>
+</header>

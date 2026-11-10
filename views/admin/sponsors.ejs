@@ -1,0 +1,155 @@
+<%
+  // Locals: submissions, placements, audit, reviewer, canEdit, displayEnabled,
+  // submissionsEnabled, labels, slots, limits, typeLabels, maxSpanDays, today,
+  // notice, error, fieldErrors, draft.
+  const _badge = s => ({ new: 'warn', under_review: 'warn', placed: 'ok', approved: 'ok', declined: 'off', withdrawn: 'off' }[s] || 'off');
+  const _draft = k => typeof draft[k] === 'string' ? draft[k] : '';
+  const _placeable = submissions.filter(s => s.status !== 'declined');
+  const _fieldErrs = Object.values(fieldErrors || {});
+%><!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Sponsor review — Admin</title>
+<link rel="stylesheet" href="/atlas/style.css">
+<link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+<main id="main" class="page">
+  <p><a href="/admin">Admin</a> · <a href="/admin/monitoring">Feed health</a> · <a href="/advertise">Public advertising policy</a></p>
+  <h1>Sponsor review</h1>
+  <p class="lede">Enquiries arrive here privately. Nothing is shown to the public unless an editor creates a placement below and public display is switched on.</p>
+  <p role="status">
+    Signed in as <strong><%= reviewer ? reviewer.id : 'unknown' %></strong>
+    · Enquiry form <span class="badge-status <%= submissionsEnabled ? 'ok' : 'off' %>"><%= submissionsEnabled ? 'open' : 'closed' %></span>
+    · Public display <span class="badge-status <%= displayEnabled ? 'ok' : 'off' %>"><%= displayEnabled ? 'on' : 'off' %></span>
+  </p>
+  <% if (!canEdit) { %><p class="notice"><strong>Read-only.</strong> Your account does not hold the editor role, so you cannot change anything here.</p><% } %>
+  <% if (notice) { %><p class="notice purple" role="status"><strong><%= notice %></strong></p><% } %>
+  <% if (error) { %>
+  <div class="notice" role="alert">
+    <p><strong>Not saved:</strong> <%= error %></p>
+    <% if (_fieldErrs.length) { %><ul><% _fieldErrs.forEach(m => { %><li><%= m %></li><% }); %></ul><% } %>
+  </div>
+  <% } %>
+
+  <h2>Submissions (<%= submissions.length %>)</h2>
+  <% if (!submissions.length) { %><p>No enquiries have been received.</p><% } else { %>
+  <div class="table-wrap"><table>
+    <thead><tr><th scope="col">Received</th><th scope="col">Organisation and contact</th><th scope="col">Type</th><th scope="col">Proposed copy</th><th scope="col">Status</th><th scope="col">Decision</th></tr></thead>
+    <tbody>
+    <% submissions.forEach(s => { %>
+      <tr>
+        <td><%= String(s.created_at).slice(0, 10) %><br><small class="muted"><%= s.id %></small></td>
+        <th scope="row"><%= s.organisation %><br><small><%= s.contact_name %> · <%= s.email %><br><%= s.website %></small></th>
+        <td><%= typeLabels[s.type] || s.type %></td>
+        <td><%= s.message %></td>
+        <td><span class="badge-status <%= _badge(s.status) %>"><%= String(s.status).replace('_', ' ') %></span><% if (s.reviewed_by) { %><br><small>by <%= s.reviewed_by %></small><% } %><% if (s.review_note) { %><br><small>Note: <%= s.review_note %></small><% } %></td>
+        <td>
+          <% if (canEdit && s.status !== 'placed') { %>
+          <form class="form-grid" method="post" action="/admin/sponsors/submissions/<%= s.id %>/status">
+            <label for="st-<%= s.id %>">New status
+              <select id="st-<%= s.id %>" name="status" required>
+                <option value="under_review">Under review</option>
+                <option value="declined">Declined</option>
+              </select>
+            </label>
+            <label for="nt-<%= s.id %>">Note (optional)
+              <input type="text" id="nt-<%= s.id %>" name="note" maxlength="<%= limits.note %>">
+            </label>
+            <div><button type="submit">Save status</button></div>
+          </form>
+          <% } else { %>—<% } %>
+        </td>
+      </tr>
+    <% }); %>
+    </tbody>
+  </table></div>
+  <% } %>
+
+  <h2 id="new-placement">Create a placement</h2>
+  <p>You type every word that will appear; nothing is copied from the enquiry. Plain text only, no web addresses in the headline or body, one https link. A placement runs for at most <%= maxSpanDays %> days (dates are UTC, end date included) and is allowed only in the listed slots.</p>
+  <% if (!canEdit) { %><p class="muted">Editor role required.</p>
+  <% } else if (!_placeable.length) { %><p>There is no open submission to create a placement from.</p>
+  <% } else { %>
+  <form class="form-grid" method="post" action="/admin/sponsors/placements">
+    <label for="p-submission">From submission
+      <select id="p-submission" name="submission_id" required>
+        <% _placeable.forEach(s => { %><option value="<%= s.id %>"<%- _draft('submission_id') === s.id ? ' selected' : '' %>><%= s.organisation %> — <%= String(s.created_at).slice(0, 10) %> (<%= String(s.status).replace('_', ' ') %>)</option><% }); %>
+      </select>
+    </label>
+    <fieldset>
+      <legend>Label shown to readers (required)</legend>
+      <% labels.forEach(l => { %>
+      <label class="check" for="p-label-<%= l %>"><input type="radio" id="p-label-<%= l %>" name="label" value="<%= l %>" required<%- _draft('label') === l ? ' checked' : '' %>> <span><%= l %></span></label>
+      <% }); %>
+    </fieldset>
+    <label for="p-sponsor">Sponsor name
+      <input type="text" id="p-sponsor" name="sponsor_name" maxlength="<%= limits.sponsor_name %>" required value="<%= _draft('sponsor_name') %>">
+    </label>
+    <label for="p-headline">Headline (up to <%= limits.headline %> characters)
+      <input type="text" id="p-headline" name="headline" maxlength="<%= limits.headline %>" required value="<%= _draft('headline') %>">
+    </label>
+    <label for="p-body">Body (up to <%= limits.body %> characters, one line)
+      <input type="text" id="p-body" name="body" maxlength="<%= limits.body %>" required value="<%= _draft('body') %>">
+    </label>
+    <label for="p-link">Link (https only)
+      <input type="url" id="p-link" name="link" maxlength="<%= limits.website %>" required value="<%= _draft('link') %>">
+    </label>
+    <label for="p-slot">Slot
+      <select id="p-slot" name="slot" required>
+        <% slots.forEach(s => { %><option value="<%= s %>"<%- _draft('slot') === s ? ' selected' : '' %>><%= s %></option><% }); %>
+      </select>
+    </label>
+    <label for="p-start">Start date (YYYY-MM-DD)
+      <input type="text" id="p-start" name="start_date" inputmode="numeric" maxlength="10" required value="<%= _draft('start_date') || today %>">
+    </label>
+    <label for="p-end">End date (YYYY-MM-DD)
+      <input type="text" id="p-end" name="end_date" inputmode="numeric" maxlength="10" required value="<%= _draft('end_date') %>">
+    </label>
+    <div><button type="submit" class="btn-primary">Approve and create placement</button></div>
+  </form>
+  <% } %>
+
+  <h2>Placements (<%= placements.length %>)</h2>
+  <% if (!placements.length) { %><p>No placements have been created.</p><% } else { %>
+  <div class="table-wrap"><table>
+    <thead><tr><th scope="col">Sponsor</th><th scope="col">Label and slot</th><th scope="col">Text and link</th><th scope="col">Dates</th><th scope="col">Status</th><th scope="col">Withdraw</th></tr></thead>
+    <tbody>
+    <% placements.forEach(p => { %>
+      <tr>
+        <th scope="row"><%= p.sponsor_name %><br><small class="muted">from <%= p.submission_id %></small></th>
+        <td><%= p.label %><br><small><%= p.slot %></small></td>
+        <td><strong><%= p.headline %></strong><br><%= p.body %><br><small><%= p.link %></small></td>
+        <td><%= p.start_date %> to <%= p.end_date %></td>
+        <td><span class="badge-status <%= _badge(p.status) %>"><%= p.status %></span><br><small>approved by <%= p.approved_by %></small><% if (p.status === 'withdrawn') { %><br><small>withdrawn by <%= p.withdrawn_by %>: <%= p.withdrawal_reason %></small><% } %></td>
+        <td>
+          <% if (canEdit && p.status === 'approved') { %>
+          <form class="form-grid" method="post" action="/admin/sponsors/placements/<%= p.id %>/withdraw">
+            <label for="wr-<%= p.id %>">Reason (required)
+              <input type="text" id="wr-<%= p.id %>" name="reason" maxlength="<%= limits.reason %>" required>
+            </label>
+            <div><button type="submit">Withdraw</button></div>
+          </form>
+          <% } else { %>—<% } %>
+        </td>
+      </tr>
+    <% }); %>
+    </tbody>
+  </table></div>
+  <% } %>
+
+  <h2>Audit log (latest <%= audit.length %>)</h2>
+  <% if (!audit.length) { %><p>No actions recorded.</p><% } else { %>
+  <div class="table-wrap"><table>
+    <thead><tr><th scope="col">Time (UTC)</th><th scope="col">Actor</th><th scope="col">Action</th><th scope="col">Target</th></tr></thead>
+    <tbody>
+    <% audit.forEach(a => { %><tr><td><%= a.at %></td><td><%= a.actor %></td><td><%= String(a.action).replaceAll('_', ' ') %></td><td><small><%= a.target %></small></td></tr><% }); %>
+    </tbody>
+  </table></div>
+  <% } %>
+</main>
+</body>
+</html>

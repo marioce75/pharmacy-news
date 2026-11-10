@@ -41,7 +41,7 @@ test('corrupt history aborts migration before any import writes',async()=>{
 });
 test('empty production-mode fixture starts without seeds or migration and serves public pages',async()=>{
  const empty=await fs.mkdtemp(path.join(os.tmpdir(),'pharmacy-empty-start-'));
- const child=spawn(process.execPath,['server.js'],{cwd,env:{PATH:process.env.PATH,CONTENT_DIR:empty,PORT:'0',NODE_ENV:'production',SESSION_SECRET:'synthetic-fixture-only-not-a-real-secret',ALLOW_COLLECTION:'false',ALLOW_MODEL_CALLS:'false',RUN_SCHEDULED_JOBS:'false'},stdio:['ignore','pipe','pipe']});
+ const child=spawn(process.execPath,['server.js'],{cwd,env:{PATH:process.env.PATH,CONTENT_DIR:empty,PORT:'0',NODE_ENV:'production',PN_ENTRY:'start-review',SESSION_SECRET:'synthetic-fixture-only-not-a-real-secret',ALLOW_COLLECTION:'false',ALLOW_MODEL_CALLS:'false',RUN_SCHEDULED_JOBS:'false'},stdio:['ignore','pipe','pipe']});
  const exited=once(child,'exit');let output='';child.stderr.on('data',()=>{});
  try {
   const url=await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Fixture startup timeout')),10000);child.once('error',e=>{clearTimeout(timer);reject(e);});child.once('exit',()=>{clearTimeout(timer);reject(new Error('Fixture exited before listening'));});child.stdout.on('data',chunk=>{output+=chunk;const match=output.match(/http:\/\/127\.0\.0\.1:\d+/);if(match){clearTimeout(timer);resolve(match[0]);}});});

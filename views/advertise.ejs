@@ -1,0 +1,145 @@
+<%- include('partials/site-top', {title, description, active:'', canonicalPath:'/advertise'}) %>
+<%
+  // Locals: open (bool), state ('form' | 'received' | 'closed'), errors, values, types,
+  // typeLabels, limits, slots, honeypot, activeSponsors.
+  const _order = ['organisation', 'contact_name', 'email', 'website', 'type', 'message', 'acknowledge'];
+  const _errs = _order.filter(k => errors[k]);
+  const _val = k => typeof values[k] === 'string' ? values[k] : '';
+  const _slotNames = { 'news-list': 'the news list', 'article-footer': 'the foot of a news article', 'newsletter': 'the email newsletter' };
+%>
+<main id="main" class="page">
+  <h1>Advertising and sponsorship policy</h1>
+  <p class="lede">PharmacyNews.ai may carry a small amount of clearly labelled advertising. This page sets out the rules that apply to it, and how an organisation can send an enquiry.</p>
+
+<% if (state === 'received') { %>
+  <div class="notice purple" role="status">
+    <p><strong>Thank you. Your enquiry has been received.</strong></p>
+    <p>An editor will review it. Sending an enquiry does not create an agreement, and nothing will appear on the site unless an editor approves it. We cannot promise a reply by any particular date.</p>
+  </div>
+<% } else if (state === 'closed') { %>
+  <div class="notice" role="alert">
+    <p><strong>Enquiries are not open yet.</strong> Your form was not sent and nothing was stored.</p>
+  </div>
+<% } %>
+
+  <h2>Current sponsors</h2>
+<% if (activeSponsors.length) { %>
+  <ul>
+  <% activeSponsors.forEach(s => { %><li><%= s.sponsor_name %> <span class="badge-status warn"><%= s.label %></span></li><% }); %>
+  </ul>
+<% } else { %>
+  <p>There are currently no active advertisers or sponsors on PharmacyNews.ai.</p>
+<% } %>
+
+  <h2>Labelling and separation</h2>
+  <ul>
+    <li>Advertising and sponsored content are always labelled “Advertisement” or “Sponsored”.</li>
+    <li>They are shown in a separate, visibly bordered block, apart from news and editorial text.</li>
+    <li>They can appear only in these places: <%= slots.map(s => _slotNames[s] || s).join('; ') %>.</li>
+  </ul>
+
+  <h2>Editorial independence</h2>
+  <ul>
+    <li>Advertisers and sponsors have no influence over which news is selected, how it is summarised, or which sources are covered.</li>
+    <li>They have no influence over the clinical tools, the treatment evidence pages, or the medication-cost resources.</li>
+    <li>Advertising and sponsored content never appear on clinical tools, treatment evidence, substance alert or medication-cost pages.</li>
+  </ul>
+
+  <h2>Review before anything appears</h2>
+  <ul>
+    <li>Every enquiry is read by a human editor. Nothing is published automatically.</li>
+    <li>If a placement goes ahead, the editor writes the final wording, chooses the label and sets the dates. A placement can be withdrawn at any time.</li>
+  </ul>
+
+  <h2>What we accept</h2>
+  <ul>
+    <li>Plain text and one <code>https</code> link only.</li>
+    <li>No tracking pixels, no third-party scripts and no images are accepted.</li>
+    <li>Links in sponsored blocks are marked as sponsored links for search engines.</li>
+  </ul>
+
+  <h2>No agreement and no published pricing</h2>
+  <ul>
+    <li>Sending an enquiry does not create an agreement of any kind, on either side.</li>
+    <li>No pricing is published. Any terms would be discussed directly and only after editorial review.</li>
+  </ul>
+
+  <h2>What we collect and why</h2>
+  <ul>
+    <li>The form asks for business contact details only: organisation, contact name, business email, website, the kind of enquiry and your proposed copy.</li>
+    <li>We use them only to review the enquiry and to reply to you.</li>
+    <li>They are stored privately, are never shown on the site, and are not shared with anyone else.</li>
+    <li>We do not record your IP address with the enquiry.</li>
+  </ul>
+
+<% if (state !== 'received') { %>
+  <h2 id="enquiry">Send an enquiry</h2>
+  <% if (!open) { %>
+  <p class="notice"><strong>Enquiries are not open yet.</strong> The form below is shown for information and cannot be sent.</p>
+  <% } %>
+
+  <% if (_errs.length) { %>
+  <div class="notice" role="alert" id="error-summary" tabindex="-1">
+    <p><strong>The enquiry was not sent. Please correct <%= _errs.length === 1 ? 'this field' : 'these ' + _errs.length + ' fields' %>:</strong></p>
+    <ul>
+      <% _errs.forEach(k => { %><li><a href="#f-<%= k %>"><%= errors[k] %></a></li><% }); %>
+    </ul>
+  </div>
+  <% } %>
+
+  <form class="form-grid" method="post" action="/advertise/submit" novalidate>
+    <fieldset class="form-grid"<%- open ? '' : ' disabled' %>>
+      <legend>Business contact details and proposal</legend>
+
+      <label for="f-organisation">Organisation
+        <input type="text" id="f-organisation" name="organisation" maxlength="<%= limits.organisation %>" required autocomplete="organization" value="<%= _val('organisation') %>"<% if (errors.organisation) { %> aria-invalid="true" aria-describedby="e-organisation"<% } %>>
+      </label>
+      <% if (errors.organisation) { %><p id="e-organisation" class="notice"><strong>Error:</strong> <%= errors.organisation %></p><% } %>
+
+      <label for="f-contact_name">Contact name
+        <input type="text" id="f-contact_name" name="contact_name" maxlength="<%= limits.contact_name %>" required autocomplete="name" value="<%= _val('contact_name') %>"<% if (errors.contact_name) { %> aria-invalid="true" aria-describedby="e-contact_name"<% } %>>
+      </label>
+      <% if (errors.contact_name) { %><p id="e-contact_name" class="notice"><strong>Error:</strong> <%= errors.contact_name %></p><% } %>
+
+      <label for="f-email">Business email
+        <input type="email" id="f-email" name="email" maxlength="254" required autocomplete="email" value="<%= _val('email') %>"<% if (errors.email) { %> aria-invalid="true" aria-describedby="e-email"<% } %>>
+      </label>
+      <% if (errors.email) { %><p id="e-email" class="notice"><strong>Error:</strong> <%= errors.email %></p><% } %>
+
+      <label for="f-website">Website (must start with https://)
+        <input type="url" id="f-website" name="website" maxlength="<%= limits.website %>" required autocomplete="url" value="<%= _val('website') %>"<% if (errors.website) { %> aria-invalid="true" aria-describedby="e-website"<% } %>>
+      </label>
+      <% if (errors.website) { %><p id="e-website" class="notice"><strong>Error:</strong> <%= errors.website %></p><% } %>
+
+      <label for="f-type">Type of enquiry
+        <select id="f-type" name="type" required<% if (errors.type) { %> aria-invalid="true" aria-describedby="e-type"<% } %>>
+          <option value="">Choose one</option>
+          <% types.forEach(t => { %><option value="<%= t %>"<%- _val('type') === t ? ' selected' : '' %>><%= typeLabels[t] %></option><% }); %>
+        </select>
+      </label>
+      <% if (errors.type) { %><p id="e-type" class="notice"><strong>Error:</strong> <%= errors.type %></p><% } %>
+
+      <label for="f-message">Proposed copy or message (plain text, up to <%= limits.message %> characters)
+        <textarea id="f-message" name="message" maxlength="<%= limits.message %>" required aria-describedby="h-message<%= errors.message ? ' e-message' : '' %>"<% if (errors.message) { %> aria-invalid="true"<% } %>><%= _val('message') %></textarea>
+      </label>
+      <p id="h-message" class="muted">An editor writes the final wording of anything that appears. Do not include personal or patient information.</p>
+      <% if (errors.message) { %><p id="e-message" class="notice"><strong>Error:</strong> <%= errors.message %></p><% } %>
+
+      <div class="hp-field" aria-hidden="true">
+        <label for="f-hp">Leave this field empty
+          <input type="text" id="f-hp" name="<%= honeypot %>" tabindex="-1" autocomplete="off" value="">
+        </label>
+      </div>
+
+      <label class="check" for="f-acknowledge">
+        <input type="checkbox" id="f-acknowledge" name="acknowledge" value="yes" required<%- values.acknowledge ? ' checked' : '' %><% if (errors.acknowledge) { %> aria-invalid="true" aria-describedby="e-acknowledge"<% } %>>
+        <span>I have read the policy above. I understand that sending this enquiry does not create an agreement, and that an editor reviews everything before it appears.</span>
+      </label>
+      <% if (errors.acknowledge) { %><p id="e-acknowledge" class="notice"><strong>Error:</strong> <%= errors.acknowledge %></p><% } %>
+
+      <div><button type="submit" class="btn-primary"><%= open ? 'Send enquiry' : 'Not open yet' %></button></div>
+    </fieldset>
+  </form>
+<% } %>
+</main>
+<%- include('partials/site-bottom') %>

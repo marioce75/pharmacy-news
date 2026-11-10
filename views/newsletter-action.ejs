@@ -1,0 +1,14 @@
+<%- include('partials/site-top', {title, description, active:'newsletter', canonicalPath:'/newsletter', noindex:true}) %>
+<main id="main" class="page">
+  <h1><%= heading %></h1>
+  <p class="lede" role="status"><%= message %></p>
+  <% if (form) { %>
+  <%# Opening the emailed link only shows this page. The change happens when the button is pressed. %>
+  <form class="form-grid" method="post" action="<%= form.action %>">
+    <input type="hidden" name="token" value="<%= form.token %>">
+    <div><button class="btn-primary" type="submit"><%= form.button %></button></div>
+  </form>
+  <% } %>
+  <p><a href="/newsletter">Newsletter page</a></p>
+</main>
+<%- include('partials/site-bottom') %>

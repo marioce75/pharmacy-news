@@ -1,0 +1,62 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Newsletter</title><link rel="stylesheet" href="/atlas/style.css"><link rel="stylesheet" href="/css/site.css"></head><body><main id="main" class="page">
+<p><a href="/admin">Admin</a> · <a href="/admin/collection">Sources &amp; daily edition</a> · <a href="/admin/monitoring">Feed health</a> · <a href="/newsletter">Public newsletter page</a></p>
+<h1>Newsletter</h1>
+<p class="lede">Subscriber numbers, switches and the send queue. Email addresses are never shown or exported here.</p>
+<% if (message) { %><div class="notice purple" role="status"><p><strong><%= message %></strong></p></div><% } %>
+<% if (error) { %><div class="notice" role="alert"><p><strong><%= error %></strong></p></div><% } %>
+
+<h2>Switches</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">Setting</th><th scope="col">State</th><th scope="col">Meaning</th></tr></thead><tbody>
+<tr><th scope="row">Public sign-up</th><td><span class="badge-status <%= cfg.signupOpen ? 'ok' : 'off' %>"><%= cfg.signupOpen ? 'open' : 'closed' %></span></td><td><%= cfg.signupOpen ? 'The public form accepts sign-ups and sends confirmation emails.' : 'Closed because: ' + cfg.signupClosedReasons.join('; ') + '.' %></td></tr>
+<tr><th scope="row">Sending</th><td><span class="badge-status <%= cfg.sendingOpen ? 'warn' : 'off' %>"><%= cfg.sendingOpen ? 'enabled' : 'disabled' %></span></td><td><%= cfg.sendingOpen ? 'Issues can be queued here and sent with the send script. Nothing is sent automatically.' : 'Disabled because: ' + cfg.sendingClosedReasons.join('; ') + '.' %></td></tr>
+<tr><th scope="row">Transport</th><td><span class="badge-status <%= cfg.transport === 'none' ? 'off' : 'warn' %>"><%= cfg.transport %></span></td><td><%= cfg.transport === 'dry-run' ? 'Dry run: each message is written to a file under newsletter/dry-run/. No email leaves this server.' : 'None: no message can be produced. No email provider is integrated.' %></td></tr>
+<tr><th scope="row">Site address for links</th><td><span class="badge-status <%= cfg.siteUrl ? 'ok' : 'off' %>"><%= cfg.siteUrl ? 'set' : 'missing' %></span></td><td><%= cfg.siteUrl || 'PUBLIC_SITE_URL must be an https address.' %></td></tr>
+<tr><th scope="row">Postal address in emails</th><td><span class="badge-status <%= cfg.postalAddress ? 'ok' : 'off' %>"><%= cfg.postalAddress ? 'set' : 'missing' %></span></td><td><%= cfg.postalAddress || 'NEWSLETTER_POSTAL_ADDRESS is not set.' %></td></tr>
+</tbody></table></div>
+
+<h2>Subscribers</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">Status</th><th scope="col">Count</th><th scope="col">Meaning</th></tr></thead><tbody>
+<tr><th scope="row">Active</th><td><%= counts.active %></td><td>Confirmed by email. These receive queued issues.</td></tr>
+<tr><th scope="row">Pending</th><td><%= counts.pending %></td><td>Signed up, not yet confirmed. Deleted 7 days after sign-up if never confirmed.</td></tr>
+<tr><th scope="row">Unsubscribed</th><td><%= counts.unsubscribed %></td><td>Address deleted; only a non-readable marker is kept.</td></tr>
+</tbody></table></div>
+
+<h2>Preview an issue</h2>
+<form class="form-grid" method="get" action="/admin/newsletter">
+  <label for="nl-day">Edition date
+    <input id="nl-day" type="text" name="day" inputmode="numeric" pattern="\d{4}-\d{2}-\d{2}" maxlength="10" placeholder="YYYY-MM-DD" value="<%= previewDay || today %>" required>
+  </label>
+  <div><button type="submit">Preview</button></div>
+</form>
+
+<% if (preview) { %>
+<h2>Preview: <%= preview.day %></h2>
+<p>Subject: <strong><%= preview.subject %></strong> · <%= preview.items.length %> item(s)<% if (preview.unavailable) { %> · <span class="badge-status warn"><%= preview.unavailable %> left out (withdrawn, corrected or no https source link)</span><% } %></p>
+<p>The unsubscribe link in this preview is a placeholder; each recipient gets their own. <a href="/admin/newsletter/preview/<%= preview.day %>?format=html" rel="noopener noreferrer" target="_blank">Open the HTML version as a mail client would show it</a>.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Headline</th><th scope="col">Source</th><th scope="col">Published</th><th scope="col">Original link</th></tr></thead><tbody>
+<% preview.items.forEach(item => { %><tr><td><%= item.headline %></td><td><%= item.source %></td><td><%= item.published %></td><td><a href="<%= item.url %>" rel="noopener noreferrer"><%= item.url %></a></td></tr><% }) %>
+</tbody></table></div>
+<h3>Plain-text version</h3>
+<pre class="notice purple" tabindex="0"><%= preview.text %></pre>
+<details><summary>HTML source</summary><pre class="notice" tabindex="0"><%= preview.html %></pre></details>
+
+<h3>Queue this issue</h3>
+<% if (!isEditor) { %><p class="muted">Only an editor can queue an issue.</p>
+<% } else if (!cfg.sendingOpen) { %><p class="muted">Queuing is unavailable while sending is disabled (see Switches).</p>
+<% } else { %>
+<form class="form-grid" method="post" action="/admin/newsletter/queue/<%= preview.day %>">
+  <label class="check" for="nl-reviewed"><input id="nl-reviewed" type="checkbox" name="reviewed" value="yes" required><span>I read this preview and it is ready for the <%= counts.active %> confirmed subscriber(s). An issue can be queued once per day and cannot be changed afterwards.</span></label>
+  <div><button class="btn-primary" type="submit">Queue the <%= preview.day %> issue</button></div>
+</form>
+<p class="muted">Queuing sends nothing. Sending is a separate manual step: <code>node scripts/newsletter-send.js <%= preview.day %> --confirm</code></p>
+<% } %>
+<% } %>
+
+<h2>Send queue</h2>
+<% if (!outboxes.length) { %><p>No issue has been queued.</p><% } else { %>
+<div class="table-wrap"><table><thead><tr><th scope="col">Edition</th><th scope="col">Queued</th><th scope="col">Recipients</th><th scope="col">Sent</th><th scope="col">Waiting</th><th scope="col">Retrying</th><th scope="col">Gave up</th><th scope="col">Skipped (unsubscribed)</th><th scope="col">Due now</th></tr></thead><tbody>
+<% outboxes.forEach(o => { %><tr><th scope="row"><a href="/admin/newsletter/preview/<%= o.day %>"><%= o.day %></a></th><td><%= o.queued_at %> by <%= o.queued_by %></td><td><%= o.total %></td><td><%= o.states.sent %></td><td><%= o.states.pending %></td><td><%= o.states.failed %></td><td><%= o.states.gave_up %></td><td><%= o.states.skipped %></td><td><%= o.due %></td></tr><% }) %>
+</tbody></table></div>
+<% } %>
+<p class="muted">Sending never starts by itself. Run <code>node scripts/newsletter-send.js YYYY-MM-DD</code> to see what would be sent, and add <code>--confirm</code> to send. Failed messages are retried on later runs after 5 minutes, 30 minutes, 2 hours and 8 hours, then given up after the fifth attempt.</p>
+</main></body></html>

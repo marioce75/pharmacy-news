@@ -4,6 +4,10 @@ const store = require('../lib/store');
 const {sanitize}=require('../lib/publication');
 router.use((req,res,next)=>{res.locals.sanitizeBody=sanitize;next();});
 const { CATEGORIES } = require('../config/categories');
+const publicArticle = require('../lib/news/public-article');
+// Collector leads (unreviewed titles) are never rendered as articles or returned by the article API.
+const { collectorLead } = require('../lib/news/listing');
+const published = async options => (await store.listArticles('approved', options)).filter(a => !collectorLead(a));
 
 // Unreviewed official-source titles and links (owner-approved public listing); no summaries, counts or advice.
 router.get('/api/monitor/reports',async(req,res,next)=>{try{const q=req.query,one=(v,ok)=>typeof v==='string'&&ok(v)?v:'';const {COUNTRIES,WHO_REGIONS}=require('../config/countries');
@@ -19,7 +23,7 @@ router.get('/', async (req, res, next) => {
   try {
     const category = req.query.category;
     const options = category && category !== 'all' ? { category } : {};
-    const articles = await store.listArticles('approved', options);
+    const articles = (await published(options)).map(publicArticle.summary);
     res.render('index', {
       articles,
       activeCategory: category || 'all',
@@ -34,7 +38,7 @@ router.get('/', async (req, res, next) => {
 router.get('/peptides', async (req, res, next) => {
   try {
     const lane = req.query.lane; // 'clinical' | 'compounding' | 'longevity' | undefined
-    const approved = await store.listArticles('approved');
+    const approved = await published();
     let articles = approved.filter(a => a.is_peptide);
     if (lane && ['clinical', 'compounding', 'longevity'].includes(lane)) {
       articles = articles.filter(a => Array.isArray(a.peptide_lanes) && a.peptide_lanes.includes(lane));
@@ -58,11 +62,15 @@ router.get('/article/:slug', async (req, res, next) => {
       return res.status(404).render('layout', {
         title: 'Article Not Found — Pharmacy News',
         activeCategory: null,
-        body: '<div style="text-align:center;padding:4rem 0"><h1 style="font-family:DM Serif Display,serif;margin-bottom:1rem">Article Not Found</h1><p style="color:var(--text-muted);margin-bottom:2rem">The article you\'re looking for doesn\'t exist or has been moved.</p><a href="/" style="color:var(--signal-green)">← Back to homepage</a></div>'
+        body: '<div style="text-align:center;padding:4rem 0"><h1 style="font-family:DM Serif Display,serif;margin-bottom:1rem">Article Not Found</h1><p style="color:var(--text-muted);margin-bottom:2rem">The article you\'re looking for doesn\'t exist or has been moved.</p><a href="/" style="color:var(--orange)">← Back to homepage</a></div>'
       });
     }
+    if (collectorLead(article)) return next();
+    let sponsorPlacements = [];
+    try { sponsorPlacements = await require('../lib/sponsors').activePlacements('article-footer'); } catch { /* display stays empty */ }
     res.render('article', {
-      article,
+      article: publicArticle.detail(article, sanitize),
+      sponsorPlacements,
       activeCategory: article.category,
       categories: CATEGORIES
     });
@@ -76,7 +84,8 @@ router.get('/api/articles', async (req, res, next) => {
   try {
     const category = req.query.category;
     const options = category && category !== 'all' ? { category } : {};
-    const articles = await store.listArticles('approved', options);
+    // Public projection only: no reviewer identities, approval records, scores or ingestion state.
+    const articles = (await published(options)).map(publicArticle.summary);
     res.json({ articles, categories: CATEGORIES });
   } catch (err) {
     next(err);
@@ -87,8 +96,8 @@ router.get('/api/articles', async (req, res, next) => {
 router.get('/api/articles/:slug', async (req, res, next) => {
   try {
     const article = await store.findBySlug('approved', req.params.slug);
-    if (!article) return res.status(404).json({ error: 'Article not found' });
-    res.json({ article });
+    if (!article || collectorLead(article)) return res.status(404).json({ error: 'Article not found' });
+    res.json({ article: publicArticle.detail(article, sanitize) });
   } catch (err) {
     next(err);
   }

@@ -1,0 +1,25 @@
+<%
+  const _site = (typeof siteUrl === 'string' && siteUrl) || process.env.PUBLIC_SITE_URL || '';
+  const _title = typeof title === 'string' && title ? title : 'PharmacyNews.ai';
+  const _desc = typeof description === 'string' && description ? description : 'Pharmacy and medicines news from official sources worldwide, with source links, review status and clear limits.';
+  const _active = typeof active === 'string' ? active : '';
+  const _canonical = _site && typeof canonicalPath === 'string' ? _site.replace(/\/$/, '') + canonicalPath : '';
+  const _noindex = typeof noindex !== 'undefined' && noindex;
+%><!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title><%= _title %></title>
+<meta name="description" content="<%= _desc %>">
+<% if (_noindex) { %><meta name="robots" content="noindex"><% } %>
+<% if (_canonical) { %><link rel="canonical" href="<%= _canonical %>"><% } %>
+<meta property="og:title" content="<%= _title %>">
+<meta property="og:description" content="<%= _desc %>">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#101113">
+<link rel="stylesheet" href="/atlas/style.css">
+<link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+<%- include('site-masthead', { active: _active }) %>

@@ -1,0 +1,46 @@
+<%- include('partials/site-top', {title, description, active:'newsletter', canonicalPath:'/newsletter'}) %>
+<main id="main" class="page">
+  <h1>Newsletter</h1>
+  <p class="lede">The reviewed daily edition by email: each item has the original headline, the source and its publication date, a short reviewed summary and a link to the original source.</p>
+
+  <% if (!open) { %>
+  <div class="notice" role="status">
+    <p><strong>Sign-up is not open yet.</strong> The newsletter has not started and no email addresses are being collected. The form below is switched off.</p>
+  </div>
+  <% } %>
+  <% if (error) { %>
+  <div class="notice" role="alert"><p><strong><%= error %></strong></p></div>
+  <% } %>
+
+  <h2>Sign up</h2>
+  <form class="form-grid" method="post" action="/newsletter/subscribe">
+    <label for="nl-email">Email address
+      <input id="nl-email" type="email" name="email" autocomplete="email" maxlength="254" value="<%= email %>" required<%= open ? '' : ' disabled' %>>
+    </label>
+    <%# Hidden from people; bots that fill it in are quietly ignored. %>
+    <div class="hp-field" aria-hidden="true">
+      <label for="nl-website">Leave this field empty
+        <input id="nl-website" type="text" name="website" tabindex="-1" autocomplete="off"<%= open ? '' : ' disabled' %>>
+      </label>
+    </div>
+    <label class="check" for="nl-consent">
+      <input id="nl-consent" type="checkbox" name="consent" value="yes" required<%= open ? '' : ' disabled' %>>
+      <span><%= consentText %></span>
+    </label>
+    <p class="muted">Consent wording version <%= consentVersion %>.</p>
+    <div><button class="btn-primary" type="submit"<%= open ? '' : ' disabled' %>><%= open ? 'Send me a confirmation email' : 'Sign-up not open yet' %></button></div>
+  </form>
+
+  <h2>How it works</h2>
+  <ul>
+    <li>After you sign up you receive one email asking you to confirm. Nothing else is sent until you confirm; an unconfirmed request is deleted after 7 days.</li>
+    <li>Only your email address is kept. No name, profession, location, IP address or health information is stored, and emails contain no tracking images or tracked links.</li>
+    <li>Every email has an unsubscribe link. Unsubscribing deletes your address from the list.</li>
+    <li>Issues are sent only after an editor has released that day's edition. Some days have no issue.</li>
+  </ul>
+  <div class="notice purple">
+    <p><strong>Not medical advice.</strong> The newsletter is an information service. It does not replace the linked official sources or a clinician's judgement.</p>
+  </div>
+  <% if (postalAddress) { %><p class="muted">PharmacyNews.ai, <%= postalAddress %></p><% } %>
+</main>
+<%- include('partials/site-bottom') %>

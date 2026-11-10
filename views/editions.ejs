@@ -1,0 +1,9 @@
+<%- include('partials/site-top', { title: 'Daily editions | PharmacyNews.ai', description: 'Reviewed daily editions of PharmacyNews.ai.', active: 'news', canonicalPath: '/edition' }) %>
+<main id="main" class="page">
+  <h1>Daily editions</h1>
+  <p class="lede">A daily edition is a set of reviewed summaries selected and released by a human editor.</p>
+  <% if (!editions.length) { %>
+    <div class="notice purple"><strong>No edition has been released yet.</strong> Editions appear here only after an editor releases them. The <a href="/news">news index</a> lists reviewed summaries and unreviewed official titles as they arrive.</div>
+  <% } else { %><ul class="news-list"><% editions.forEach(e => { %><li><h3><a href="/edition/<%= e.day %>">Edition for <%= e.day %></a></h3><div class="meta"><span><%= e.items %> reviewed item<%= e.items === 1 ? '' : 's' %></span><span>Released <%= String(e.released_at).slice(0, 10) %></span></div></li><% }); %></ul><% } %>
+</main>
+<%- include('partials/site-bottom') %>
