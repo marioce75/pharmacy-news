@@ -11,7 +11,7 @@ dashboard settings could not be inspected from the development machine.
 | `npm start` → `scripts/start-review.js` | Production (Render start command) | Checks Node 24.22.1; forces model calls and the antibiotic watcher off; **collection off unless `COLLECTION_PAUSED=false`**; requires `./content` to be a mounted disk; opens `./content/store-v1`; read-only integrity check (refuses to start on any finding); binds `0.0.0.0`. No seeding, import, migration or repair. |
 | `npm run preview` → `scripts/start-preview.js` | Local production-like preview | Binds `127.0.0.1:4010`; collection, schedules, models, newsletter sending, sponsor display and alert webhooks forced off; uses `.preview-store/` (git-ignored). Cannot touch `./content`. |
 | `node server.js` | Development only | In `NODE_ENV=production` it now **refuses to start** unless launched by `start-review.js`. Previously `render.yaml` used this command with the disk root as the content directory, which did not match the `store-v1` layout used by `npm start`. |
-| `npm test` | Test suite | 209 tests; no network; temp directories only. |
+| `npm test` | Test suite | 215 tests; no network; temp directories only. |
 
 `render.yaml` now uses `node scripts/start-review.js`, pins `NODE_VERSION=24.22.1`, sets
 `COLLECTION_PAUSED="true"` and no longer sets `CONTENT_DIR` or the legacy flag variables.
@@ -116,3 +116,45 @@ rollback; the new directories (`newsletter/`, `sponsors/`, `clinical-tools/`,
 | `NEWSLETTER_SIGNUP_ENABLED`, `NEWSLETTER_SENDING_ENABLED`, `NEWSLETTER_TRANSPORT`, `NEWSLETTER_POSTAL_ADDRESS` | See docs/NEWSLETTER.md — no real email provider exists yet |
 | `SPONSOR_SUBMISSIONS_ENABLED`, `SPONSOR_DISPLAY_ENABLED` | See docs/SPONSORSHIP.md |
 | `REVIEWER_REGISTRY_FILE` | Per-person reviewer accounts incl. verified clinical reviewer |
+
+## 8. Release-blocker corrections (2026-11-10, after review of 3e41396)
+
+Each item was reproduced on `3e41396`, has a regression test in
+`tests/release-blockers.test.js` (plus one in `tests/newsletter.test.js`) that fails there,
+and passes now.
+
+1. **Clinical approval digest.** The digest now includes a fingerprint of the full source of
+   every file that can change a calculator result (`IMPLEMENTATION_FILES`, currently
+   `lib/clinical/calculators.js`, which has no imports — a test fails if it gains one that is
+   not listed). The fingerprint is taken at process start, i.e. of the code actually running.
+   Changing a shared helper (rounding, parsing, bounds, display) invalidates approvals.
+   Consequence: any edit to that file returns *all four* calculators to "awaiting clinical
+   review". No approvals existed, so nothing was invalidated by this change.
+2. **Zero displayed for a positive result.** Calculators return raw values; one `display`
+   step rounds them. A positive result below one display unit is refused with an input error
+   instead of being shown as 0 (or rounded up to the smallest unit). Infusion rates under
+   1 mL/h show three decimals; rates under 0.01 mL/h are refused.
+3. **90-day freshness.** One rule (`lib/news/freshness.js`): current for 90 days from the
+   source publication date, or from the collection date when the source gave no usable date.
+   The review date is never used. Applied to `/news`, `/news/:desk`, `/api/news`, the homepage
+   stream, `/api/articles`, `/peptides`, the sitemap, `/edition/:day` and the newsletter issue.
+   A reviewed story's own URL (`/article/:slug`, `/api/articles/:slug`) still resolves so
+   links do not break, but is labelled **Archive**, marked `noindex`, and flagged
+   `archived: true`. This last point is a product decision the owner can change to a 404/410.
+4. **Schedule migration.** The journal records a schedule epoch
+   (`collection/schedule-epoch.json`: policy, cadence, enabled, since). Missed-slot reporting
+   only covers slots after the current epoch began. A new epoch starts when the cadence or
+   policy changes, when collection is enabled after being off, or on the first start after
+   upgrading. A restart with the same enabled schedule keeps the epoch, so real downtime is
+   still reported. Run history is never rewritten.
+5. **Idle runs and failures.** A run with nothing due, or in which nothing was retrieved, is
+   recorded as `idle`: it does not count as a success, does not reset the consecutive-failure
+   count, and does not overwrite the last real outcome. A source poll that made no retrieval
+   keeps the earlier failure on record (`failure_carried_forward`); only a completed
+   retrieval for that same source clears it.
+
+Remaining limitations: `/api/admin/operations` can show `collection_overdue` for up to about
+90 seconds after collection is re-enabled following a long pause, until the catch-up run
+finishes (alerts are only evaluated after a run, so no alert is sent for it). Not run on
+Linux x86-64. The archive behaviour in item 3 was verified by automated HTTP tests, not with
+real published stories (none exist).

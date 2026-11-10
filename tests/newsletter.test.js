@@ -84,9 +84,11 @@ const tokenFrom = (text, kind) => new RegExp(`/newsletter/${kind}\\?token=([A-Za
 const subscribersOnDisk = async () => fs.readFile(path.join(root, 'newsletter', 'subscribers.json'), 'utf8').catch(() => '');
 
 // ---- Edition fixture: the same review -> approvals -> publish -> draft -> release path the application uses.
+// Fixture stories are dated inside the 90-day freshness window (relative to the test run).
+const RECENT_DAY = new Date(Date.now() - 3 * 86400000).toISOString().slice(0, 10);
 async function publishArticle(id, fields = {}) {
   const article = { id, slug: id, status: 'pending', title: 'Synthetic regulator notice ' + id, source: 'Example Agency',
-    source_url: 'https://example.org/notices/' + id, date_published: '2026-01-02', content_kind: 'news',
+    source_url: 'https://example.org/notices/' + id, date_published: RECENT_DAY, content_kind: 'news',
     summary: 'An original synthetic summary written for this local fixture only.',
     body: '<p>' + 'Original synthetic editorial text for a local fixture. '.repeat(4) + '</p>', ...fields };
   await store.writeArticle('pending', id, article);
@@ -325,7 +327,7 @@ test('buildIssue lists headline, source, date, https link and reviewed summary; 
   assert.equal(issue.day, '2026-02-03');
   assert.equal(issue.items.length, 2);
   assert.equal(issue.unavailable, 0);
-  assert.deepEqual(issue.items[1], { headline: 'Synthetic regulator notice nl-plain', source: 'Example Agency', published: '2026-01-02', url: 'https://example.org/notices/nl-plain', summary: 'An original synthetic summary written for this local fixture only.' });
+  assert.deepEqual(issue.items[1], { headline: 'Synthetic regulator notice nl-plain', source: 'Example Agency', published: RECENT_DAY, url: 'https://example.org/notices/nl-plain', summary: 'An original synthetic summary written for this local fixture only.' });
   assert.equal(issue.items[0].headline, hostile);
 
   assert.doesNotMatch(issue.html, /<script|<img|<b>|<iframe|<link/i);
@@ -656,4 +658,17 @@ test('scripts/newsletter-send.js: without --confirm it only reports; with --conf
   const [mail] = await dryRunMessages();
   assert.equal(mail.to, 'script@example.com');
   assert.equal((await newsletter.readOutbox('2026-02-18')).recipients[0].state, 'sent');
+});
+
+// Release blocker 3 (review of 3e41396): the newsletter is a publication path too.
+test('an issue never includes a reviewed story older than the 90-day freshness window', async () => {
+  configure();
+  const old = new Date(Date.now() - 200 * 86400000).toISOString(), recent = new Date(Date.now() - 3 * 86400000).toISOString();
+  await publishArticle('fresh-window-fixture', { date_published: recent.slice(0, 10), provenance: { published_at: recent, retrieved_at: recent } });
+  await publishArticle('stale-window-fixture', { title: 'STALE STORY MUST NOT BE MAILED', date_published: old.slice(0, 10), provenance: { published_at: old, retrieved_at: recent } });
+  await releaseEdition('2026-10-05', ['fresh-window-fixture', 'stale-window-fixture']);
+  const issue = await newsletter.buildIssue('2026-10-05');
+  assert.equal(issue.items.length, 1);
+  assert.equal(issue.unavailable, 1);
+  assert.ok(!issue.html.includes('STALE STORY') && !issue.text.includes('STALE STORY'));
 });

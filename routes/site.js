@@ -121,7 +121,7 @@ publicRouter.get('/sitemap.xml', wrap(async (req, res, next) => {
   const origin = site();
   if (!origin) return next(); // no canonical site URL configured: no sitemap rather than a wrong one
   const paths = ['/', '/news', ...Object.keys(desks.DESKS).map(d => '/news/' + d), '/sources', '/tools', '/affordability', '/newsletter', '/about', '/advertise', '/substance-alerts', '/treatments', '/edition'];
-  for (const a of await require('../lib/store').listArticles('approved')) if (!news.collectorLead(a) && /^[a-z0-9-]+$/i.test(a.slug || '')) paths.push('/article/' + a.slug);
+  for (const a of await require('../lib/store').listArticles('approved')) if (!news.collectorLead(a) && require('../lib/news/freshness').current(a) && /^[a-z0-9-]+$/i.test(a.slug || '')) paths.push('/article/' + a.slug);
   res.type('application/xml').send('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + paths.map(p => `<url><loc>${origin}${p}</loc></url>`).join('\n') + '\n</urlset>\n');
 }));
 

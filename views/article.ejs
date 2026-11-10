@@ -1,8 +1,9 @@
-<%- include('partials/site-top', { title: article.title + ' | PharmacyNews.ai', description: article.summary.slice(0, 300), active: 'news', canonicalPath: '/article/' + article.slug }) %>
+<%- include('partials/site-top', { title: article.title + ' | PharmacyNews.ai', description: article.summary.slice(0, 300), active: 'news', canonicalPath: '/article/' + article.slug, noindex: !!article.archived }) %>
 <main id="main" class="page">
   <p><a href="/news/<%= article.desk %>">← <%= article.desk_label %></a></p>
   <article>
-    <p class="news-list"><span class="badge-status ok">Reviewed summary</span></p>
+    <p class="news-list"><span class="badge-status ok">Reviewed summary</span><% if (article.archived) { %> <span class="badge-status off">Archive</span><% } %></p>
+    <% if (article.archived) { %><div class="notice" role="note"><strong>Archive.</strong> This story is older than <%= typeof archiveDays === 'undefined' ? 90 : archiveDays %> days and is no longer listed as current news. It may have been superseded; check the original source for the latest information.</div><% } %>
     <h1><%= article.title %></h1>
     <p class="muted"><%= article.source || 'Source unspecified' %> ·
       <% if (article.date_published) { %>Published <time datetime="<%= article.date_published %>"><%= article.date_published %></time><% } else { %>Publication date unknown<% } %>
