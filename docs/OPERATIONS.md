@@ -11,7 +11,7 @@ dashboard settings could not be inspected from the development machine.
 | `npm start` → `scripts/start-review.js` | Production (Render start command) | Checks Node 24.22.1; forces model calls and the antibiotic watcher off; **collection off unless `COLLECTION_PAUSED=false`**; requires `./content` to be a mounted disk; opens `./content/store-v1`; read-only integrity check (refuses to start on any finding); binds `0.0.0.0`. No seeding, import, migration or repair. |
 | `npm run preview` → `scripts/start-preview.js` | Local production-like preview | Binds `127.0.0.1:4010`; collection, schedules, models, newsletter sending, sponsor display and alert webhooks forced off; uses `.preview-store/` (git-ignored). Cannot touch `./content`. |
 | `node server.js` | Development only | In `NODE_ENV=production` it now **refuses to start** unless launched by `start-review.js`. Previously `render.yaml` used this command with the disk root as the content directory, which did not match the `store-v1` layout used by `npm start`. |
-| `npm test` | Test suite | 215 tests; no network; temp directories only. |
+| `npm test` | Test suite | 220 tests; no network; temp directories only. |
 
 `render.yaml` now uses `node scripts/start-review.js`, pins `NODE_VERSION=24.22.1`, sets
 `COLLECTION_PAUSED="true"` and no longer sets `CONTENT_DIR` or the legacy flag variables.
@@ -152,6 +152,19 @@ and passes now.
    count, and does not overwrite the last real outcome. A source poll that made no retrieval
    keeps the earlier failure on record (`failure_carried_forward`); only a completed
    retrieval for that same source clears it.
+
+**Correction to item 5 (2026-11-10, after retest of `9a970f8`).** The first fix only carried a
+failure forward for the *same* source. A healthy source that merely drained an already-fetched
+queue (zero HTTP requests) was still counted as a successful run, which reset the run-level
+failure streak and overwrote the last failed outcome. Every request now goes through a
+per-source wrapper that sets `attempted` (and counts `requests`); `retrieved` is set only when
+a retrieval completes. A run is judged only on rows with a completed retrieval or a failed
+attempt; with neither it is `idle`. Queue-only work never updates `last_success_at`, the
+failure streak, `last_completed_success_at` or `last-run`. A real retrieval for any source ends
+the run-level streak (the collector demonstrably works) but each source's own failure is
+cleared only by that source's own retrieval. Regression tests: `tests/idle-recovery.test.js`.
+Behaviour note: a mixed run where one source fails and the others are queue-only is now
+`failed` (previously `completed_with_errors`).
 
 Remaining limitations: `/api/admin/operations` can show `collection_overdue` for up to about
 90 seconds after collection is re-enabled following a long pause, until the catch-up run
