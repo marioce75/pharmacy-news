@@ -5,7 +5,7 @@ const fs = require('fs');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
-const morgan = require('morgan');
+const { requestLogger } = require('./lib/log-redaction');
 const store = require('./lib/store');
 const scheduler = require('./lib/scheduler');
 
@@ -31,7 +31,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Middleware
 app.use(require('./middleware/security').headers);
-app.use(morgan('short'));
+app.use(requestLogger()); // access log; credential-like query values are masked
 app.use(express.json({limit:'256kb'}));
 app.use(express.urlencoded({ extended: false, limit:'256kb' }));
 app.use(cookieParser());

@@ -10,14 +10,15 @@
     <td><%= labels[c.state] %><% if (c.review_due) { %><br><span class="muted">Re-review due <%= c.review_due %></span><% } %><% if (c.note) { %><br><span class="muted"><%= c.note %></span><% } %></td>
     <td><code style="word-break:break-all;font-size:11px"><%= c.version_digest %></code></td>
     <td>
-      <form class="form-grid" data-tool-approve="<%= c.tool.id %>" data-digest="<%= c.version_digest %>">
+      <form class="form-grid" method="post" action="/admin/tools/<%= c.tool.id %>/approve" data-tool-approve="<%= c.tool.id %>" data-digest="<%= c.version_digest %>">
+        <input type="hidden" name="version_digest" value="<%= c.version_digest %>">
         <label class="check"><input type="checkbox" name="formulaChecked"> <span>Formula checked against the cited source</span></label>
         <label class="check"><input type="checkbox" name="citationsChecked"> <span>Citations checked</span></label>
         <label class="check"><input type="checkbox" name="testCasesChecked"> <span>Test cases checked</span></label>
         <label>Your password<input type="password" name="password" autocomplete="current-password" style="display:block;width:100%;margin-top:5px;background:#17181a;color:#ededee;border:1px solid #6b6b72;padding:10px;font-size:16px"></label>
         <button class="btn-primary" type="submit"<%- you.clinical ? '' : ' disabled' %>>Sign clinical approval</button>
       </form>
-      <form class="form-grid" data-tool-withdraw="<%= c.tool.id %>" style="margin-top:12px"><label>Withdrawal reason<input type="text" name="reason" maxlength="500"></label><button type="submit">Withdraw</button></form>
+      <form class="form-grid" method="post" action="/admin/tools/<%= c.tool.id %>/withdraw" data-tool-withdraw="<%= c.tool.id %>" style="margin-top:12px"><label>Withdrawal reason<input type="text" name="reason" maxlength="500"></label><button type="submit">Withdraw</button></form>
       <p role="status" data-tool-status="<%= c.tool.id %>"></p>
     </td></tr><% }); %>
   </tbody></table></div>

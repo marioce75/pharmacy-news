@@ -171,3 +171,13 @@ Remaining limitations: `/api/admin/operations` can show `collection_overdue` for
 finishes (alerts are only evaluated after a run, so no alert is sent for it). Not run on
 Linux x86-64. The archive behaviour in item 3 was verified by automated HTTP tests, not with
 real published stories (none exist).
+
+## 9. Security hotfix, 10 November 2026
+
+Two defects in the clinical tool review routes were corrected. Regression tests: `tests/security-hotfix.test.js`.
+
+1. **Calculator id validation.** The withdrawal route built a file path from the id in the address without checking it, so a signed-in editor could send an encoded traversal id and rewrite a JSON file outside the clinical-tools directory. Every id is now matched against the exact `CALCULATORS` list before a path is built or a file is read or written, in the library (`status`, `approve`, `withdraw`) and again in the routes before the password check. The approval file name is taken from the matched catalogue entry, never from the request.
+2. **Review forms post.** The four approval forms and four withdrawal forms had no `method`, so with the page script disabled, blocked or failed a browser would submit them by GET with the password in the address. Each form now declares `method="post"` and its own action, and the routes accept that plain form post with the same gates (same-origin, sign-in, password re-entry, verified clinical credential, exact digest, three attestations).
+3. **Access log.** Request logging goes through `lib/log-redaction.js`, which masks the value of credential-like query parameters (`password`, `token`, `secret`, `key`, `code`, `session`, `signature` and similar) and keeps method, path, parameter names, status and timing. Request bodies are not logged.
+
+If the review page was ever submitted with the script not running before this fix, the password used is in that request's address and may be in Render's request logs and browser history; treat it as exposed.

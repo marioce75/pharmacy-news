@@ -104,15 +104,30 @@ adminRouter.post('/tools/:id/preview', form, wrap(async (req, res, next) => {
   try { res.render('tool', toolView(s, { ...base, result: calculators.calculate(s.tool.id, req.body) })); }
   catch (e) { if (e.code !== 'INVALID_INPUT') throw e; res.status(422).render('tool', toolView(s, { ...base, error: e.message, errorField: e.field })); }
 }));
-adminRouter.post('/tools/:id/approve', sameOrigin, express.json({ limit: '10kb' }), wrap(async (req, res) => {
-  const signed = await reauthenticate(req.session, req.body?.password);
-  if (!signed) return res.status(401).json({ error: 'Re-enter your own password to sign this approval' });
-  res.json(await tools.approve(req.params.id, req.body?.version_digest, signed, req.body?.attestation));
+// The id must be an exact catalogue id before anything else happens: no password check, no
+// path and no file access for anything that is not a listed calculator.
+const knownTool = (req, res, next) => (tools.known(req.params.id) ? next() : res.status(404).json({ error: 'Unknown tool' }));
+// The review forms post here directly when the page script has not run (JavaScript disabled,
+// blocked or failed), so the password travels in a POST body, never in an address.
+const reviewBody = [express.json({ limit: '10kb' }), express.urlencoded({ extended: false, limit: '10kb' })];
+const plainForm = req => Boolean(req.is('application/x-www-form-urlencoded'));
+const ticked = v => v === 'on';
+const done = (req, res, result) => (plainForm(req) ? res.redirect(303, '/admin/tools') : res.json(result));
+adminRouter.post('/tools/:id/approve', sameOrigin, knownTool, reviewBody, wrap(async (req, res) => {
+  const b = req.body || {};
+  const signed = await reauthenticate(req.session, b.password);
+  if (!signed) throw Object.assign(new Error('Re-enter your own password to sign this approval'), { status: 401 });
+  const attestation = plainForm(req) ? { formulaChecked: ticked(b.formulaChecked), citationsChecked: ticked(b.citationsChecked), testCasesChecked: ticked(b.testCasesChecked) } : b.attestation;
+  done(req, res, await tools.approve(req.params.id, b.version_digest, signed, attestation));
 }));
-adminRouter.post('/tools/:id/withdraw', sameOrigin, express.json({ limit: '10kb' }), wrap(async (req, res) => {
-  res.json(await tools.withdraw(req.params.id, identity(req.session), req.body?.reason));
+adminRouter.post('/tools/:id/withdraw', sameOrigin, knownTool, reviewBody, wrap(async (req, res) => {
+  done(req, res, await tools.withdraw(req.params.id, identity(req.session), req.body?.reason));
 }));
-adminRouter.use('/tools', (err, req, res, next) => (err.status ? res.status(err.status).json({ error: err.message }) : next(err)));
+adminRouter.use('/tools', (err, req, res, next) => {
+  if (!err.status) return next(err);
+  if (plainForm(req)) return res.status(err.status).type('text').send(err.message + '\n\nNothing was recorded. Go back to the clinical tool review page to try again.');
+  res.status(err.status).json({ error: err.message });
+});
 
 // ---- robots.txt and sitemap ----------------------------------------------------------
 const site = () => { try { const u = new URL(process.env.PUBLIC_SITE_URL || ''); return u.protocol === 'https:' ? u.origin : ''; } catch { return ''; } };
